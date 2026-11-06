@@ -47,4 +47,3 @@ export async function createPaymentRequest({
   if (!res.ok) throw new Error(`IntaSend checkout failed: ${res.statusText}`);
   return res.json();
 }
-
