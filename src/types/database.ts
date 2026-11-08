@@ -15,6 +15,8 @@ export type PayoutMethodType = "till" | "paybill" | "pochi" | "phone";
 
 export type InvoiceStatus = "unpaid" | "claimed" | "paid" | "cancelled";
 
+export type ClaimStatus = "pending" | "confirmed" | "rejected";
+
 export interface InvoiceItem {
   description: string;
   quantity: number;
@@ -364,6 +366,115 @@ export interface Database {
           },
         ];
       };
+      payment_claims: {
+        Row: {
+          id: string;
+          seller_id: string;
+          invoice_id: string | null;
+          payment_link_id: string | null;
+          payer_name: string;
+          payer_phone: string;
+          mpesa_code: string;
+          amount_minor: number;
+          status: ClaimStatus;
+          reject_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          seller_id: string;
+          invoice_id?: string | null;
+          payment_link_id?: string | null;
+          payer_name: string;
+          payer_phone: string;
+          mpesa_code: string;
+          amount_minor: number;
+          status?: ClaimStatus;
+          reject_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          seller_id?: string;
+          invoice_id?: string | null;
+          payment_link_id?: string | null;
+          payer_name?: string;
+          payer_phone?: string;
+          mpesa_code?: string;
+          amount_minor?: number;
+          status?: ClaimStatus;
+          reject_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payment_claims_seller_id_fkey";
+            columns: ["seller_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payment_claims_invoice_id_fkey";
+            columns: ["invoice_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payment_claims_payment_link_id_fkey";
+            columns: ["payment_link_id"];
+            isOneToOne: false;
+            referencedRelation: "payment_links";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      receipts: {
+        Row: {
+          id: string;
+          claim_id: string;
+          seller_id: string;
+          receipt_number: string;
+          public_token: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          claim_id: string;
+          seller_id: string;
+          receipt_number: string;
+          public_token: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          claim_id?: string;
+          seller_id?: string;
+          receipt_number?: string;
+          public_token?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "receipts_claim_id_fkey";
+            columns: ["claim_id"];
+            isOneToOne: true;
+            referencedRelation: "payment_claims";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "receipts_seller_id_fkey";
+            columns: ["seller_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -372,6 +483,7 @@ export interface Database {
       payout_method: PayoutMethod;
       payout_method_type: PayoutMethodType;
       invoice_status: InvoiceStatus;
+      claim_status: ClaimStatus;
       transaction_status: TransactionStatus;
       payer_type: PayerType;
       ledger_direction: LedgerDirection;
@@ -398,3 +510,5 @@ export type Transaction = Tables<"transactions">;
 export type LedgerEntry = Tables<"ledger_entries">;
 export type PayoutMethodRecord = Tables<"payout_methods">;
 export type InvoiceRecord = Tables<"invoices">;
+export type PaymentClaimRecord = Tables<"payment_claims">;
+export type ReceiptRecord = Tables<"receipts">;

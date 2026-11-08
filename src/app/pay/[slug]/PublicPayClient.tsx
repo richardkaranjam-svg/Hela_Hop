@@ -3,12 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { submitPaymentClaimAction } from "@/app/dashboard/claims/actions";
 import { setLanguageAction } from "@/app/dashboard/links/actions";
 import { translations, type Language } from "@/lib/i18n";
 
 interface PublicPayClientProps {
   initialLang: Language;
   slug: string;
+  sellerId?: string;
+  paymentLinkId?: string;
   sellerName: string;
   sellerUsername: string;
   title: string;
@@ -27,6 +30,8 @@ interface PublicPayClientProps {
 export function PublicPayClient({
   initialLang,
   slug,
+  sellerId,
+  paymentLinkId,
   sellerName,
   sellerUsername,
   title,
@@ -40,11 +45,13 @@ export function PublicPayClient({
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [claimSubmitted, setClaimSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Claim Form state
   const [mpesaCode, setMpesaCode] = useState("");
   const [payerName, setPayerName] = useState("");
   const [payerPhone, setPayerPhone] = useState("");
+  const [customAmount, setCustomAmount] = useState("");
   const [claimError, setClaimError] = useState<string | null>(null);
 
   const t = translations[lang] || translations.en;
@@ -78,7 +85,7 @@ export function PublicPayClient({
     }
   };
 
-  const handleClaimSubmit = (e: React.FormEvent) => {
+  const handleClaimSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanCode = mpesaCode.trim().toUpperCase();
     if (!/^[A-Z0-9]{10}$/.test(cleanCode)) {
@@ -87,8 +94,52 @@ export function PublicPayClient({
       );
       return;
     }
+
+    let effectiveAmountMinor = amountMinor;
+    if (effectiveAmountMinor === null) {
+      const parsed = parseFloat(customAmount);
+      if (isNaN(parsed) || parsed <= 0) {
+        setClaimError("Please enter the amount you paid.");
+        return;
+      }
+      effectiveAmountMinor = Math.round(parsed * 100);
+    }
+
+    if (!sellerId) {
+      setClaimSubmitted(true);
+      return;
+    }
+
     setClaimError(null);
-    setClaimSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      const res = await submitPaymentClaimAction({
+        sellerId,
+        paymentLinkId: paymentLinkId || null,
+        payerName,
+        payerPhone,
+        mpesaCode: cleanCode,
+        amountMinor: effectiveAmountMinor,
+      });
+
+      if (res.success) {
+        setClaimSubmitted(true);
+      } else {
+        setClaimError(
+          res.errors?.mpesa_code ||
+            res.errors?.amount ||
+            res.errors?.payer_name ||
+            res.errors?.payer_phone ||
+            res.errors?.general ||
+            res.message ||
+            "Failed to submit claim."
+        );
+      }
+    } catch {
+      setClaimError("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formattedAmount =
@@ -480,12 +531,37 @@ export function PublicPayClient({
                     />
                   </div>
 
+                  {amountMinor === null && (
+                    <div>
+                      <label
+                        htmlFor="claim-amount"
+                        className="mb-1 block text-xs font-bold text-slate-700"
+                      >
+                        Amount Paid (KES)
+                      </label>
+                      <input
+                        id="claim-amount"
+                        type="number"
+                        min="1"
+                        step="any"
+                        required
+                        placeholder="e.g. 1500"
+                        value={customAmount}
+                        onChange={(e) => setCustomAmount(e.target.value)}
+                        className="min-h-[48px] w-full rounded-xl border border-slate-300 px-3.5 py-2 font-mono text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                      />
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-2 pt-2">
                     <button
                       type="submit"
-                      className="min-h-[48px] w-full rounded-xl bg-emerald-600 text-xs font-bold text-white transition-colors hover:bg-emerald-700"
+                      disabled={isSubmitting}
+                      className="min-h-[48px] w-full rounded-xl bg-emerald-600 text-xs font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
                     >
-                      Send Payment Claim &rarr;
+                      {isSubmitting
+                        ? "Sending Claim..."
+                        : "Send Payment Claim \u2192"}
                     </button>
                     <button
                       type="button"

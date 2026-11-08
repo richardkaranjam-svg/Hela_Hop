@@ -9,80 +9,115 @@ interface DashboardNavProps {
   userEmail: string;
 }
 
-export function DashboardHeader({ userEmail }: DashboardNavProps) {
+const navLinks = [
+  { href: "/dashboard", label: "Dashboard", icon: "📊" },
+  { href: "/dashboard/links", label: "Links", icon: "🔗" },
+  { href: "/dashboard/invoices", label: "Invoices", icon: "🧾" },
+  { href: "/dashboard/claims", label: "Claims", icon: "📩" },
+  { href: "/dashboard/billers", label: "Billers", icon: "⚡" },
+  { href: "/dashboard/payout-methods", label: "Payouts", icon: "💳" },
+  { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
+];
+
+export function DesktopSidebar({ userEmail }: DashboardNavProps) {
   const pathname = usePathname();
 
-  const links = [
-    { href: "/dashboard", label: "Overview", icon: "📊" },
-    { href: "/dashboard/invoices", label: "Invoices", icon: "🧾" },
-    { href: "/dashboard/links", label: "Payment Links", icon: "🔗" },
-    { href: "/dashboard/payout-methods", label: "Payout Methods", icon: "💳" },
-    { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
-  ];
-
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+    <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col justify-between border-r border-slate-200 bg-white p-5 lg:flex">
+      <div>
         {/* Brand */}
-        <div className="flex items-center gap-6">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2.5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-          >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-lg font-extrabold text-white shadow-sm shadow-emerald-600/30">
-              H
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-lg font-extrabold text-white shadow-sm shadow-emerald-600/30">
+            H
+          </span>
+          <div className="flex flex-col">
+            <span className="text-base font-black tracking-tight text-slate-900">
+              Hela Hop
             </span>
-            <div className="flex flex-col">
-              <span className="text-base leading-tight font-black tracking-tight text-slate-900">
-                Hela Hop
-              </span>
-              <span className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase">
-                Seller Hub
-              </span>
-            </div>
-          </Link>
+            <span className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase">
+              Seller Hub
+            </span>
+          </div>
+        </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden items-center gap-1 lg:flex">
-            {links.map((link) => {
-              const isActive =
-                link.href === "/dashboard"
-                  ? pathname === "/dashboard"
-                  : pathname.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-colors ${
-                    isActive
-                      ? "bg-emerald-50 font-extrabold text-emerald-700"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
-                >
-                  <span aria-hidden="true">{link.icon}</span>
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+        {/* Sidebar Nav */}
+        <nav className="mt-8 space-y-1.5">
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex min-h-[44px] items-center gap-3 rounded-xl px-3.5 text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-emerald-50 text-emerald-800 shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                <span className="text-base" aria-hidden="true">
+                  {link.icon}
+                </span>
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* User Footer / Sign Out */}
+      <div className="border-t border-slate-100 pt-4">
+        <div className="mb-3">
+          <span className="block truncate text-xs font-bold text-slate-800">
+            {userEmail}
+          </span>
+          <span className="text-[10px] text-slate-400">Seller Account</span>
         </div>
 
-        {/* Right action / user profile */}
-        <div className="flex items-center gap-3">
-          <div className="hidden flex-col text-right sm:flex">
-            <span className="max-w-[180px] truncate text-xs font-semibold text-slate-700">
-              {userEmail}
-            </span>
-            <span className="text-[10px] text-slate-400">Seller Account</span>
-          </div>
+        <form action={signOutAction}>
+          <button
+            type="submit"
+            className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 active:scale-98"
+          >
+            <span>Log Out</span>
+          </button>
+        </form>
+      </div>
+    </aside>
+  );
+}
 
+export function MobileTopBar({ userEmail }: DashboardNavProps) {
+  return (
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white lg:hidden">
+      <div className="flex h-14 items-center justify-between px-4">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 rounded-lg p-1 focus:outline-none"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-base font-extrabold text-white shadow-sm">
+            H
+          </span>
+          <span className="text-base font-black tracking-tight text-slate-900">
+            Hela Hop
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <span className="max-w-[120px] truncate text-[11px] font-semibold text-slate-600">
+            {userEmail.split("@")[0]}
+          </span>
           <form action={signOutAction}>
             <button
               type="submit"
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
-              title="Sign out of your account"
+              className="flex min-h-[36px] items-center justify-center rounded-lg border border-slate-200 px-2.5 text-[11px] font-bold text-slate-600 hover:bg-slate-50"
             >
-              <span>Log Out</span>
+              Log Out
             </button>
           </form>
         </div>
@@ -94,11 +129,11 @@ export function DashboardHeader({ userEmail }: DashboardNavProps) {
 export function MobileBottomNav() {
   const pathname = usePathname();
 
-  const links = [
+  const mobileLinks = [
     { href: "/dashboard", label: "Home", icon: "📊" },
-    { href: "/dashboard/invoices", label: "Invoices", icon: "🧾" },
     { href: "/dashboard/links", label: "Links", icon: "🔗" },
-    { href: "/dashboard/payout-methods", label: "Payouts", icon: "💳" },
+    { href: "/dashboard/invoices", label: "Invoices", icon: "🧾" },
+    { href: "/dashboard/claims", label: "Claims", icon: "📩" },
     { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
   ];
 
@@ -108,7 +143,7 @@ export function MobileBottomNav() {
       className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200 bg-white px-1 py-1 shadow-lg lg:hidden"
     >
       <div className="mx-auto grid max-w-md grid-cols-5">
-        {links.map((link) => {
+        {mobileLinks.map((link) => {
           const isActive =
             link.href === "/dashboard"
               ? pathname === "/dashboard"

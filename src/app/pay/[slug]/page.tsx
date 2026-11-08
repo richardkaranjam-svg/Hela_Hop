@@ -133,6 +133,8 @@ export default async function PublicPayPage({ params }: PayPageProps) {
     <PublicPayClient
       initialLang={lang}
       slug={link.slug}
+      sellerId={link.user_id}
+      paymentLinkId={link.id}
       sellerName={sellerName}
       sellerUsername={sellerUsername}
       title={link.title}

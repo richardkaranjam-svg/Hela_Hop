@@ -41,3 +41,23 @@ export function generateSecureInvoiceCode(): string {
   const randomPart = crypto.randomBytes(8).toString("hex").slice(0, 12);
   return `inv-${randomPart}`;
 }
+
+/**
+ * Generates an unguessable, non-sequential token for receipts.
+ * Minimum 10 characters (per Master Plan D10).
+ * Example: "rec-7qm2-xp9a-k4t8"
+ */
+export function generateReceiptToken(): string {
+  const randomPart = crypto.randomBytes(8).toString("hex").slice(0, 12);
+  return `rec-${randomPart}`;
+}
+
+/**
+ * Generates a human-friendly receipt display number.
+ * Example: "REC-2026-9041"
+ */
+export function generateReceiptNumber(): string {
+  const year = new Date().getFullYear();
+  const randomDigits = Math.floor(1000 + Math.random() * 9000);
+  return `REC-${year}-${randomDigits}`;
+}
