@@ -86,7 +86,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => removeToast(toast.id)}
-              className="flex min-h-[32px] min-w-[32px] shrink-0 items-center justify-center text-lg leading-none text-white/70 hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center text-lg leading-none text-white/70 hover:text-white"
               aria-label="Dismiss toast"
             >
               &times;

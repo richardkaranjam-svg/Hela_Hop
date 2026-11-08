@@ -186,7 +186,7 @@ export function NewInvoiceForm({ payoutMethods }: NewInvoiceFormProps) {
           <button
             type="button"
             onClick={handleAddItem}
-            className="flex min-h-[36px] items-center px-2 text-xs font-bold text-emerald-600 hover:text-emerald-700"
+            className="flex min-h-[44px] items-center px-2 text-xs font-bold text-emerald-600 hover:text-emerald-700"
           >
             + Add Item Row
           </button>
@@ -212,7 +212,7 @@ export function NewInvoiceForm({ payoutMethods }: NewInvoiceFormProps) {
                   <button
                     type="button"
                     onClick={() => handleRemoveItem(item.id)}
-                    className="min-h-[32px] px-1 text-xs font-bold text-red-500 hover:text-red-700"
+                    className="min-h-[44px] px-2 text-xs font-bold text-red-500 hover:text-red-700"
                   >
                     Remove
                   </button>

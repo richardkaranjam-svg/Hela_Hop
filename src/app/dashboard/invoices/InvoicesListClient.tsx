@@ -179,7 +179,7 @@ export function InvoicesListClient({
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold capitalize transition-all ${
+                className={`flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold capitalize transition-all ${
                   isSel
                     ? "bg-slate-900 text-white shadow-xs"
                     : "text-slate-600 hover:bg-slate-100"
@@ -330,15 +330,13 @@ export function InvoicesListClient({
                   )}
 
                   {inv.status === "claimed" && (
-                    <button
-                      type="button"
-                      onClick={() => handleStatusChange(inv.id, "paid")}
-                      disabled={isPending}
-                      className="min-h-[44px] rounded-xl bg-emerald-600 px-3 text-xs font-bold text-white transition-colors hover:bg-emerald-700"
-                      title="Confirm payment received"
+                    <Link
+                      href="/dashboard/claims"
+                      className="flex min-h-[44px] items-center justify-center rounded-xl bg-emerald-600 px-3 text-xs font-bold text-white transition-colors hover:bg-emerald-700"
+                      title="Check your M-PESA SMS, then confirm the claim"
                     >
-                      Confirm Paid
-                    </button>
+                      Review claim
+                    </Link>
                   )}
 
                   {/* Delete button */}

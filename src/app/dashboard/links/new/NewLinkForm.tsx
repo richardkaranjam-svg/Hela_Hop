@@ -173,7 +173,7 @@ export function NewLinkForm({ username, payoutMethods }: NewLinkFormProps) {
                   key={q}
                   type="button"
                   onClick={() => setAmount(String(q))}
-                  className="min-h-[32px] rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+                  className="min-h-[44px] rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                 >
                   KES {q.toLocaleString()}
                 </button>

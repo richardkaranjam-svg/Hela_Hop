@@ -55,7 +55,7 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
     startTransition(async () => {
       const res = await confirmPaymentClaimAction(claim.id);
       if (res.success) {
-        success(res.message || "Payment confirmed! Receipt generated.");
+        success(res.message || "Payment confirmed. Receipt created.");
         setClaims((prev) =>
           prev.map((c) =>
             c.id === claim.id
@@ -65,7 +65,7 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
                   receipt: res.receiptToken
                     ? {
                         public_token: res.receiptToken,
-                        receipt_number: "RECEIPT",
+                        receipt_number: res.receiptNumber ?? "Receipt",
                       }
                     : c.receipt,
                 }
@@ -111,7 +111,7 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
         return (
           <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500"></span>
-            PENDING VERIFICATION
+            WAITING FOR YOU
           </span>
         );
       case "confirmed":
@@ -156,7 +156,7 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold capitalize transition-all ${
+              className={`flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold capitalize transition-all ${
                 isSel
                   ? "bg-slate-900 text-white shadow-xs"
                   : "text-slate-600 hover:bg-slate-100"
@@ -190,7 +190,8 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
           </h2>
           <p className="mx-auto mt-1 max-w-sm text-xs text-slate-500">
             When customers submit their M-PESA confirmation code after paying,
-            their claim will appear here for you to verify.
+            their claim will appear here for you to check against your M-PESA
+            SMS.
           </p>
         </div>
       ) : (
@@ -275,8 +276,8 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
                       💡
                     </span>
                     <p>
-                      <strong>Verification check:</strong> Check your own M-PESA
-                      SMS message on your phone to confirm code{" "}
+                      <strong>Before you confirm:</strong> look for this code in
+                      your own M-PESA SMS on your phone:{" "}
                       <strong className="font-mono">{claim.mpesa_code}</strong>{" "}
                       for <strong>{formattedAmount}</strong> before confirming.
                     </p>

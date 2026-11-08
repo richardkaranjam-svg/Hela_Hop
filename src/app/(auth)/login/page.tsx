@@ -58,7 +58,7 @@ function LoginForm() {
           Welcome Back
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Log in to manage your payment links and verify claims.
+          Log in to manage your payment links and confirm claims.
         </p>
       </div>
 

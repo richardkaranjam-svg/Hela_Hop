@@ -18,13 +18,13 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="flex min-h-[40px] items-center rounded-xl px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
+              className="flex min-h-[44px] items-center rounded-xl px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
             >
               Log In
             </Link>
             <Link
               href="/signup"
-              className="flex min-h-[40px] items-center rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
+              className="flex min-h-[44px] items-center rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
             >
               Sign Up
             </Link>

@@ -73,9 +73,15 @@ export async function GET() {
         ? `Link: ${pl.title}`
         : "Direct Payment";
 
-    // Escape CSV cell values
-    const escapeCsv = (val: string) => {
-      if (val.includes(",") || val.includes('"') || val.includes("\n")) {
+    // Escape CSV cell values. Payers type their own name, so a value starting
+    // with = + - @ (or a tab/CR) could run as a formula when opened in Excel.
+    // Prefix those with an apostrophe so they stay plain text.
+    const escapeCsv = (input: string) => {
+      let val = input;
+      if (/^[=+\-@\t\r]/.test(val)) {
+        val = `'${val}`;
+      }
+      if (/[",\r\n]/.test(val)) {
         return `"${val.replace(/"/g, '""')}"`;
       }
       return val;

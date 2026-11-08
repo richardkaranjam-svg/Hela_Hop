@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { maskPhoneNumber } from "@/lib/formatters";
-
 export interface ReceiptDetails {
   receiptNumber: string;
   publicToken: string;
@@ -12,14 +10,14 @@ export interface ReceiptDetails {
   amountMinor: number;
   mpesaCode: string;
   payerName: string;
-  payerPhone: string;
+  /** Already masked on the server (D10). The real number never reaches this page. */
+  payerPhoneMasked: string;
   sellerName: string;
-  sellerSlug?: string | null;
   payoutType?: string | null;
   payoutNumber?: string | null;
   payoutAccountRef?: string | null;
-  contextTitle?: string | null;
-  invoiceCode?: string | null;
+  /** Payment link title, or "Invoice payment". The invoice code is never shown. */
+  reference?: string | null;
   qrDataUrl: string;
   receiptUrl: string;
 }
@@ -32,7 +30,7 @@ export function PublicReceiptClient({ receipt }: PublicReceiptClientProps) {
   const [copied, setCopied] = useState(false);
 
   const formattedAmount = `KES ${(receipt.amountMinor / 100).toLocaleString()}`;
-  const maskedPhone = maskPhoneNumber(receipt.payerPhone);
+  const maskedPhone = receipt.payerPhoneMasked;
   const formattedDate = new Date(receipt.createdAt).toLocaleString("en-KE", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -199,41 +197,39 @@ export function PublicReceiptClient({ receipt }: PublicReceiptClientProps) {
                 </div>
               )}
 
-              {(receipt.contextTitle || receipt.invoiceCode) && (
+              {receipt.reference && (
                 <div className="flex justify-between pt-2">
                   <span className="text-slate-500">Reference</span>
                   <span className="font-semibold text-slate-800">
-                    {receipt.invoiceCode
-                      ? `Invoice #${receipt.invoiceCode}`
-                      : receipt.contextTitle}
+                    {receipt.reference}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Verification Notice (Rule D9 / D11 Plain Language) */}
+            {/* Plain-language notice (D9 / D11): the seller confirmed it, Hela Hop did not */}
             <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3 text-center">
               <p className="text-[11px] leading-relaxed text-slate-600">
-                This receipt confirms that the seller verified receipt of funds
-                in their M-PESA SMS balance.
+                The seller confirmed this payment against their own M-PESA SMS.
+                Hela Hop does not hold or check the money.
               </p>
             </div>
 
-            {/* QR Code Verification Section */}
+            {/* QR code that opens this receipt */}
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 p-4 text-center">
               <div className="relative mb-2 h-32 w-32 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={receipt.qrDataUrl}
-                  alt={`QR verification for receipt ${receipt.receiptNumber}`}
+                  alt={`QR code linking to receipt ${receipt.receiptNumber}`}
                   className="h-full w-full object-contain"
                 />
               </div>
               <p className="text-[11px] font-bold text-slate-700">
-                Scan to verify online
+                Scan to open this receipt
               </p>
-              <p className="mt-0.5 font-mono text-[10px] text-slate-400">
-                helahop.co.ke/r/{receipt.publicToken}
+              <p className="mt-0.5 font-mono text-[10px] break-all text-slate-400">
+                {receipt.receiptUrl.replace(/^https?:\/\//, "")}
               </p>
             </div>
 

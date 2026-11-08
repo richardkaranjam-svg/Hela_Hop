@@ -201,7 +201,9 @@ export async function deleteInvoiceAction(
 }
 
 /**
- * Server action to update an invoice's status (e.g. mark cancelled or paid).
+ * Server action to update an invoice's status.
+ * A seller can only CANCEL an unpaid invoice here. "Paid" is only ever set by
+ * confirming a claim (D9: no receipt/paid status without the seller confirming).
  */
 export async function updateInvoiceStatusAction(
   invoiceId: string,
@@ -216,101 +218,33 @@ export async function updateInvoiceStatusAction(
     return { success: false, message: "Authentication required." };
   }
 
-  const { error } = await supabase
+  if (status !== "cancelled") {
+    return {
+      success: false,
+      message: "Invoices become paid when you confirm a payment claim.",
+    };
+  }
+
+  const { data: updated, error } = await supabase
     .from("invoices")
-    .update({ status, updated_at: new Date().toISOString() })
+    .update({ status: "cancelled" })
     .eq("id", invoiceId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .eq("status", "unpaid")
+    .select("id");
 
   if (error) {
-    return { success: false, message: error.message };
+    console.error("Failed to cancel invoice:", error);
+    return { success: false, message: "Could not cancel this invoice." };
+  }
+  if (!updated || updated.length === 0) {
+    return {
+      success: false,
+      message: "Only unpaid invoices can be cancelled.",
+    };
   }
 
   revalidatePath("/dashboard/invoices");
-  return { success: true, message: `Invoice marked as ${status}.` };
-}
-
-/**
- * Public server action for a customer to submit their M-PESA claim on /i/[code].
- */
-export async function submitInvoiceClaimAction(
-  code: string,
-  mpesaCode: string
-): Promise<{ success: boolean; message?: string }> {
-  const cleanCode = mpesaCode.trim().toUpperCase();
-  if (!/^[A-Z0-9]{10}$/.test(cleanCode)) {
-    return {
-      success: false,
-      message: "Please enter a valid 10-character M-PESA confirmation code.",
-    };
-  }
-
-  const supabase = await createClient();
-
-  // Find invoice
-  const { data: inv, error: invError } = await supabase
-    .from("invoices")
-    .select("id, user_id, customer_name, customer_phone, total_minor, status")
-    .eq("code", code)
-    .single();
-
-  if (invError || !inv) {
-    return { success: false, message: "Invoice not found." };
-  }
-
-  if (inv.status === "paid") {
-    return { success: false, message: "This invoice has already been paid." };
-  }
-
-  // Check unique mpesa_code constraint per seller
-  const { data: existingClaim } = await supabase
-    .from("payment_claims")
-    .select("id")
-    .eq("seller_id", inv.user_id)
-    .eq("mpesa_code", cleanCode)
-    .maybeSingle();
-
-  if (existingClaim) {
-    return {
-      success: false,
-      message: "This M-PESA code has already been submitted to this seller.",
-    };
-  }
-
-  // Insert payment claim
-  const { error: claimError } = await supabase.from("payment_claims").insert({
-    seller_id: inv.user_id,
-    invoice_id: inv.id,
-    payer_name: inv.customer_name,
-    payer_phone: inv.customer_phone,
-    mpesa_code: cleanCode,
-    amount_minor: inv.total_minor,
-    status: "pending",
-  });
-
-  if (claimError) {
-    console.error("Failed to insert invoice payment claim:", claimError);
-    return {
-      success: false,
-      message: claimError.message || "Failed to submit claim.",
-    };
-  }
-
-  // Update invoice status to 'claimed'
-  await supabase
-    .from("invoices")
-    .update({
-      status: "claimed",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", inv.id);
-
-  revalidatePath(`/i/${code}`);
-  revalidatePath("/dashboard/invoices");
-  revalidatePath("/dashboard/claims");
   revalidatePath("/dashboard");
-  return {
-    success: true,
-    message: "Claim sent. Waiting for the seller to confirm.",
-  };
+  return { success: true, message: "Invoice cancelled." };
 }

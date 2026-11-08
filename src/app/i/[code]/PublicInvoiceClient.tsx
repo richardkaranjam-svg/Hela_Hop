@@ -3,9 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { submitInvoiceClaimAction } from "@/app/dashboard/invoices/actions";
+import { submitClaimAction } from "@/app/dashboard/claims/actions";
 import { setLanguageAction } from "@/app/dashboard/links/actions";
-import { maskPhoneNumber } from "@/lib/formatters";
 import { translations, type Language } from "@/lib/i18n";
 import type { InvoiceItem, InvoiceStatus } from "@/types/database";
 
@@ -13,9 +12,9 @@ interface PublicInvoiceClientProps {
   initialLang: Language;
   code: string;
   sellerName: string;
-  sellerUsername: string;
   customerName: string;
-  customerPhone: string;
+  /** Already masked on the server (D10). The real number never reaches this page. */
+  customerPhoneMasked: string;
   items: InvoiceItem[];
   totalMinor: number;
   currency: string;
@@ -35,7 +34,7 @@ export function PublicInvoiceClient({
   code,
   sellerName,
   customerName,
-  customerPhone,
+  customerPhoneMasked,
   items,
   totalMinor,
   currency,
@@ -93,19 +92,32 @@ export function PublicInvoiceClient({
     setClaimError(null);
     setIsSubmittingClaim(true);
 
-    const res = await submitInvoiceClaimAction(code, cleanCode);
-    setIsSubmittingClaim(false);
+    try {
+      const res = await submitClaimAction({
+        invoiceCode: code,
+        mpesaCode: cleanCode,
+      });
 
-    if (res.success) {
-      setStatus("claimed");
-      setIsClaimModalOpen(false);
-    } else {
-      setClaimError(res.message || "Failed to submit claim.");
+      if (res.success) {
+        setStatus("claimed");
+        setIsClaimModalOpen(false);
+      } else {
+        setClaimError(
+          res.errors?.mpesa_code ||
+            res.errors?.general ||
+            res.message ||
+            "Failed to submit claim."
+        );
+      }
+    } catch {
+      setClaimError("Network error. Please try again.");
+    } finally {
+      setIsSubmittingClaim(false);
     }
   };
 
   const formattedTotal = `${currency} ${(totalMinor / 100).toLocaleString()}`;
-  const maskedPhone = maskPhoneNumber(customerPhone);
+  const maskedPhone = customerPhoneMasked;
 
   const payoutHeader =
     payoutMethod.type === "till"
@@ -145,7 +157,8 @@ export function PublicInvoiceClient({
             <button
               type="button"
               onClick={() => handleLangToggle("en")}
-              className={`min-h-[36px] min-w-[38px] rounded-full px-2.5 text-xs font-bold transition-all ${
+              aria-label="Switch to English"
+              className={`min-h-[44px] min-w-[44px] rounded-full px-2.5 text-xs font-bold transition-all ${
                 lang === "en"
                   ? "bg-emerald-600 text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -156,7 +169,8 @@ export function PublicInvoiceClient({
             <button
               type="button"
               onClick={() => handleLangToggle("sw")}
-              className={`min-h-[36px] min-w-[38px] rounded-full px-2.5 text-xs font-bold transition-all ${
+              aria-label="Badilisha kwa Kiswahili"
+              className={`min-h-[44px] min-w-[44px] rounded-full px-2.5 text-xs font-bold transition-all ${
                 lang === "sw"
                   ? "bg-emerald-600 text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -450,7 +464,8 @@ export function PublicInvoiceClient({
               <button
                 type="button"
                 onClick={() => setIsClaimModalOpen(false)}
-                className="flex min-h-[36px] min-w-[36px] items-center justify-center text-lg text-slate-400 hover:text-slate-700"
+                aria-label="Close"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center text-lg text-slate-400 hover:text-slate-700"
               >
                 &times;
               </button>

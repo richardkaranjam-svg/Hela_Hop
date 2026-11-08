@@ -3,15 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { submitPaymentClaimAction } from "@/app/dashboard/claims/actions";
+import { submitClaimAction } from "@/app/dashboard/claims/actions";
 import { setLanguageAction } from "@/app/dashboard/links/actions";
 import { translations, type Language } from "@/lib/i18n";
 
 interface PublicPayClientProps {
   initialLang: Language;
   slug: string;
-  sellerId?: string;
-  paymentLinkId?: string;
+  paymentLinkId: string;
   sellerName: string;
   sellerUsername: string;
   title: string;
@@ -30,7 +29,6 @@ interface PublicPayClientProps {
 export function PublicPayClient({
   initialLang,
   slug,
-  sellerId,
   paymentLinkId,
   sellerName,
   sellerUsername,
@@ -105,17 +103,11 @@ export function PublicPayClient({
       effectiveAmountMinor = Math.round(parsed * 100);
     }
 
-    if (!sellerId) {
-      setClaimSubmitted(true);
-      return;
-    }
-
     setClaimError(null);
     setIsSubmitting(true);
     try {
-      const res = await submitPaymentClaimAction({
-        sellerId,
-        paymentLinkId: paymentLinkId || null,
+      const res = await submitClaimAction({
+        paymentLinkId,
         payerName,
         payerPhone,
         mpesaCode: cleanCode,
@@ -191,7 +183,7 @@ export function PublicPayClient({
               type="button"
               onClick={() => handleLangToggle("en")}
               aria-label="Switch to English"
-              className={`min-h-[36px] min-w-[38px] rounded-full px-2.5 text-xs font-bold transition-all ${
+              className={`min-h-[44px] min-w-[44px] rounded-full px-2.5 text-xs font-bold transition-all ${
                 lang === "en"
                   ? "bg-emerald-600 text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -203,7 +195,7 @@ export function PublicPayClient({
               type="button"
               onClick={() => handleLangToggle("sw")}
               aria-label="Badilisha kwa Kiswahili"
-              className={`min-h-[36px] min-w-[38px] rounded-full px-2.5 text-xs font-bold transition-all ${
+              className={`min-h-[44px] min-w-[44px] rounded-full px-2.5 text-xs font-bold transition-all ${
                 lang === "sw"
                   ? "bg-emerald-600 text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -458,7 +450,8 @@ export function PublicPayClient({
                   <button
                     type="button"
                     onClick={() => setIsClaimModalOpen(false)}
-                    className="flex min-h-[36px] min-w-[36px] items-center justify-center text-lg text-slate-400 hover:text-slate-700"
+                    aria-label="Close"
+                    className="flex min-h-[44px] min-w-[44px] items-center justify-center text-lg text-slate-400 hover:text-slate-700"
                   >
                     &times;
                   </button>

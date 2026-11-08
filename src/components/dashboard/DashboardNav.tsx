@@ -14,7 +14,7 @@ const navLinks = [
   { href: "/dashboard/links", label: "Links", icon: "🔗" },
   { href: "/dashboard/invoices", label: "Invoices", icon: "🧾" },
   { href: "/dashboard/claims", label: "Claims", icon: "📩" },
-  { href: "/dashboard/billers", label: "Billers", icon: "⚡" },
+  // Billers/reminders (Task 1.7) move to Week 10 (D12). Link added back then.
   { href: "/dashboard/payout-methods", label: "Payouts", icon: "💳" },
   { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
 ];
@@ -115,7 +115,7 @@ export function MobileTopBar({ userEmail }: DashboardNavProps) {
           <form action={signOutAction}>
             <button
               type="submit"
-              className="flex min-h-[36px] items-center justify-center rounded-lg border border-slate-200 px-2.5 text-[11px] font-bold text-slate-600 hover:bg-slate-50"
+              className="flex min-h-[44px] items-center justify-center rounded-lg border border-slate-200 px-3 text-[11px] font-bold text-slate-600 hover:bg-slate-50"
             >
               Log Out
             </button>

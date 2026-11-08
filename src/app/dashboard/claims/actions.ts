@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
-import { generateReceiptNumber, generateReceiptToken } from "@/lib/formatters";
+import { notifySellerOfClaim } from "@/lib/email";
+import { normalizeKenyanPhoneSync } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 
 export type SubmitClaimResult = {
@@ -17,189 +18,190 @@ export type SubmitClaimResult = {
   };
 };
 
+type RpcClaimResponse = {
+  ok: boolean;
+  claim_id?: string;
+  field?: "mpesa_code" | "payer_name" | "payer_phone" | "amount" | "general";
+  error?: string;
+};
+
+const CLAIM_ERROR_MESSAGES: Record<string, string> = {
+  invalid_code:
+    "Please enter the 10-character M-PESA code from your SMS (e.g. SDF489K1L2).",
+  duplicate_code:
+    "This M-PESA code has already been sent to this seller. Please check the code.",
+  invalid_name: "Please enter your name.",
+  invalid_phone: "Please enter a valid phone number.",
+  invalid_amount: "Please enter a valid amount (KES 1 to 150,000).",
+  already_paid: "This invoice has already been paid.",
+  already_claimed:
+    "A payment claim for this invoice is already waiting for the seller.",
+  cancelled: "This invoice was cancelled by the seller.",
+  not_found: "This payment page is no longer available.",
+  invalid_target: "Something went wrong. Please reload the page.",
+};
+
 /**
- * Public action: Submit an "I've Paid" claim from /pay/[slug] or /i/[code].
+ * Public action: send an "I've Paid" claim from /pay/[slug] or /i/[code].
+ * Pass EITHER paymentLinkId OR invoiceCode. The seller is looked up in the
+ * database function, never taken from the browser (D9: a claim is not a receipt).
  */
-export async function submitPaymentClaimAction(data: {
-  sellerId: string;
-  invoiceId?: string | null;
+export async function submitClaimAction(data: {
   paymentLinkId?: string | null;
-  payerName: string;
-  payerPhone: string;
+  invoiceCode?: string | null;
+  payerName?: string;
+  payerPhone?: string;
   mpesaCode: string;
-  amountMinor: number;
+  amountMinor?: number | null;
 }): Promise<SubmitClaimResult> {
-  const supabase = await createClient();
+  const mpesaCode = (data.mpesaCode || "").trim().toUpperCase();
+  const payerName = (data.payerName || "").trim().slice(0, 100);
+  const rawPhone = (data.payerPhone || "").trim();
+  const isInvoice = Boolean(data.invoiceCode);
 
-  const payerName = data.payerName.trim();
-  const payerPhone = data.payerPhone.trim();
-  const mpesaCode = data.mpesaCode.trim().toUpperCase();
-  const amountMinor = Math.round(Number(data.amountMinor));
-
-  const errors: SubmitClaimResult["errors"] = {};
-
-  if (!payerName) {
-    errors.payer_name = "Your name is required.";
-  }
-
-  if (!payerPhone) {
-    errors.payer_phone = "Your phone number is required.";
-  }
+  const errors: NonNullable<SubmitClaimResult["errors"]> = {};
 
   if (!/^[A-Z0-9]{10}$/.test(mpesaCode)) {
-    errors.mpesa_code =
-      "Please enter a valid 10-character M-PESA confirmation code (e.g. SDF489K1L2).";
+    errors.mpesa_code = CLAIM_ERROR_MESSAGES.invalid_code;
   }
 
-  if (isNaN(amountMinor) || amountMinor <= 0) {
-    errors.amount = "Invalid payment amount.";
+  // For invoices, name and phone come from the invoice itself.
+  let payerPhone = "";
+  if (!isInvoice) {
+    if (!payerName) {
+      errors.payer_name = CLAIM_ERROR_MESSAGES.invalid_name;
+    }
+    const normalized = normalizeKenyanPhoneSync(rawPhone);
+    if (!normalized) {
+      errors.payer_phone = "Enter a valid Kenyan number (e.g. 0712 345 678).";
+    } else {
+      payerPhone = normalized;
+    }
+  }
+
+  const amountMinor =
+    data.amountMinor == null ? null : Math.round(Number(data.amountMinor));
+  if (
+    !isInvoice &&
+    amountMinor !== null &&
+    (!Number.isFinite(amountMinor) ||
+      amountMinor <= 0 ||
+      amountMinor > 15_000_000)
+  ) {
+    errors.amount = CLAIM_ERROR_MESSAGES.invalid_amount;
   }
 
   if (Object.keys(errors).length > 0) {
     return { success: false, errors };
   }
 
-  // Check unique mpesa_code per seller constraint
-  const { data: existingClaim } = await supabase
-    .from("payment_claims")
-    .select("id")
-    .eq("seller_id", data.sellerId)
-    .eq("mpesa_code", mpesaCode)
-    .maybeSingle();
-
-  if (existingClaim) {
-    return {
-      success: false,
-      errors: {
-        mpesa_code:
-          "This M-PESA confirmation code has already been submitted to this seller.",
-      },
-    };
-  }
-
-  // Insert claim
-  const { error: insertError } = await supabase.from("payment_claims").insert({
-    seller_id: data.sellerId,
-    invoice_id: data.invoiceId || null,
-    payment_link_id: data.paymentLinkId || null,
-    payer_name: payerName,
-    payer_phone: payerPhone,
-    mpesa_code: mpesaCode,
-    amount_minor: amountMinor,
-    status: "pending",
+  const supabase = await createClient();
+  const { data: raw, error } = await supabase.rpc("submit_payment_claim", {
+    p_payment_link_id: isInvoice ? null : (data.paymentLinkId ?? null),
+    p_invoice_code: isInvoice ? (data.invoiceCode ?? null) : null,
+    p_payer_name: payerName,
+    p_payer_phone: payerPhone,
+    p_mpesa_code: mpesaCode,
+    p_amount_minor: amountMinor,
   });
 
-  if (insertError) {
-    console.error("Failed to submit claim:", insertError);
+  if (error) {
+    console.error("submit_payment_claim failed:", error);
     return {
       success: false,
-      errors: {
-        general:
-          insertError.message || "Failed to submit claim. Please try again.",
-      },
+      errors: { general: "Could not send your claim. Please try again." },
     };
   }
 
-  // If attached to an invoice, update invoice status to 'claimed'
-  if (data.invoiceId) {
-    await supabase
-      .from("invoices")
-      .update({
-        status: "claimed",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", data.invoiceId);
-
-    revalidatePath("/dashboard/invoices");
+  const res = raw as unknown as RpcClaimResponse;
+  if (!res?.ok) {
+    const message =
+      CLAIM_ERROR_MESSAGES[res?.error ?? ""] ??
+      "Could not send your claim. Please try again.";
+    const field = res?.field ?? "general";
+    return { success: false, errors: { [field]: message } };
   }
 
+  // Tell the seller (Task 1.5). Never blocks or fails the payer's claim.
+  if (res.claim_id) {
+    await notifySellerOfClaim(res.claim_id);
+  }
+
+  if (isInvoice) {
+    revalidatePath(`/i/${data.invoiceCode}`);
+    revalidatePath("/dashboard/invoices");
+  }
   revalidatePath("/dashboard/claims");
   revalidatePath("/dashboard");
+
   return {
     success: true,
     message: "Claim sent. Waiting for the seller to confirm.",
   };
 }
 
+type RpcSellerResponse = {
+  ok: boolean;
+  error?: string;
+  receipt_token?: string;
+  receipt_number?: string;
+};
+
+const SELLER_ERROR_MESSAGES: Record<string, string> = {
+  not_authenticated: "Please log in again.",
+  not_found: "Claim not found.",
+  not_pending: "This claim was already handled. Refresh the page.",
+};
+
 /**
- * Seller action: Confirm a pending payment claim and issue a receipt.
+ * Seller action: confirm a PENDING claim after checking their own M-PESA SMS.
+ * Claim, invoice and receipt are updated together in one database transaction.
  */
-export async function confirmPaymentClaimAction(
-  claimId: string
-): Promise<{ success: boolean; receiptToken?: string; message?: string }> {
+export async function confirmPaymentClaimAction(claimId: string): Promise<{
+  success: boolean;
+  message?: string;
+  receiptToken?: string;
+  receiptNumber?: string;
+}> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) {
     return { success: false, message: "Authentication required." };
   }
 
-  // 1. Fetch claim to verify ownership
-  const { data: claim, error: claimError } = await supabase
-    .from("payment_claims")
-    .select("id, seller_id, invoice_id, amount_minor")
-    .eq("id", claimId)
-    .eq("seller_id", user.id)
-    .single();
-
-  if (claimError || !claim) {
-    return { success: false, message: "Claim not found or unauthorized." };
-  }
-
-  // 2. Update claim to 'confirmed'
-  const { error: updateError } = await supabase
-    .from("payment_claims")
-    .update({
-      status: "confirmed",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", claim.id);
-
-  if (updateError) {
-    return { success: false, message: updateError.message };
-  }
-
-  // 3. If tied to an invoice, set invoice to 'paid'
-  if (claim.invoice_id) {
-    await supabase
-      .from("invoices")
-      .update({
-        status: "paid",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", claim.invoice_id);
-
-    revalidatePath("/dashboard/invoices");
-  }
-
-  // 4. Create receipt with random unguessable public_token
-  const receiptNumber = generateReceiptNumber();
-  const publicToken = generateReceiptToken();
-
-  const { error: receiptError } = await supabase.from("receipts").insert({
-    claim_id: claim.id,
-    seller_id: user.id,
-    receipt_number: receiptNumber,
-    public_token: publicToken,
+  const { data: raw, error } = await supabase.rpc("confirm_payment_claim", {
+    p_claim_id: claimId,
   });
+  if (error) {
+    console.error("confirm_payment_claim failed:", error);
+    return { success: false, message: "Could not confirm. Please try again." };
+  }
 
-  if (receiptError) {
-    console.error("Error creating receipt record:", receiptError);
+  const res = raw as unknown as RpcSellerResponse;
+  if (!res?.ok) {
+    return {
+      success: false,
+      message:
+        SELLER_ERROR_MESSAGES[res?.error ?? ""] ??
+        "Could not confirm. Please try again.",
+    };
   }
 
   revalidatePath("/dashboard/claims");
+  revalidatePath("/dashboard/invoices");
   revalidatePath("/dashboard");
   return {
     success: true,
-    receiptToken: publicToken,
-    message: "Payment confirmed! Receipt generated.",
+    receiptToken: res.receipt_token,
+    receiptNumber: res.receipt_number,
+    message: "Payment confirmed. Receipt created.",
   };
 }
 
 /**
- * Seller action: Reject a pending claim (returns invoice to unpaid).
+ * Seller action: reject a PENDING claim (an attached invoice returns to unpaid).
  */
 export async function rejectPaymentClaimAction(
   claimId: string,
@@ -209,54 +211,31 @@ export async function rejectPaymentClaimAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) {
     return { success: false, message: "Authentication required." };
   }
 
-  // 1. Fetch claim
-  const { data: claim, error: claimError } = await supabase
-    .from("payment_claims")
-    .select("id, invoice_id")
-    .eq("id", claimId)
-    .eq("seller_id", user.id)
-    .single();
-
-  if (claimError || !claim) {
-    return { success: false, message: "Claim not found or unauthorized." };
+  const { data: raw, error } = await supabase.rpc("reject_payment_claim", {
+    p_claim_id: claimId,
+    p_reason: reason ?? "",
+  });
+  if (error) {
+    console.error("reject_payment_claim failed:", error);
+    return { success: false, message: "Could not reject. Please try again." };
   }
 
-  // 2. Update claim to 'rejected'
-  const { error: updateError } = await supabase
-    .from("payment_claims")
-    .update({
-      status: "rejected",
-      reject_reason: reason || "Code could not be verified in seller's SMS.",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", claim.id);
-
-  if (updateError) {
-    return { success: false, message: updateError.message };
-  }
-
-  // 3. Return attached invoice to 'unpaid'
-  if (claim.invoice_id) {
-    await supabase
-      .from("invoices")
-      .update({
-        status: "unpaid",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", claim.invoice_id);
-
-    revalidatePath("/dashboard/invoices");
+  const res = raw as unknown as RpcSellerResponse;
+  if (!res?.ok) {
+    return {
+      success: false,
+      message:
+        SELLER_ERROR_MESSAGES[res?.error ?? ""] ??
+        "Could not reject. Please try again.",
+    };
   }
 
   revalidatePath("/dashboard/claims");
+  revalidatePath("/dashboard/invoices");
   revalidatePath("/dashboard");
-  return {
-    success: true,
-    message: "Claim marked as rejected.",
-  };
+  return { success: true, message: "Claim rejected." };
 }

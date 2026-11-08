@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { safeRedirectPath } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthActionResult = {
@@ -138,8 +139,7 @@ export async function loginAction(
     };
   }
 
-  const target = rawRedirect.startsWith("/") ? rawRedirect : "/dashboard";
-  redirect(target);
+  redirect(safeRedirectPath(rawRedirect, "/dashboard"));
 }
 
 export async function forgotPasswordAction(

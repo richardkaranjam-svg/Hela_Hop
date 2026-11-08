@@ -45,7 +45,8 @@ interface DashboardClientProps {
   weeklyData: DayData[];
   recentActivity: ActivityItem[];
   sellerName: string;
-  sellerSlug: string;
+  /** Slug of the seller's newest active payment link, or null if none yet. */
+  publicLinkSlug: string | null;
   payoutBadge?: {
     type: string;
     number: string;
@@ -58,19 +59,21 @@ export function DashboardClient({
   weeklyData,
   recentActivity,
   sellerName,
-  sellerSlug,
+  publicLinkSlug,
   payoutBadge,
 }: DashboardClientProps) {
   const { success } = useToast();
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid">("all");
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const publicLinkUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/pay/${sellerSlug}`
-      : `https://helahop.co.ke/pay/${sellerSlug}`;
+  const publicLinkUrl = publicLinkSlug
+    ? typeof window !== "undefined"
+      ? `${window.location.origin}/pay/${publicLinkSlug}`
+      : `/pay/${publicLinkSlug}`
+    : "";
 
   const handleCopyLink = async () => {
+    if (!publicLinkUrl) return;
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(publicLinkUrl);
@@ -247,33 +250,53 @@ export function DashboardClient({
       </div>
 
       {/* Shareable Link Banner with Copy Button */}
-      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:flex-row sm:items-center">
-        <div className="min-w-0">
-          <div className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            YOUR PUBLIC PAYMENT LINK
+      {publicLinkSlug ? (
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:flex-row sm:items-center">
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              YOUR PUBLIC PAYMENT LINK
+            </div>
+            <div className="mt-0.5 truncate font-mono text-sm font-bold text-slate-900">
+              {publicLinkUrl}
+            </div>
           </div>
-          <div className="mt-0.5 truncate font-mono text-sm font-bold text-slate-900">
-            {publicLinkUrl}
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="flex min-h-[44px] items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-xs font-bold text-emerald-800 transition-colors hover:bg-emerald-100 active:scale-98"
+            >
+              {copiedLink ? "✓ Copied!" : "Copy Link"}
+            </button>
+            <Link
+              href={`/pay/${publicLinkSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-[44px] items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 active:scale-98"
+            >
+              Visit &rarr;
+            </Link>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCopyLink}
-            className="flex min-h-[44px] items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-xs font-bold text-emerald-800 transition-colors hover:bg-emerald-100 active:scale-98"
-          >
-            {copiedLink ? "✓ Copied!" : "Copy Link"}
-          </button>
+      ) : (
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-dashed border-emerald-300 bg-emerald-50/60 p-4 sm:flex-row sm:items-center">
+          <div>
+            <div className="text-[10px] font-bold tracking-wider text-emerald-700 uppercase">
+              YOUR PUBLIC PAYMENT LINK
+            </div>
+            <p className="mt-0.5 text-xs text-slate-600">
+              You have no active payment link yet. Create one to start getting
+              paid.
+            </p>
+          </div>
           <Link
-            href={`/pay/${sellerSlug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex min-h-[44px] items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 active:scale-98"
+            href="/dashboard/links/new"
+            className="flex min-h-[44px] shrink-0 items-center justify-center rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white transition-colors hover:bg-emerald-700 active:scale-98"
           >
-            Visit &rarr;
+            Create my link
           </Link>
         </div>
-      </div>
+      )}
 
       {/* Weekly Payments HTML/CSS Bar Chart (Requirement 4) */}
       <div className="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs sm:p-6">
@@ -351,7 +374,7 @@ export function DashboardClient({
             <a
               href="/api/export/payments"
               download
-              className="flex min-h-[40px] items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 active:scale-98"
+              className="flex min-h-[44px] items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition-colors hover:bg-slate-50 active:scale-98"
             >
               <span>⬇️</span>
               <span>CSV Export</span>
