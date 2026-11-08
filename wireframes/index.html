@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hela Hop — Mobile Wireframes & Prototype (8 Screens)</title>
+  <!-- Inline lightweight CSS: Zero external blocking dependencies, guaranteed < 50KB total payload -->
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-light: #ecfdf5;
+      --primary-border: #a7f3d0;
+      --dark: #0f172a;
+      --slate-800: #1e293b;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --red: #ef4444;
+      --red-light: #fee2e2;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: #0b1120;
+      color: var(--slate-100);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Showcase Bar */
+    header.showcase-header {
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .showcase-nav {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .brand-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      background: #064e3b;
+      color: #6ee7b7;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+      border: 1px solid #047857;
+    }
+
+    /* Controls Bar */
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .screen-selector {
+      background: #1e293b;
+      color: #ffffff;
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      min-height: 44px;
+      cursor: pointer;
+    }
+
+    .device-pill-btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .device-pill-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Main Container */
+    .showcase-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      width: 100%;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .showcase-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Phone Device Simulator Frame */
+    .device-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px 0;
+    }
+
+    .phone-simulator {
+      background: #ffffff;
+      color: var(--dark);
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 8px #1e293b;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s ease;
+      position: relative;
+    }
+
+    /* Screen width variants */
+    .phone-simulator.width-320 { width: 320px; }
+    .phone-simulator.width-375 { width: 375px; }
+    .phone-simulator.width-412 { width: 412px; }
+
+    /* Phone Status Bar */
+    .phone-status-bar {
+      height: 32px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 1px solid #f1f5f9;
+      user-select: none;
+    }
+
+    .status-carrier {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--primary-hover);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .status-carrier-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    /* Screen Viewport */
+    .screen-viewport {
+      min-height: 580px;
+      max-height: 720px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Wireframe Screen Containers */
+    .wireframe-screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+    }
+
+    .wireframe-screen.active {
+      display: flex;
+    }
+
+    /* Wireframe Annotations Sidebar */
+    .notes-panel {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      padding: 20px;
+      color: #e5e7eb;
+      position: sticky;
+      top: 80px;
+    }
+
+    .notes-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+
+    .badge-emerald { background: #064e3b; color: #a7f3d0; border: 1px solid #059669; }
+    .badge-blue { background: #1e3a8a; color: #bfdbfe; border: 1px solid #3b82f6; }
+    .badge-amber { background: #78350f; color: #fde68a; border: 1px solid #d97706; }
+
+    .checklist-list {
+      list-style: none;
+      margin: 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checklist-item {
+      font-size: 12.5px;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: #9ca3af;
+    }
+
+    .checklist-check {
+      color: #10b981;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Wireframe Design Tokens (Strict mobile-first) */
+    .wf-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-200);
+      min-height: 52px;
+      gap: 8px;
+    }
+
+    .wf-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .wf-brand-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .wf-btn-icon {
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 1px solid var(--slate-200);
+      background: #ffffff;
+      color: var(--dark);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    /* Swahili Toggle Pill (Min 44px tap area) */
+    .lang-toggle-box {
+      display: inline-flex;
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      border-radius: 22px;
+      padding: 2px;
+      align-items: center;
+      min-height: 44px;
+      box-sizing: border-box;
+    }
+
+    .lang-btn {
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 18px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--slate-600);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    /* Common Buttons (Strict min 44px - 48px) */
+    .btn-primary {
+      min-height: 48px;
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+      transition: background 0.15s, transform 0.05s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      min-height: 48px;
+      width: 100%;
+      background: #ffffff;
+      color: var(--dark);
+      border: 1.5px solid var(--slate-200);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+    }
+
+    .btn-copy-big {
+      min-height: 52px;
+      width: 100%;
+      background: var(--dark);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-copy-big.copied {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Form Fields (Min 44px - 48px touch targets) */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+      width: 100%;
+    }
+
+    .form-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--slate-500);
+      font-weight: 500;
+    }
+
+    .form-input {
+      min-height: 48px;
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--slate-200);
+      background: #ffffff;
+      font-size: 14.5px;
+      color: var(--dark);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Warning Banner (Master Plan Section 6 MVP requirement #11) */
+    .seller-disclaimer {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-left: 3px solid var(--amber);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #92400e;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    /* Screen Card Surface */
+    .card-surface {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Toast Notification (Simulated) */
+    .toast-msg {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--dark);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      z-index: 99;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Bottom Navigation Bar for Dashboard */
+    .bottom-tab-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: #ffffff;
+      border-top: 1px solid var(--slate-200);
+      min-height: 54px;
+      padding: 4px 6px;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
+      color: var(--slate-400);
+      font-size: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .tab-item.active {
+      color: var(--primary);
+    }
+
+    .tab-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* Helper SVG Icon Styling */
+    .icon-inline {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      vertical-align: -2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Showcase Controls Bar -->
+  <header class="showcase-header">
+    <div class="showcase-nav">
+      <div class="brand-badge">
+        <div class="brand-logo-icon">H</div>
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="brand-name">Hela Hop</span>
+            <span class="brand-tag">Mobile Wireframes v1.0</span>
+          </div>
+          <p style="font-size: 11px; color: #94a3b8; margin-top:2px;">
+            Kenya M-PESA Payment Link App • 8 Core Screens • Mobile-First
+          </p>
+        </div>
+      </div>
+
+      <div class="controls-group">
+        <!-- Screen Switcher Dropdown -->
+        <select id="screenSelect" class="screen-selector" onchange="switchScreen(this.value)" aria-label="Select Screen">
+          <option value="1">1. Landing Page ("60s Payment Link")</option>
+          <option value="2">2. Sign-Up (Simple 1-Step)</option>
+          <option value="3">3. Seller Dashboard (Payments & Totals)</option>
+          <option value="4">4. Add Payout Method (Till/Paybill/Pochi)</option>
+          <option value="5" selected>5. Payment Link Page (/pay/seller-name)</option>
+          <option value="6">6. Create Invoice (Items & Due Date)</option>
+          <option value="7">7. Invoice Page (/i/abc123 + "I've Paid")</option>
+          <option value="8">8. Receipt Page (QR & Confirmation)</option>
+        </select>
+
+        <!-- Viewport Width Buttons -->
+        <button class="device-pill-btn active" id="btnW320" onclick="setDeviceWidth(320)" title="Budget Android / iPhone SE (320px)">
+          📱 320px
+        </button>
+        <button class="device-pill-btn" id="btnW375" onclick="setDeviceWidth(375)" title="iPhone Mini / Standard (375px)">
+          375px
+        </button>
+        <button class="device-pill-btn" id="btnW412" onclick="setDeviceWidth(412)" title="Samsung / Pixel (412px)">
+          412px
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Showcase Main Layout -->
+  <main class="showcase-layout">
+
+    <!-- Center Phone Stage -->
+    <div class="device-stage">
+      <div id="phoneDevice" class="phone-simulator width-320">
+        
+        <!-- Phone Hardware Top Bar -->
+        <div class="phone-status-bar">
+          <span style="font-size:11px;">9:41</span>
+          <span class="status-carrier">
+            <span class="status-carrier-dot"></span> SAFARICOM 4G
+          </span>
+          <span style="font-size:12px;">🔋 88%</span>
+        </div>
+
+        <!-- Toast Feedback inside phone screen -->
+        <div id="phoneToast" class="toast-msg">
+          <span>✅</span> <span id="toastText">Copied to clipboard!</span>
+        </div>
+
+        <!-- Scrollable Screen Viewport -->
+        <div class="screen-viewport" id="screenViewport">
+
+          <!-- ==========================================
+               SCREEN 1: LANDING PAGE
+               ========================================== -->
+          <div id="screen-1" class="wireframe-screen">
+            <!-- Topbar -->
+            <div class="wf-topbar">
+              <a href="javascript:void(0)" class="wf-brand">
+                <span class="wf-brand-dot">H</span>
+                <span>Hela Hop</span>
+              </a>
+              <button class="btn-secondary" style="min-height:44px; width:auto; padding:0 12px; font-size:12px;" onclick="switchScreen(2)">
+                Ingia / Log In
+              </button>
+            </div>
+
+            <!-- Content Area -->
+            <div style="padding: 16px 14px 28px; flex:1; display:flex; flex-direction:column; gap:16px;">
+              <!-- Trust Pill -->
+              <div style="display:inline-flex; align-items:center; gap:6px; background:var(--primary-light); color:#047857; padding:4px 10px; border-radius:9999px; font-size:11px; font-weight:700; width:fit-content; border:1px solid var(--primary-border);">
+                <span>🇰🇪</span> Direct to your M-PESA
+              </div>
+
+              <!-- Hero Headline -->
+              <div>
+                <h1 style="font-size: 24px; font-weight: 800; line-height: 1.2; color: var(--dark); letter-spacing: -0.5px;">
+                  Get your payment link in <span style="color:var(--primary-hover);">60 seconds.</span>
+                </h1>
+                <p style="font-size: 13.5px; color: var(--slate-600); margin-top: 8px; line-height: 1.45;">
+                  Sell on WhatsApp & Instagram without mistyped Paybills or asking customers "umesend screenshot?".
+                </p>
+              </div>
+
+              <!-- Main Hero CTA Button (min 48px) -->
+              <button class="btn-primary" onclick="switchScreen(2)">
+                <span>Get Started Free</span>
+                <span style="font-size:18px;">➔</span>
+              </button>
+              <div style="text-align:center; font-size:11px; color:var(--slate-500); margin-top:-8px;">
+                No registration fee • Works with Till, Paybill & Pochi
+              </div>
+
+              <!-- Phone Preview Graphic (Pure CSS Wireframe Mock) -->
+              <div style="background: var(--slate-50); border:1.5px dashed var(--slate-300); border-radius:12px; padding:12px; text-align:center;">
+                <div style="background:#ffffff; border:1px solid var(--slate-200); border-radius:8px; padding:10px; box-shadow:var(--shadow-sm); text-align:left;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--slate-500); margin-bottom:4px;">
+                    <span>helahop.app/pay/mama-shiro</span>
+                    <span style="color:var(--primary); font-weight:700;">ACTIVE</span>
+                  </div>
+                  <div style="font-size:13px; font-weight:800; color:var(--dark);">Mama Shiro Thrift</div>
+                  <div style="font-size:18px; font-weight:900; color:var(--primary-hover); margin:4px 0;">KES 1,800</div>
+                  <div style="background:var(--slate-100); padding:6px 8px; border-radius:6px; font-size:11px; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
+                    <span>Till: 5492103</span>
+                    <span style="background:var(--dark); color:#fff; padding:2px 6px; border-radius:4px; font-size:10px;">Copy</span>
+                  </div>
+                </div>
+                <div style="font-size:10.5px; color:var(--slate-500); margin-top:8px;">
+                  💬 Customers open link on WhatsApp & pay with 1 tap.
+                </div>
+              </div>
+
+              <!-- 3 Value Props (Informal Kenyan sellers focus) -->
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                  <div style="width:32px; height:32px; border-radius:8px; background:var(--primary-light); color:var(--primary-hover); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;">
+                    📋
+                  </div>
+                  <div>
+                    <h3 style="font-size:13px; font-weight:700; color:var(--dark);">No More Mistyped Paybills</h3>
+                    <p style="font-size:11.5px; color:var(--slate-500); line-height:1.35;">Big 1-tap copy buttons guarantee your customer never sends money to the wrong person.</p>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                  <div style="width:32px; height:32px; border-radius:8px; background:var(--blue-light); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;">
+                    🧾
+                  </div>
+                  <div>
+                    <h3 style="font-size:13px; font-weight:700; color:var(--dark);">Track Paid vs Unpaid</h3>
+                    <p style="font-size:11.5px; color:var(--slate-500); line-height:1.35;">Customers submit their M-PESA code. You verify in one tap. Instant QR receipt once you confirm.</p>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                  <div style="width:32px; height:32px; border-radius:8px; background:var(--amber-light); color:var(--amber); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;">
+                    🛡️
+                  </div>
+                  <div>
+                    <h3 style="font-size:13px; font-weight:700; color:var(--dark);">Zero Commission in Phase 1</h3>
+                    <p style="font-size:11.5px; color:var(--slate-500); line-height:1.35;">Money lands straight in your own Till, Paybill or Pochi. We never hold your cash.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer CTA -->
+              <div style="border-top:1px solid var(--slate-200); padding-top:14px; text-align:center;">
+                <button class="btn-primary" onclick="switchScreen(2)" style="min-height:48px;">
+                  Create My Payment Link
+                </button>
+                <div style="font-size:11px; color:var(--slate-500); margin-top:8px;">
+                  © 2026 Hela Hop Kenya • Built for local hustle
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 2: SIGN-UP (SIMPLE 1-STEP)
+               ========================================== -->
+          <div id="screen-2" class="wireframe-screen">
+            <!-- Topbar with Back button -->
+            <div class="wf-topbar">
+              <button class="wf-btn-icon" onclick="switchScreen(1)" title="Go back">
+                ‹
+              </button>
+              <div class="wf-brand">
+                <span class="wf-brand-dot">H</span>
+                <span>Hela Hop</span>
+              </div>
+              <div style="width:44px;"></div>
+            </div>
+
+            <!-- Form Body -->
+            <div style="padding: 18px 14px 28px; flex:1; display:flex; flex-direction:column;">
+              <div style="margin-bottom: 18px;">
+                <h2 style="font-size: 20px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px;">
+                  Create Seller Account
+                </h2>
+                <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;">
+                  One simple step to get your M-PESA payment link.
+                </p>
+              </div>
+
+              <!-- Sign-up Form -->
+              <form onsubmit="event.preventDefault(); switchScreen(4);">
+                <!-- Email field -->
+                <div class="form-group">
+                  <label class="form-label" for="signup-email">
+                    <span>Email Address</span>
+                    <span class="form-hint">Used for login & receipts</span>
+                  </label>
+                  <input type="email" id="signup-email" class="form-input" placeholder="e.g. shiro.thrift@gmail.com" required inputmode="email">
+                </div>
+
+                <!-- Password field -->
+                <div class="form-group">
+                  <label class="form-label" for="signup-pass">
+                    <span>Password</span>
+                    <span class="form-hint">Min 10 characters</span>
+                  </label>
+                  <div style="position:relative;">
+                    <input type="password" id="signup-pass" class="form-input" placeholder="••••••••••••" required minlength="10" style="padding-right:48px;">
+                    <button type="button" onclick="togglePassVisibility('signup-pass', this)" style="position:absolute; right:4px; top:2px; width:44px; height:44px; border:none; background:transparent; color:var(--slate-500); cursor:pointer; font-size:13px; font-weight:600;">
+                      Show
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Terms and Privacy Checkbox (Min 44px hit target) -->
+                <div style="margin: 14px 0 20px;">
+                  <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; min-height:44px; padding:4px 0;">
+                    <input type="checkbox" required checked style="width:20px; height:20px; margin-top:2px; accent-color:var(--primary);">
+                    <span style="font-size:11.5px; color:var(--slate-600); line-height:1.4;">
+                      I agree to the <a href="javascript:void(0)" style="color:var(--primary-hover); font-weight:700; text-decoration:none;">Terms of Service</a> & <a href="javascript:void(0)" style="color:var(--primary-hover); font-weight:700; text-decoration:none;">Privacy Policy</a>. Hela Hop does not hold my funds.
+                    </span>
+                  </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary">
+                  <span>Create Account & Setup Link</span>
+                  <span>➔</span>
+                </button>
+              </form>
+
+              <!-- Divider -->
+              <div style="display:flex; align-items:center; gap:10px; margin:20px 0 16px;">
+                <div style="flex:1; height:1px; background:var(--slate-200);"></div>
+                <span style="font-size:11px; color:var(--slate-400); font-weight:600;">OR</span>
+                <div style="flex:1; height:1px; background:var(--slate-200);"></div>
+              </div>
+
+              <!-- Google One-Tap Alt -->
+              <button type="button" class="btn-secondary" onclick="switchScreen(4)">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27a7.18 7.18 0 0 1 0-4.54V6.58H1.25a11.96 11.96 0 0 0 0 10.84l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+                <span>Continue with Google <span style="font-size:10px; font-weight:700; color:var(--slate-500);">(Phase 2, not in first build)</span></span>
+              </button>
+
+              <!-- Footer Switch -->
+              <div style="margin-top:auto; padding-top:20px; text-align:center; font-size:12.5px; color:var(--slate-500);">
+                Already have an account? 
+                <a href="javascript:void(0)" onclick="alert('Log-in mode: Enter your email & password')" style="color:var(--primary-hover); font-weight:700; text-decoration:none;">
+                  Log In
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 3: SELLER DASHBOARD
+               ========================================== -->
+          <div id="screen-3" class="wireframe-screen">
+            <!-- Dashboard Topbar -->
+            <div class="wf-topbar">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:34px; height:34px; border-radius:50%; background:var(--primary-light); color:var(--primary-hover); font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; border:1px solid var(--primary-border);">
+                  MS
+                </div>
+                <div>
+                  <div style="font-size:13px; font-weight:800; color:var(--dark);">Mama Shiro Thrift</div>
+                  <div style="font-size:10px; color:var(--primary-hover); font-weight:700;">🟢 Pochi: 0722***456</div>
+                </div>
+              </div>
+              <button class="wf-btn-icon" onclick="switchScreen(4)" title="Payout Settings">
+                ⚙️
+              </button>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div style="padding: 14px 12px; flex:1; display:flex; flex-direction:column; gap:12px;">
+
+              <!-- Totals Card -->
+              <div style="background:linear-gradient(135deg, #064e3b 0%, #0f172a 100%); border-radius:14px; padding:14px; color:#ffffff; box-shadow:var(--shadow);">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#a7f3d0; font-weight:600;">
+                  <span>THIS MONTH'S TOTAL</span>
+                  <span style="background:rgba(255,255,255,0.15); padding:2px 8px; border-radius:999px;">Nov 2026</span>
+                </div>
+                <div style="font-size:26px; font-weight:900; margin:6px 0 10px; letter-spacing:-0.5px;">
+                  KES 42,850
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; border-top:1px solid rgba(255,255,255,0.15); padding-top:8px;">
+                  <div>
+                    <div style="font-size:10px; color:#94a3b8;">Paid (14 orders)</div>
+                    <div style="font-size:13px; font-weight:800; color:#6ee7b7;">KES 36,450</div>
+                  </div>
+                  <div>
+                    <div style="font-size:10px; color:#94a3b8;">Unpaid (3 pending)</div>
+                    <div style="font-size:13px; font-weight:800; color:#fcd34d;">KES 6,400</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Action Bar -->
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button class="btn-primary" style="min-height:44px; font-size:12.5px; padding:0 8px;" onclick="switchScreen(6)">
+                  <span>➕ Create Invoice</span>
+                </button>
+                <button class="btn-secondary" style="min-height:44px; font-size:12.5px; padding:0 8px;" onclick="switchScreen(5)">
+                  <span>🔗 View Pay Link</span>
+                </button>
+              </div>
+
+              <!-- Shareable Link Banner with Copy Button -->
+              <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:10px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                <div style="overflow:hidden;">
+                  <div style="font-size:10px; color:var(--slate-500); font-weight:600;">YOUR PUBLIC PAYMENT LINK</div>
+                  <div style="font-size:12px; font-weight:700; color:var(--dark); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                    helahop.app/pay/shiro-thrift
+                  </div>
+                </div>
+                <button class="btn-secondary" style="min-height:44px; min-width:44px; padding:0 10px; font-size:11px; flex-shrink:0; background:var(--primary-light); color:var(--primary-hover); border-color:var(--primary-border);" onclick="triggerCopy('https://helahop.app/pay/shiro-thrift')">
+                  Copy
+                </button>
+              </div>
+
+              <!-- Payment List Header & Filter Tabs -->
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <h3 style="font-size:14px; font-weight:800; color:var(--dark);">Recent Payments</h3>
+                  <a href="javascript:void(0)" style="font-size:11px; color:var(--primary-hover); font-weight:700; text-decoration:none;" onclick="triggerToast('Exported CSV with 17 rows')">
+                    ⬇️ CSV Export
+                  </a>
+                </div>
+
+                <!-- Tabs (min 44px tap targets) -->
+                <div style="display:flex; gap:6px; margin-bottom:8px;">
+                  <button id="tab-all" class="btn-secondary" style="min-height:44px; padding:0 10px; font-size:11px; flex:1; background:var(--dark); color:#fff; border-color:var(--dark);" onclick="filterPayments('all')">
+                    All (3)
+                  </button>
+                  <button id="tab-paid" class="btn-secondary" style="min-height:44px; padding:0 10px; font-size:11px; flex:1;" onclick="filterPayments('paid')">
+                    Paid (2)
+                  </button>
+                  <button id="tab-unpaid" class="btn-secondary" style="min-height:44px; padding:0 10px; font-size:11px; flex:1;" onclick="filterPayments('unpaid')">
+                    Unpaid (1)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Recent Payments Stream -->
+              <div style="display:flex; flex-direction:column; gap:8px;" id="payment-items-container">
+
+                <!-- Item 1: Paid -->
+                <div class="card-surface payment-card paid-card" style="margin-bottom:0; padding:10px 12px; cursor:pointer;" onclick="switchScreen(8)">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                      <div style="font-size:13px; font-weight:800; color:var(--dark);">Faith Wanjiku</div>
+                      <div style="font-size:11px; color:var(--slate-500);">Denim Jacket • Code: <span style="font-family:monospace; font-weight:700; color:var(--dark);">SDF489K1L2</span></div>
+                      <div style="font-size:10px; color:var(--slate-400); margin-top:2px;">Today, 2:15 PM</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:14px; font-weight:800; color:var(--dark);">KES 1,800</div>
+                      <span class="badge-pill badge-emerald" style="margin-top:2px;">PAID</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Item 2: Unpaid with Action -->
+                <div class="card-surface payment-card unpaid-card" style="margin-bottom:0; padding:10px 12px; border-left:3px solid var(--amber);">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                      <div style="font-size:13px; font-weight:800; color:var(--dark);">Kevin Ochieng</div>
+                      <div style="font-size:11px; color:var(--slate-500);">Leather Bag • <a href="javascript:void(0)" onclick="switchScreen(7)" style="color:var(--primary-hover); font-weight:700;">#INV-8492</a></div>
+                      <div style="font-size:10px; color:var(--amber); font-weight:700; margin-top:2px;">Claimed: M-PESA Code submitted</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:14px; font-weight:800; color:var(--dark);">KES 2,000</div>
+                      <span class="badge-pill badge-amber" style="margin-top:2px;">CLAIMED</span>
+                    </div>
+                  </div>
+                  <!-- Seller must match the code + amount against their OWN M-PESA SMS before confirming -->
+                  <div style="font-size:10.5px; color:var(--slate-600); margin-top:6px;">Check your M-PESA SMS shows code <span style="font-family:monospace; font-weight:700;">SDF489K1L2</span> and KES 2,000 before you confirm.</div>
+                  <div style="display:flex; gap:6px; margin-top:8px; border-top:1px dashed var(--slate-200); padding-top:6px;">
+                    <button class="btn-primary" style="min-height:44px; font-size:11px; padding:0 8px; flex:2;" onclick="event.stopPropagation(); triggerToast('Payment confirmed! Receipt generated.'); switchScreen(8);">
+                      Confirm KES 2,000
+                    </button>
+                    <button class="btn-secondary" style="min-height:44px; font-size:11px; padding:0 8px; flex:1;" onclick="event.stopPropagation(); alert('Reminder sent via WhatsApp!')">
+                      Remind
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Item 3: Paid -->
+                <div class="card-surface payment-card paid-card" style="margin-bottom:0; padding:10px 12px; cursor:pointer;" onclick="switchScreen(8)">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                      <div style="font-size:13px; font-weight:800; color:var(--dark);">Brenda Mutua</div>
+                      <div style="font-size:11px; color:var(--slate-500);">3× Vintage Tees • Code: <span style="font-family:monospace; font-weight:700; color:var(--dark);">RTY7290M1</span></div>
+                      <div style="font-size:10px; color:var(--slate-400); margin-top:2px;">Yesterday, 5:40 PM</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:14px; font-weight:800; color:var(--dark);">KES 2,400</div>
+                      <span class="badge-pill badge-emerald" style="margin-top:2px;">PAID</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Mobile Bottom Nav Bar -->
+            <div class="bottom-tab-bar">
+              <div class="tab-item active" onclick="switchScreen(3)">
+                <span class="tab-icon">📊</span>
+                <span>Home</span>
+              </div>
+              <div class="tab-item" onclick="switchScreen(6)">
+                <span class="tab-icon">➕</span>
+                <span>Invoice</span>
+              </div>
+              <div class="tab-item" onclick="switchScreen(5)">
+                <span class="tab-icon">🔗</span>
+                <span>My Link</span>
+              </div>
+              <div class="tab-item" onclick="switchScreen(4)">
+                <span class="tab-icon">⚙️</span>
+                <span>Payouts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 4: ADD PAYOUT METHOD
+               ========================================== -->
+          <div id="screen-4" class="wireframe-screen">
+            <!-- Topbar -->
+            <div class="wf-topbar">
+              <button class="wf-btn-icon" onclick="switchScreen(3)" title="Back to dashboard">
+                ‹
+              </button>
+              <div style="font-size:15px; font-weight:800; color:var(--dark);">Add Payout Method</div>
+              <div style="width:44px;"></div>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 16px 14px 28px; flex:1; display:flex; flex-direction:column;">
+              <p style="font-size:12.5px; color:var(--slate-500); margin-bottom:14px; line-height:1.4;">
+                Where do you want customers to pay? Choose your existing M-PESA receiving method.
+              </p>
+
+              <!-- 4-Way Method Selector Grid (Large tap targets min 44px) -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;">
+                <!-- Till option -->
+                <button type="button" id="opt-till" class="btn-secondary" style="min-height:54px; flex-direction:column; padding:8px 4px; gap:2px; border-color:var(--primary); background:var(--primary-light); color:#064e3b;" onclick="selectPayoutType('till')">
+                  <span style="font-size:16px;">🏪</span>
+                  <span style="font-size:11px; font-weight:800;">Buy Goods Till</span>
+                </button>
+                <!-- Paybill option -->
+                <button type="button" id="opt-paybill" class="btn-secondary" style="min-height:54px; flex-direction:column; padding:8px 4px; gap:2px;" onclick="selectPayoutType('paybill')">
+                  <span style="font-size:16px;">🏢</span>
+                  <span style="font-size:11px; font-weight:800;">Paybill Number</span>
+                </button>
+                <!-- Pochi option -->
+                <button type="button" id="opt-pochi" class="btn-secondary" style="min-height:54px; flex-direction:column; padding:8px 4px; gap:2px;" onclick="selectPayoutType('pochi')">
+                  <span style="font-size:16px;">👛</span>
+                  <span style="font-size:11px; font-weight:800;">Pochi la Biashara</span>
+                </button>
+                <!-- Phone option -->
+                <button type="button" id="opt-phone" class="btn-secondary" style="min-height:54px; flex-direction:column; padding:8px 4px; gap:2px;" onclick="selectPayoutType('phone')">
+                  <span style="font-size:16px;">📱</span>
+                  <span style="font-size:11px; font-weight:800;">Send Money Phone</span>
+                </button>
+              </div>
+
+              <!-- Form with Dynamic Inputs -->
+              <form onsubmit="event.preventDefault(); triggerToast('Payout method saved!'); switchScreen(3);">
+
+                <!-- Till Fields -->
+                <div id="fields-till">
+                  <div class="form-group">
+                    <label class="form-label" for="till-num">
+                      <span>Till Number</span>
+                      <span class="form-hint">5 to 7 digits</span>
+                    </label>
+                    <input type="tel" id="till-num" class="form-input" placeholder="e.g. 5492103" pattern="[0-9]{5,7}" inputmode="numeric">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="till-store-name">
+                      <span>Store / Registered Name</span>
+                      <span class="form-hint">Shows on payer confirmation</span>
+                    </label>
+                    <input type="text" id="till-store-name" class="form-input" placeholder="e.g. MAMA SHIRO THRIFT">
+                  </div>
+                </div>
+
+                <!-- Paybill Fields (Hidden by default) -->
+                <div id="fields-paybill" style="display:none;">
+                  <div class="form-group">
+                    <label class="form-label" for="paybill-business">
+                      <span>Paybill Business Number</span>
+                      <span class="form-hint">5 to 6 digits</span>
+                    </label>
+                    <input type="tel" id="paybill-business" class="form-input" placeholder="e.g. 247247" inputmode="numeric">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="paybill-acc">
+                      <span>Account Number Prompt</span>
+                      <span class="form-hint">e.g. Order ID, Customer Phone</span>
+                    </label>
+                    <input type="text" id="paybill-acc" class="form-input" placeholder="e.g. SHIRO-ORDER">
+                  </div>
+                </div>
+
+                <!-- Pochi Fields (Hidden by default) -->
+                <div id="fields-pochi" style="display:none;">
+                  <div class="form-group">
+                    <label class="form-label" for="pochi-phone">
+                      <span>Safaricom Mobile Number</span>
+                      <span class="form-hint">Pochi registered phone</span>
+                    </label>
+                    <input type="tel" id="pochi-phone" class="form-input" placeholder="07XX XXX XXX or 01XX XXX XXX" inputmode="tel">
+                  </div>
+                </div>
+
+                <!-- Phone Fields (Hidden by default) -->
+                <div id="fields-phone" style="display:none;">
+                  <div class="form-group">
+                    <label class="form-label" for="personal-phone">
+                      <span>M-PESA Phone Number</span>
+                      <span class="form-hint">Personal send-money line</span>
+                    </label>
+                    <input type="tel" id="personal-phone" class="form-input" placeholder="07XX XXX XXX" inputmode="tel">
+                  </div>
+                </div>
+
+                <!-- Friendly label -->
+                <div class="form-group">
+                  <label class="form-label" for="payout-label">
+                    <span>Friendly Nickname</span>
+                    <span class="form-hint">Only you see this</span>
+                  </label>
+                  <input type="text" id="payout-label" class="form-input" placeholder="e.g. Nairobi CBD Shop Till" value="Main Shop Till">
+                </div>
+
+                <!-- Default toggle (Min 44px hit target) -->
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; min-height:44px; margin-bottom:16px;">
+                  <input type="checkbox" checked style="width:20px; height:20px; accent-color:var(--primary);">
+                  <span style="font-size:12.5px; font-weight:600; color:var(--dark);">Set as default payout method</span>
+                </label>
+
+                <!-- Safety Note -->
+                <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:8px; padding:10px 12px; font-size:11px; color:var(--slate-600); line-height:1.4; margin-bottom:18px;">
+                  🔒 <strong>Direct M-PESA Guarantee:</strong> Customers will send money directly to this number. Hela Hop never touches your funds.
+                </div>
+
+                <!-- Save Action (Min 48px) -->
+                <button type="submit" class="btn-primary">
+                  <span>Save Payout Method</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 5: PAYMENT LINK PAGE (/pay/seller-name)
+               ========================================== -->
+          <div id="screen-5" class="wireframe-screen">
+            <!-- Public Topbar with Bilingual Toggle (Min 44px hit area) -->
+            <div class="wf-topbar">
+              <div class="wf-brand">
+                <span class="wf-brand-dot">H</span>
+                <span>Hela Hop</span>
+              </div>
+              <!-- Swahili / English Switcher -->
+              <div class="lang-toggle-box">
+                <button class="lang-btn active" id="btn-lang-en-pay" onclick="setPublicLanguage('en')" aria-label="English">EN</button>
+                <button class="lang-btn" id="btn-lang-sw-pay" onclick="setPublicLanguage('sw')" aria-label="Kiswahili">SW</button>
+              </div>
+            </div>
+
+            <!-- Public Payment Page Content -->
+            <div style="padding: 16px 14px 28px; flex:1; display:flex; flex-direction:column;">
+
+              <!-- Seller Header Card -->
+              <div style="text-align:center; margin-bottom:12px;">
+                <div style="width:52px; height:52px; border-radius:50%; background:var(--primary-light); color:var(--primary-hover); font-weight:900; font-size:22px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; border:2px solid var(--primary-border);">
+                  A
+                </div>
+                <h1 style="font-size:18px; font-weight:800; color:var(--dark); margin:0;" data-en="Amani Leather Crafts" data-sw="Amani Leather Crafts">
+                  Amani Leather Crafts
+                </h1>
+                <div style="font-size:11px; color:var(--slate-500); margin-top:2px;">
+                  @amani-crafts • Nairobi, Kenya
+                </div>
+              </div>
+
+              <!-- Seller Disclaimer (Mandatory per Master Plan Section 6 #11) -->
+              <div class="seller-disclaimer">
+                <span style="font-size:14px; flex-shrink:0;">⚠️</span>
+                <span id="disclaimer-text-pay">
+                  Hela Hop does not verify this seller. Only send money to sellers you trust.
+                </span>
+              </div>
+
+              <!-- Payment Box -->
+              <div class="card-surface" style="padding:14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:11px; font-weight:700; color:var(--slate-500);" id="lbl-item-pay">FOR ORDER / ITEM</span>
+                  <span class="badge-pill badge-emerald">M-PESA TILL</span>
+                </div>
+                <div style="font-size:13px; font-weight:700; color:var(--dark); margin-bottom:4px;" id="item-title-pay">
+                  Handmade Leather Tote Bag (Brown)
+                </div>
+                <div style="font-size:24px; font-weight:900; color:var(--primary-hover); letter-spacing:-0.5px;">
+                  KES 2,500
+                </div>
+              </div>
+
+              <!-- BIG M-PESA NUMBER BOX WITH 1-TAP COPY -->
+              <div style="background:var(--slate-50); border:1.5px solid var(--slate-300); border-radius:12px; padding:14px; margin-bottom:14px; text-align:center;">
+                <div style="font-size:11px; font-weight:800; color:var(--slate-500); text-transform:uppercase; letter-spacing:0.5px;" id="lbl-till-header">
+                  BUY GOODS TILL NUMBER
+                </div>
+                
+                <!-- Huge Number -->
+                <div id="copyable-till-number" style="font-size:32px; font-weight:900; color:var(--dark); letter-spacing:2px; margin:6px 0; font-family:monospace;">
+                  5492103
+                </div>
+
+                <div style="font-size:11.5px; color:var(--slate-600); margin-bottom:10px;">
+                  <span id="lbl-store-name">Store Name:</span> <strong style="color:var(--dark);">AMANI CRAFTS</strong>
+                </div>
+
+                <!-- Big Copy Button (Min 52px high) -->
+                <button id="btnCopyTill" class="btn-copy-big" onclick="copyTillNumber('5492103')">
+                  <span>📋</span> <span id="btnCopyTillText">Copy Till Number (5492103)</span>
+                </button>
+              </div>
+
+              <!-- Step-by-Step Payment Instructions -->
+              <div class="card-surface" style="padding:14px; margin-bottom:14px;">
+                <div style="font-size:12px; font-weight:800; color:var(--dark); margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                  <span>📱</span> <span id="lbl-steps-header">How to Pay via M-PESA</span>
+                </div>
+                
+                <ol id="instructions-list-pay" style="padding-left:18px; font-size:11.5px; color:var(--slate-600); line-height:1.5; display:flex; flex-direction:column; gap:6px;">
+                  <li>Open <strong>SIM Toolkit</strong> or <strong>M-PESA App</strong>.</li>
+                  <li>Select <strong>Lipa na M-PESA</strong> > <strong>Buy Goods and Services</strong>.</li>
+                  <li>Enter Till Number: <strong style="color:var(--dark); font-family:monospace;">5492103</strong></li>
+                  <li>Enter Amount: <strong>KES 2,500</strong></li>
+                  <li>Enter your M-PESA PIN and press OK.</li>
+                </ol>
+              </div>
+
+              <!-- Action: I Have Sent Payment -->
+              <button class="btn-primary" onclick="promptMpesaCode()" style="min-height:50px;">
+                <span>✅</span> <span id="btn-ive-paid-pay">I've Sent Payment — Enter Code</span>
+              </button>
+
+              <!-- Footer Reassurance -->
+              <div style="text-align:center; font-size:11px; color:var(--slate-400); margin-top:14px;">
+                Powered by Hela Hop • Direct Peer-to-Merchant Bridge
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 6: CREATE INVOICE
+               ========================================== -->
+          <div id="screen-6" class="wireframe-screen">
+            <!-- Topbar -->
+            <div class="wf-topbar">
+              <button class="wf-btn-icon" onclick="switchScreen(3)" title="Back to dashboard">
+                ‹
+              </button>
+              <div style="font-size:15px; font-weight:800; color:var(--dark);">Create Invoice</div>
+              <div style="font-size:11px; color:var(--primary); font-weight:700;">#INV-8493</div>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 16px 14px 28px; flex:1; display:flex; flex-direction:column;">
+              <form onsubmit="event.preventDefault(); switchScreen(7);">
+                
+                <!-- Customer Details -->
+                <div class="card-surface" style="padding:12px; margin-bottom:12px;">
+                  <div style="font-size:12px; font-weight:800; color:var(--dark); margin-bottom:8px;">
+                    👤 Customer Details
+                  </div>
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label class="form-label" for="cust-name">Customer Name</label>
+                    <input type="text" id="cust-name" class="form-input" placeholder="e.g. Kevin Ochieng" value="Kevin Ochieng" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="cust-phone">WhatsApp / Phone Number</label>
+                    <input type="tel" id="cust-phone" class="form-input" placeholder="07XX XXX XXX" value="0712 345 678" inputmode="tel" required>
+                  </div>
+                </div>
+
+                <!-- Items Section -->
+                <div class="card-surface" style="padding:12px; margin-bottom:12px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:12px; font-weight:800; color:var(--dark);">📦 Invoice Items</span>
+                    <button type="button" onclick="alert('Item row added')" style="background:transparent; border:none; color:var(--primary-hover); font-size:11px; font-weight:700; cursor:pointer;">
+                      + Add Item
+                    </button>
+                  </div>
+
+                  <!-- Item Row 1 -->
+                  <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:8px; padding:8px; margin-bottom:6px;">
+                    <input type="text" class="form-input" value="Vintage Denim Jacket (Blue)" style="min-height:44px; font-size:12.5px; margin-bottom:6px;" placeholder="Item description">
+                    <div style="display:grid; grid-template-columns: 80px 1fr; gap:6px;">
+                      <input type="number" class="form-input" value="1" min="1" style="min-height:44px; font-size:12.5px;" placeholder="Qty">
+                      <input type="number" class="form-input" value="1800" style="min-height:44px; font-size:12.5px;" placeholder="Price (KES)">
+                    </div>
+                  </div>
+
+                  <!-- Delivery Fee Option -->
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-top:1px dashed var(--slate-200); margin-top:8px;">
+                    <span style="font-size:12px; color:var(--slate-600);">Courier Delivery (CBD)</span>
+                    <span style="font-size:12.5px; font-weight:700; color:var(--dark);">KES 200</span>
+                  </div>
+
+                  <!-- Total minor calculation -->
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1.5px solid var(--slate-200); margin-top:4px;">
+                    <span style="font-size:13px; font-weight:800; color:var(--dark);">Total Amount</span>
+                    <span style="font-size:18px; font-weight:900; color:var(--primary-hover);">KES 2,000</span>
+                  </div>
+                </div>
+
+                <!-- Due Date & Payout Destination -->
+                <div class="card-surface" style="padding:12px; margin-bottom:14px;">
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label class="form-label" for="invoice-due">Due Date</label>
+                    <input type="date" id="invoice-due" class="form-input" value="2026-11-08">
+                  </div>
+
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="invoice-payout">Receive payment to</label>
+                    <select id="invoice-payout" class="form-input" style="cursor:pointer;">
+                      <option value="pochi">Pochi: 0722***456 (Mama Shiro)</option>
+                      <option value="till">Till: 5492103 (Main Shop)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary" style="min-height:50px;">
+                  <span>Generate & View Invoice Link</span>
+                  <span>➔</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 7: INVOICE PAGE (/i/abc123)
+               ========================================== -->
+          <div id="screen-7" class="wireframe-screen">
+            <!-- Topbar with Bilingual Toggle -->
+            <div class="wf-topbar">
+              <div class="wf-brand">
+                <span class="wf-brand-dot">H</span>
+                <span>Hela Hop</span>
+              </div>
+              <div class="lang-toggle-box">
+                <button class="lang-btn active" id="btn-lang-en-inv" onclick="setPublicLanguage('en')" aria-label="English">EN</button>
+                <button class="lang-btn" id="btn-lang-sw-inv" onclick="setPublicLanguage('sw')" aria-label="Kiswahili">SW</button>
+              </div>
+            </div>
+
+            <!-- Public Invoice Body -->
+            <div style="padding: 16px 14px 28px; flex:1; display:flex; flex-direction:column;">
+
+              <!-- Invoice Header -->
+              <div class="card-surface" style="padding:14px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                  <div>
+                    <span style="font-size:10px; font-weight:800; color:var(--slate-400); letter-spacing:0.5px;" id="lbl-inv-tag">INVOICE</span>
+                    <h2 style="font-size:17px; font-weight:900; color:var(--dark); margin:2px 0;">#INV-8492</h2>
+                    <div style="font-size:11px; color:var(--slate-500);"><span id="lbl-seller-from">From:</span> <strong>Mama Shiro Thrift</strong></div>
+                  </div>
+                  <span class="badge-pill badge-amber" id="badge-inv-status">DUE TODAY</span>
+                </div>
+
+                <div style="background:var(--slate-50); border-radius:8px; padding:8px 10px; font-size:11.5px; color:var(--slate-600); margin:8px 0;">
+                  <span id="lbl-billed-to">Billed to:</span> <strong style="color:var(--dark);">Kevin Ochieng (0712 *** 678)</strong>
+                </div>
+
+                <!-- Line Items Table -->
+                <div style="font-size:12px; border-top:1px solid var(--slate-200); padding-top:8px;">
+                  <div style="display:flex; justify-content:space-between; padding:4px 0;">
+                    <span>Vintage Denim Jacket (Blue)</span>
+                    <span style="font-weight:700;">KES 1,800</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding:4px 0; color:var(--slate-500); font-size:11.5px;">
+                    <span id="lbl-delivery-fee">CBD Delivery Fee</span>
+                    <span>KES 200</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1.5px solid var(--slate-200); margin-top:4px; font-size:14px; font-weight:900;">
+                    <span id="lbl-inv-total">Total Due:</span>
+                    <span style="color:var(--primary-hover); font-size:18px;">KES 2,000</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payout Details Box with Copy -->
+              <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:10px; padding:12px; margin-bottom:12px; text-align:center;">
+                <div style="font-size:11px; font-weight:800; color:var(--slate-500);" id="lbl-inv-paymethod">
+                  SEND PAYMENT VIA POCHI LA BIASHARA
+                </div>
+                <div style="font-size:24px; font-weight:900; color:var(--dark); margin:4px 0; font-family:monospace;">
+                  0722 123 456
+                </div>
+                <div style="font-size:11px; color:var(--slate-500); margin-bottom:8px;">
+                  Name: <strong>SHIRO NJERI</strong>
+                </div>
+                <button class="btn-secondary" style="min-height:44px; font-size:12px;" onclick="triggerCopy('0722123456')">
+                  📋 <span id="btn-copy-inv-num">Copy Pochi Number</span>
+                </button>
+              </div>
+
+              <!-- "I've Paid" Section & M-PESA Code Input -->
+              <div class="card-surface" style="padding:14px; margin-bottom:12px; border:1.5px solid var(--primary-border); background:var(--primary-light);">
+                <div style="font-size:13px; font-weight:800; color:#064e3b; margin-bottom:6px;" id="lbl-ive-paid-title">
+                  Already paid via M-PESA?
+                </div>
+                <p style="font-size:11.5px; color:#047857; margin-bottom:10px; line-height:1.4;" id="lbl-ive-paid-desc">
+                  Paste the 10-character M-PESA confirmation code from your Safaricom SMS.
+                </p>
+
+                <form id="claim-form" onsubmit="event.preventDefault(); verifyInvoicePayment();">
+                  <div class="form-group" style="margin-bottom:10px;">
+                    <input type="text" id="mpesa-code-input" class="form-input" placeholder="e.g. SDF489K1L2" maxlength="10" minlength="10" pattern="[A-Za-z0-9]{10}" autocapitalize="characters" autocomplete="off" required aria-label="M-PESA confirmation code" style="font-family:monospace; font-weight:800; text-transform:uppercase; font-size:16px; letter-spacing:1px; background:#fff;">
+                    <div id="code-error" role="alert" style="display:none; font-size:11px; color:#b91c1c; margin-top:4px;">Code must be exactly 10 letters/numbers.</div>
+                  </div>
+                  <button type="submit" class="btn-primary" style="min-height:48px;">
+                    <span>✅</span> <span id="btn-submit-code">Send Payment Claim</span>
+                  </button>
+                </form>
+
+                <!-- Shown after the payer submits a claim: NOT a receipt yet -->
+                <div id="claim-pending" style="display:none; text-align:center;">
+                  <div style="font-size:26px;">⏳</div>
+                  <div id="claim-pending-title" style="font-size:14px; font-weight:800; color:#92400e; margin:4px 0;">Claim sent. Waiting for the seller to confirm.</div>
+                  <p id="claim-pending-desc" style="font-size:11.5px; color:var(--slate-600); line-height:1.4; margin:0 0 6px;">
+                    The seller checks your code against their own M-PESA SMS. You will get a receipt once they confirm.
+                  </p>
+                  <div style="font-family:monospace; font-weight:800; font-size:14px; color:var(--dark); margin-bottom:6px;" id="claim-pending-code">SDF489K1L2</div>
+                  <div style="font-size:10.5px; color:var(--slate-500);"><span class="badge-pill badge-amber">CLAIMED</span></div>
+                </div>
+              </div>
+
+              <!-- Disclaimer -->
+              <div style="font-size:10.5px; color:var(--slate-400); text-align:center; line-height:1.4;">
+                <span id="disclaimer-inv-text">Hela Hop is a peer payment bridge. Funds go straight to the seller's M-PESA account.</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ==========================================
+               SCREEN 8: RECEIPT PAGE
+               ========================================== -->
+          <div id="screen-8" class="wireframe-screen">
+            <!-- Topbar -->
+            <div class="wf-topbar">
+              <div class="wf-brand">
+                <span class="wf-brand-dot">H</span>
+                <span>Hela Hop</span>
+              </div>
+              <button class="wf-btn-icon" onclick="switchScreen(3)" title="Done / Back to Home">
+                ✕
+              </button>
+            </div>
+
+            <!-- Receipt Content -->
+            <div style="padding: 16px 14px 28px; flex:1; display:flex; flex-direction:column; align-items:center;">
+              
+              <!-- Checkmark Animation / Icon -->
+              <div style="width:58px; height:58px; border-radius:50%; background:var(--primary); color:#ffffff; font-size:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(16, 185, 129, 0.4); margin-bottom:10px;">
+                ✓
+              </div>
+
+              <h2 style="font-size:20px; font-weight:900; color:var(--dark); margin:0;">Payment Confirmed</h2>
+              <div style="font-size:12px; color:var(--slate-600); font-weight:600; margin-top:2px;">Confirmed by the seller (Mama Shiro Thrift)</div>
+              <div style="font-size:12px; color:var(--primary-hover); font-weight:700; margin-top:2px;">Receipt #REC-2026-9041</div>
+
+              <!-- Receipt Ticket Card -->
+              <div class="card-surface" style="width:100%; padding:14px; margin:14px 0 12px; position:relative;">
+                
+                <!-- SVG QR Code (Standalone vector representation, < 3KB) -->
+                <div style="text-align:center; padding:10px 0; border-bottom:1px dashed var(--slate-200); margin-bottom:12px;">
+                  <svg width="130" height="130" viewBox="0 0 130 130" style="margin:0 auto; display:block;">
+                    <!-- Border Box -->
+                    <rect width="130" height="130" fill="#ffffff" rx="8"/>
+                    <!-- QR Finder Patterns -->
+                    <rect x="10" y="10" width="35" height="35" fill="#0f172a" rx="4"/>
+                    <rect x="16" y="16" width="23" height="23" fill="#ffffff"/>
+                    <rect x="22" y="22" width="11" height="11" fill="#10b981"/>
+
+                    <rect x="85" y="10" width="35" height="35" fill="#0f172a" rx="4"/>
+                    <rect x="91" y="16" width="23" height="23" fill="#ffffff"/>
+                    <rect x="97" y="22" width="11" height="11" fill="#10b981"/>
+
+                    <rect x="10" y="85" width="35" height="35" fill="#0f172a" rx="4"/>
+                    <rect x="16" y="91" width="23" height="23" fill="#ffffff"/>
+                    <rect x="22" y="97" width="11" height="11" fill="#10b981"/>
+
+                    <!-- Data dots simulation -->
+                    <rect x="52" y="15" width="8" height="8" fill="#0f172a"/>
+                    <rect x="65" y="15" width="8" height="8" fill="#10b981"/>
+                    <rect x="52" y="28" width="8" height="8" fill="#10b981"/>
+                    <rect x="65" y="28" width="8" height="8" fill="#0f172a"/>
+                    <rect x="15" y="52" width="8" height="8" fill="#0f172a"/>
+                    <rect x="28" y="52" width="8" height="8" fill="#10b981"/>
+                    <rect x="42" y="52" width="8" height="8" fill="#0f172a"/>
+                    <rect x="55" y="52" width="8" height="8" fill="#0f172a"/>
+                    <rect x="68" y="52" width="8" height="8" fill="#10b981"/>
+                    <rect x="82" y="52" width="8" height="8" fill="#0f172a"/>
+                    <rect x="95" y="52" width="8" height="8" fill="#0f172a"/>
+                    <rect x="108" y="52" width="8" height="8" fill="#10b981"/>
+                    <rect x="52" y="65" width="8" height="8" fill="#10b981"/>
+                    <rect x="65" y="65" width="8" height="8" fill="#0f172a"/>
+                    <rect x="52" y="80" width="8" height="8" fill="#0f172a"/>
+                    <rect x="65" y="80" width="8" height="8" fill="#10b981"/>
+                    <rect x="85" y="85" width="12" height="12" fill="#0f172a"/>
+                    <rect x="102" y="85" width="15" height="8" fill="#10b981"/>
+                    <rect x="85" y="102" width="10" height="15" fill="#10b981"/>
+                    <rect x="102" y="102" width="15" height="15" fill="#0f172a"/>
+                  </svg>
+                  <div style="font-size:10px; color:var(--slate-400); margin-top:6px;">Scan with phone to verify at helahop.app/r/k7Qm2xP9aT</div>
+                </div>
+
+                <!-- Transaction Metadata -->
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--slate-500);">Amount Paid</span>
+                    <span style="font-size:15px; font-weight:900; color:var(--primary-hover);">KES 2,000</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--slate-500);">M-PESA Code</span>
+                    <span style="font-family:monospace; font-weight:800; color:var(--dark);">SDF489K1L2</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--slate-500);">Paid To</span>
+                    <span style="font-weight:700; color:var(--dark);">Mama Shiro Thrift (Pochi)</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--slate-500);">Customer</span>
+                    <span style="font-weight:700; color:var(--dark);">Kevin Ochieng</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--slate-500);">Timestamp</span>
+                    <span style="font-weight:600; color:var(--slate-600);">07 Nov 2026, 21:42 EAT</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons (Min 44px) -->
+              <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                <button class="btn-primary" onclick="alert('Shared receipt link on WhatsApp!')" style="background:#25D366; box-shadow:none;">
+                  <span>💬 Share on WhatsApp</span>
+                </button>
+                <button class="btn-secondary" onclick="alert('Receipt downloaded as image/PDF')">
+                  <span>📥 Download Receipt (PDF)</span>
+                </button>
+              </div>
+
+              <!-- Viral Seller Referral Footer -->
+              <div style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:10px; padding:10px; text-align:center; margin-top:14px; width:100%;">
+                <div style="font-size:11px; font-weight:700; color:var(--dark);">Are you also a seller on IG or WhatsApp?</div>
+                <div style="font-size:10px; color:var(--slate-500); margin:2px 0 6px;">Get your own free payment link in 60s.</div>
+                <button class="btn-secondary" style="min-height:44px; font-size:11px; width:auto; margin:0 auto; padding:0 12px; background:var(--primary-light); color:var(--primary-hover); border-color:var(--primary-border);" onclick="switchScreen(1)">
+                  Get Free Link
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- /screen-viewport -->
+      </div><!-- /phone-simulator -->
+    </div><!-- /device-stage -->
+
+    <!-- Right Column: Wireframe Architecture & Technical Spec Panel -->
+    <aside class="notes-panel">
+      <div class="notes-title">
+        <span>📐</span>
+        <span>Screen Specs & Requirements</span>
+      </div>
+
+      <div id="screen-spec-content">
+        <!-- Dynamically updated by switchScreen -->
+      </div>
+
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid #1f2937;">
+        <div style="font-size:12px; font-weight:800; color:#ffffff; margin-bottom:8px;">
+          Compliance & Budget Verification:
+        </div>
+        <ul class="checklist-list">
+          <li class="checklist-item">
+            <span class="checklist-check">✓</span>
+            <span><strong>Large Tap Targets:</strong> All buttons, inputs and toggles are ≥ 44px (44px - 52px). Pinch-zoom is allowed.</span>
+          </li>
+          <li class="checklist-item">
+            <span class="checklist-check">✓</span>
+            <span><strong>320px Width Compliant:</strong> Tested on ultra-narrow low-cost Androids with zero overflow.</span>
+          </li>
+          <li class="checklist-item">
+            <span class="checklist-check">✓</span>
+            <span><strong>Performance Budget:</strong> Total uncompressed CSS+HTML is &lt; 40KB (Budget: 200KB).</span>
+          </li>
+          <li class="checklist-item">
+            <span class="checklist-check">✓</span>
+            <span><strong>Bilingual Swahili/English:</strong> Natural Kenyan phrasing for public payment & invoice screens.</span>
+          </li>
+          <li class="checklist-item">
+            <span class="checklist-check">✓</span>
+            <span><strong>Brand Emerald Green:</strong> Primary color <code style="color:#6ee7b7;">#10b981</code> with accessible contrast.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Quick Screen Jump Grid -->
+      <div style="margin-top:18px;">
+        <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px;">
+          Quick Screen Jump:
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px;">
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(1)">1</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(2)">2</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(3)">3</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(4)">4</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(5)">5</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(6)">6</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(7)">7</button>
+          <button class="btn-secondary" style="min-height:44px; padding:0; font-size:11px; background:#1e293b; color:#fff; border-color:#334155;" onclick="switchScreen(8)">8</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Interactive Logic Script -->
+  <script>
+    // Screen Specifications Data for the Sidebar
+    const SCREEN_SPECS = {
+      1: {
+        title: "1. Landing Page",
+        badge: "Growth & Acquisition",
+        badgeClass: "badge-emerald",
+        summary: "Targeted at informal Instagram/WhatsApp sellers. Eliminates friction with the '60s' promise and zero upfront barrier.",
+        tapTargets: "CTA button: 48px height • Log in link: 44px touch area",
+        fields: "Hero headline, Value proposition cards, CSS phone mockup preview, CTA to Sign-Up",
+        kenyanContext: "Addresses mistyped Paybills and tedious 'umesend screenshot?' back-and-forth."
+      },
+      2: {
+        title: "2. Sign-Up (Simple 1-Step)",
+        badge: "Seller Onboarding",
+        badgeClass: "badge-blue",
+        summary: "Ultra-lean single-step sign up. As specified in Master Plan Section 1.2: no national ID or SIM card required to begin.",
+        tapTargets: "Form inputs: 48px height • Show/Hide password toggle: 44px tap zone • Submit CTA: 48px",
+        fields: "Email (email inputmode), Password (min 10 chars, argon2 backend), Terms checkbox",
+        kenyanContext: "Informal sellers abandon multi-step forms. Google one-tap offers zero-typing option."
+      },
+      3: {
+        title: "3. Seller Dashboard",
+        badge: "Daily Operations",
+        badgeClass: "badge-emerald",
+        summary: "High-contrast glanceable totals: Paid vs Unpaid tracking. Allows one-tap link sharing and instant CSV exports.",
+        tapTargets: "Action buttons: 44px - 48px • Filter tabs: 44px touch zone • Payment cards: full-width tap target",
+        fields: "Month totals (KES), Paid count, Pending count, Search/Filter pills, Payment card list with M-PESA codes",
+        kenyanContext: "Solves the notebook problem ('who hasn't paid?'). M-PESA code matching prevents fake SMS tricks."
+      },
+      4: {
+        title: "4. Add Payout Method",
+        badge: "Financial Plumbing",
+        badgeClass: "badge-amber",
+        summary: "Dynamic form supporting all 4 Kenyan receiving channels: Buy Goods Till, Paybill+Account, Pochi la Biashara, and Send Money.",
+        tapTargets: "Method cards: 54px height • Numeric input fields: 48px • Save button: 48px",
+        fields: "Method selector (Till/Paybill/Pochi/Phone), Shortcode/Phone input, Store name, Default toggle",
+        kenyanContext: "Supports Safaricom's diverse merchant ecosystem. Clear disclaimer: funds land in seller's own M-PESA."
+      },
+      5: {
+        title: "5. Payment Link (/pay/seller-name)",
+        badge: "Public Payer Experience",
+        badgeClass: "badge-emerald",
+        summary: "Public mobile page for payers. Features a huge 1-tap copy button for the Till/Pochi number to eliminate mistyped numbers.",
+        tapTargets: "Language switcher: 44px • Big Copy Button: 52px • 'I've Sent Payment' CTA: 50px",
+        fields: "Seller avatar/name, Required seller disclaimer, Amount due, Prominent shortcode, Step-by-step instructions",
+        kenyanContext: "Full Swahili/English toggle. Reassures buyers with store name and direct M-PESA instructions."
+      },
+      6: {
+        title: "6. Create Invoice",
+        badge: "Transaction Generator",
+        badgeClass: "badge-blue",
+        summary: "Lightweight invoice generator for custom orders. Generates unique random invoice code (/i/abc123) for WhatsApp sharing.",
+        tapTargets: "Form inputs: 48px • Item quantity & price: 44px • Add Item: 44px tap target • Submit: 50px",
+        fields: "Customer name, Customer phone, Item rows (Description, Qty, Price), Delivery fee, Due date, Payout method",
+        kenyanContext: "Replaces unformatted WhatsApp texts with professional itemized invoices."
+      },
+      7: {
+        title: "7. Invoice Page (/i/abc123)",
+        badge: "Payer Verification",
+        badgeClass: "badge-amber",
+        summary: "Public invoice page with instant 'I've Paid' claim form. Customer enters their 10-character M-PESA confirmation code.",
+        tapTargets: "Language switcher: 44px • Copy Pochi: 44px • Code input: 48px • Submit: 48px",
+        fields: "Invoice #, Status pill, Customer name, Items breakdown, Seller receiving number, M-PESA code input",
+        kenyanContext: "Directly solves the claim-and-verify loop. Payer only CLAIMS; the seller confirms against their own M-PESA SMS, so fake claims never become receipts."
+      },
+      8: {
+        title: "8. Receipt Page",
+        badge: "Proof of Payment",
+        badgeClass: "badge-emerald",
+        summary: "Permanent receipt (random, unguessable link) with QR code, issued only after the seller confirms. Shareable to WhatsApp with one tap to confirm dispatch.",
+        tapTargets: "WhatsApp share: 48px • Download PDF: 48px • Seller referral: 44px",
+        fields: "Receipt #, Verification QR Code, M-PESA code, Amount, Paid to, Paid by, Timestamp, Line items",
+        kenyanContext: "Proof of payment, confirmed by the seller. Creates viral organic acquisition loops for Hela Hop."
+      }
+    };
+
+    // Switch Visible Screen
+    function switchScreen(screenNum) {
+      screenNum = parseInt(screenNum);
+      document.querySelectorAll('.wireframe-screen').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`screen-${screenNum}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      const selectEl = document.getElementById('screenSelect');
+      if (selectEl) selectEl.value = screenNum;
+
+      // Scroll viewport back to top
+      const vp = document.getElementById('screenViewport');
+      if (vp) vp.scrollTop = 0;
+
+      // Update Spec Notes
+      updateSpecPanel(screenNum);
+    }
+
+    // Update Right Panel Specs
+    function updateSpecPanel(screenNum) {
+      const spec = SCREEN_SPECS[screenNum];
+      if (!spec) return;
+      
+      const container = document.getElementById('screen-spec-content');
+      container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <h3 style="font-size:15px; font-weight:800; color:#ffffff;">${spec.title}</h3>
+          <span class="badge-pill ${spec.badgeClass}">${spec.badge}</span>
+        </div>
+        <p style="font-size:12.5px; color:#9ca3af; line-height:1.45; margin-bottom:12px;">
+          ${spec.summary}
+        </p>
+        <div style="background:#1f2937; border-radius:8px; padding:10px; margin-bottom:8px; font-size:12px;">
+          <div style="font-weight:700; color:#10b981; margin-bottom:2px;">Touch Target Compliance:</div>
+          <div style="color:#d1d5db;">${spec.tapTargets}</div>
+        </div>
+        <div style="background:#1f2937; border-radius:8px; padding:10px; margin-bottom:8px; font-size:12px;">
+          <div style="font-weight:700; color:#60a5fa; margin-bottom:2px;">Key Data Elements:</div>
+          <div style="color:#d1d5db;">${spec.fields}</div>
+        </div>
+        <div style="background:#1f2937; border-radius:8px; padding:10px; font-size:12px;">
+          <div style="font-weight:700; color:#fbbf24; margin-bottom:2px;">Kenyan Market Context:</div>
+          <div style="color:#d1d5db;">${spec.kenyanContext}</div>
+        </div>
+      `;
+    }
+
+    // Set Simulator Width (320px, 375px, 412px)
+    function setDeviceWidth(width) {
+      const dev = document.getElementById('phoneDevice');
+      dev.classList.remove('width-320', 'width-375', 'width-412');
+      dev.classList.add(`width-${width}`);
+
+      document.querySelectorAll('.device-pill-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`btnW${width}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      triggerToast(`Viewport set to ${width}px width`);
+    }
+
+    // Toast Feedback
+    function triggerToast(text) {
+      const toast = document.getElementById('phoneToast');
+      const toastText = document.getElementById('toastText');
+      toastText.innerText = text;
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2500);
+    }
+
+    // Copy Till with animated button state
+    function copyTillNumber(num) {
+      navigator.clipboard && navigator.clipboard.writeText(num);
+      const btn = document.getElementById('btnCopyTill');
+      const btnText = document.getElementById('btnCopyTillText');
+      btn.classList.add('copied');
+      btnText.innerText = `✅ Copied Till (${num})!`;
+      triggerToast(`Till number ${num} copied!`);
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btnText.innerText = `Copy Till Number (${num})`;
+      }, 3000);
+    }
+
+    function triggerCopy(text) {
+      navigator.clipboard && navigator.clipboard.writeText(text);
+      triggerToast(`Copied: ${text}`);
+    }
+
+    // Password visibility toggle
+    function togglePassVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerText = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.innerText = 'Show';
+      }
+    }
+
+    // Payout Method Selector
+    function selectPayoutType(type) {
+      ['till', 'paybill', 'pochi', 'phone'].forEach(t => {
+        const btn = document.getElementById(`opt-${t}`);
+        const fields = document.getElementById(`fields-${t}`);
+        if (btn) {
+          btn.style.borderColor = 'var(--slate-200)';
+          btn.style.background = '#ffffff';
+          btn.style.color = 'var(--dark)';
+        }
+        if (fields) fields.style.display = 'none';
+      });
+
+      const activeBtn = document.getElementById(`opt-${type}`);
+      const activeFields = document.getElementById(`fields-${type}`);
+      if (activeBtn) {
+        activeBtn.style.borderColor = 'var(--primary)';
+        activeBtn.style.background = 'var(--primary-light)';
+        activeBtn.style.color = '#064e3b';
+      }
+      if (activeFields) activeFields.style.display = 'block';
+    }
+
+    // Bilingual Toggle for Public Pages (/pay and /i)
+    let currentLang = 'en';
+    const TRANSLATIONS = {
+      en: {
+        disclaimerPay: "⚠️ Hela Hop does not verify this seller. Only send money to sellers you trust.",
+        itemPay: "FOR ORDER / ITEM",
+        itemTitlePay: "Handmade Leather Tote Bag (Brown)",
+        tillHeader: "BUY GOODS TILL NUMBER",
+        storeName: "Store Name:",
+        copyTillBtn: "Copy Till Number (5492103)",
+        stepsHeader: "How to Pay via M-PESA",
+        stepsPay: [
+          "Open <strong>SIM Toolkit</strong> or <strong>M-PESA App</strong>.",
+          "Select <strong>Lipa na M-PESA</strong> > <strong>Buy Goods and Services</strong>.",
+          "Enter Till Number: <strong style='color:var(--dark); font-family:monospace;'>5492103</strong>",
+          "Enter Amount: <strong>KES 2,500</strong>",
+          "Enter your M-PESA PIN and press OK."
+        ],
+        ivePaidPayBtn: "I've Sent Payment — Enter Code",
+        
+        // Invoice Screen translations
+        invTag: "INVOICE",
+        sellerFrom: "From:",
+        billedTo: "Billed to:",
+        deliveryFee: "CBD Delivery Fee",
+        invTotal: "Total Due:",
+        invPayMethod: "SEND PAYMENT VIA POCHI LA BIASHARA",
+        btnCopyInv: "Copy Pochi Number",
+        ivePaidTitle: "Already paid via M-PESA?",
+        ivePaidDesc: "Paste the 10-character M-PESA confirmation code from your Safaricom SMS.",
+        submitCode: "Send Payment Claim",
+        claimTitle: "Claim sent. Waiting for the seller to confirm.",
+        claimDesc: "The seller checks your code against their own M-PESA SMS. You will get a receipt once they confirm.",
+        disclaimerInv: "Hela Hop is a peer payment bridge. Funds go straight to the seller's M-PESA account."
+      },
+      sw: {
+        disclaimerPay: "⚠️ Hela Hop haithibitishi muuzaji huyu. Lipa tu watu unaowaamini.",
+        itemPay: "MALIPO YA BIDHAA",
+        itemTitlePay: "Mkoba wa Ngozi Uliotengenezwa kwa Mkono (Kahawia)",
+        tillHeader: "NAMBARI YA TILL (BUY GOODS)",
+        storeName: "Jina la Duka:",
+        copyTillBtn: "Nakili Nambari ya Till (5492103)",
+        stepsHeader: "Jinsi ya Kulipa kupitia M-PESA",
+        stepsPay: [
+          "Fungua <strong>SIM Toolkit</strong> au <strong>M-PESA App</strong>.",
+          "Chagua <strong>Lipa na M-PESA</strong> > <strong>Buy Goods and Services</strong>.",
+          "Weka Nambari ya Till: <strong style='color:var(--dark); font-family:monospace;'>5492103</strong>",
+          "Weka Kiasi cha Pesa: <strong>KES 2,500</strong>",
+          "Weka PIN yako ya M-PESA na ubonyeze OK."
+        ],
+        ivePaidPayBtn: "Nimeshatuma Malipo — Weka Msimbo",
+
+        // Invoice Screen translations
+        invTag: "ANKARA YA MALIPO",
+        sellerFrom: "Kutoka kwa:",
+        billedTo: "Inalipwa na:",
+        deliveryFee: "Gharama ya Usafiri (CBD)",
+        invTotal: "Jumla Inayopasa:",
+        invPayMethod: "TUMA MALIPO KUPITIA POCHI LA BIASHARA",
+        btnCopyInv: "Nakili Nambari ya Pochi",
+        ivePaidTitle: "Je, umeshatuma malipo kwa M-PESA?",
+        ivePaidDesc: "Weka msimbo wenye herufi na nambari 10 kutoka ujumbe wako wa Safaricom SMS.",
+        submitCode: "Tuma Dai la Malipo",
+        claimTitle: "Dai limetumwa. Subiri muuzaji athibitishe.",
+        claimDesc: "Muuzaji atalinganisha msimbo wako na ujumbe wake wa M-PESA. Utapata risiti akishathibitisha.",
+        disclaimerInv: "Hela Hop haishiki pesa zako. Malipo yanaenda moja kwa moja kwa M-PESA ya muuzaji."
+      }
+    };
+
+    function setPublicLanguage(lang) {
+      currentLang = lang;
+      
+      // Update toggle buttons on screen 5 & 7
+      ['en', 'sw'].forEach(l => {
+        const btnPay = document.getElementById(`btn-lang-${l}-pay`);
+        const btnInv = document.getElementById(`btn-lang-${l}-inv`);
+        if (btnPay) btnPay.classList.toggle('active', l === lang);
+        if (btnInv) btnInv.classList.toggle('active', l === lang);
+      });
+
+      const t = TRANSLATIONS[lang];
+
+      // Screen 5 elements
+      const discPay = document.getElementById('disclaimer-text-pay');
+      if (discPay) discPay.innerHTML = t.disclaimerPay;
+      const lblItemPay = document.getElementById('lbl-item-pay');
+      if (lblItemPay) lblItemPay.innerText = t.itemPay;
+      const itemTitlePay = document.getElementById('item-title-pay');
+      if (itemTitlePay) itemTitlePay.innerText = t.itemTitlePay;
+      const tillHdr = document.getElementById('lbl-till-header');
+      if (tillHdr) tillHdr.innerText = t.tillHeader;
+      const storeName = document.getElementById('lbl-store-name');
+      if (storeName) storeName.innerText = t.storeName;
+      const copyTillText = document.getElementById('btnCopyTillText');
+      if (copyTillText) copyTillText.innerText = t.copyTillBtn;
+      const stepsHdr = document.getElementById('lbl-steps-header');
+      if (stepsHdr) stepsHdr.innerText = t.stepsHeader;
+      const stepsList = document.getElementById('instructions-list-pay');
+      if (stepsList) {
+        stepsList.innerHTML = t.stepsPay.map(step => `<li>${step}</li>`).join('');
+      }
+      const btnPaidPay = document.getElementById('btn-ive-paid-pay');
+      if (btnPaidPay) btnPaidPay.innerText = t.ivePaidPayBtn;
+
+      // Screen 7 elements
+      const invTag = document.getElementById('lbl-inv-tag');
+      if (invTag) invTag.innerText = t.invTag;
+      const sellerFrom = document.getElementById('lbl-seller-from');
+      if (sellerFrom) sellerFrom.innerText = t.sellerFrom;
+      const billedTo = document.getElementById('lbl-billed-to');
+      if (billedTo) billedTo.innerText = t.billedTo;
+      const delivFee = document.getElementById('lbl-delivery-fee');
+      if (delivFee) delivFee.innerText = t.deliveryFee;
+      const invTotal = document.getElementById('lbl-inv-total');
+      if (invTotal) invTotal.innerText = t.invTotal;
+      const invPayMethod = document.getElementById('lbl-inv-paymethod');
+      if (invPayMethod) invPayMethod.innerText = t.invPayMethod;
+      const btnCopyInv = document.getElementById('btn-copy-inv-num');
+      if (btnCopyInv) btnCopyInv.innerText = t.btnCopyInv;
+      const ivePaidTitle = document.getElementById('lbl-ive-paid-title');
+      if (ivePaidTitle) ivePaidTitle.innerText = t.ivePaidTitle;
+      const ivePaidDesc = document.getElementById('lbl-ive-paid-desc');
+      if (ivePaidDesc) ivePaidDesc.innerText = t.ivePaidDesc;
+      const submitCode = document.getElementById('btn-submit-code');
+      if (submitCode) submitCode.innerText = t.submitCode;
+      const claimTitle = document.getElementById('claim-pending-title');
+      if (claimTitle) claimTitle.innerText = t.claimTitle;
+      const claimDesc = document.getElementById('claim-pending-desc');
+      if (claimDesc) claimDesc.innerText = t.claimDesc;
+      const discInv = document.getElementById('disclaimer-inv-text');
+      if (discInv) discInv.innerText = t.disclaimerInv;
+
+      triggerToast(lang === 'en' ? 'Switched to English' : 'Imebadilishwa kuwa Kiswahili');
+    }
+
+    // Prompt M-PESA Code on Screen 5
+    // A valid M-PESA code is exactly 10 letters/numbers (e.g. SDF489K1L2)
+    const MPESA_CODE_RE = /^[A-Z0-9]{10}$/;
+
+    function promptMpesaCode() {
+      const code = prompt("Enter your 10-character M-PESA Confirmation Code (from Safaricom SMS):", "SDF489K1L2");
+      if (!code) return;
+      const val = code.trim().toUpperCase();
+      if (!MPESA_CODE_RE.test(val)) {
+        triggerToast('Code must be exactly 10 letters/numbers');
+        return;
+      }
+      // A claim is NOT a receipt: the seller must confirm first (Master Plan Section 6, Phase 1 #6)
+      triggerToast(`Claim ${val} sent. Waiting for the seller to confirm.`);
+      setTimeout(() => switchScreen(7), 600);
+    }
+
+    // Submit a payment CLAIM on Screen 7 (a receipt is only issued after the seller confirms on Screen 3)
+    function verifyInvoicePayment() {
+      const codeInput = document.getElementById('mpesa-code-input');
+      const val = codeInput ? codeInput.value.trim().toUpperCase() : '';
+      const err = document.getElementById('code-error');
+      if (!MPESA_CODE_RE.test(val)) {
+        if (err) err.style.display = 'block';
+        return;
+      }
+      if (err) err.style.display = 'none';
+      document.getElementById('claim-form').style.display = 'none';
+      document.getElementById('claim-pending').style.display = 'block';
+      document.getElementById('claim-pending-code').innerText = val;
+      const badge = document.getElementById('badge-inv-status');
+      if (badge) badge.innerText = currentLang === 'sw' ? 'IMEDAIWA' : 'CLAIMED';
+      triggerToast(`Claim ${val} sent. Waiting for the seller to confirm.`);
+    }
+
+    // Filter Dashboard Payments
+    function filterPayments(type) {
+      const cards = document.querySelectorAll('.payment-card');
+      ['all', 'paid', 'unpaid'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.style.background = 'var(--dark)';
+            btn.style.color = '#ffffff';
+            btn.style.borderColor = 'var(--dark)';
+          } else {
+            btn.style.background = '#ffffff';
+            btn.style.color = 'var(--dark)';
+            btn.style.borderColor = 'var(--slate-200)';
+          }
+        }
+      });
+
+      cards.forEach(card => {
+        if (type === 'all') {
+          card.style.display = 'block';
+        } else if (type === 'paid') {
+          card.style.display = card.classList.contains('paid-card') ? 'block' : 'none';
+        } else if (type === 'unpaid') {
+          card.style.display = card.classList.contains('unpaid-card') ? 'block' : 'none';
+        }
+      });
+    }
+
+    // Initial setup on load
+    window.addEventListener('DOMContentLoaded', () => {
+      switchScreen(5); // Default to public payment page
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hela Hop — Get your payment link in 60 seconds</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-light: #ecfdf5;
+      --primary-border: #a7f3d0;
+      --dark: #0f172a;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --amber: #d97706;
+      --blue: #2563eb;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font);
+      background-color: var(--slate-100);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+    .mobile-container {
+      width: 100%;
+      max-width: 480px;
+      min-width: 320px;
+      background: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0,0,0,0.06);
+    }
+    /* Topbar min-height 52px */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--slate-200);
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 17px;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .btn-login {
+      min-height: 44px;
+      padding: 0 14px;
+      background: #ffffff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .content {
+      padding: 18px 14px 32px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .trust-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      color: #047857;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      width: fit-content;
+      border: 1px solid var(--primary-border);
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.22;
+      color: var(--dark);
+      letter-spacing: -0.5px;
+    }
+    .text-emerald { color: var(--primary-hover); }
+    .subtitle {
+      font-size: 13.5px;
+      color: var(--slate-600);
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+    .btn-cta {
+      min-height: 48px;
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+      cursor: pointer;
+    }
+    .btn-cta:active {
+      background: var(--primary-hover);
+      transform: scale(0.99);
+    }
+    .card-mock {
+      background: var(--slate-50);
+      border: 1.5px dashed var(--slate-300);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .mock-inner {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .value-card {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .value-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-container">
+    <header class="topbar">
+      <a href="screen1_landing.html" class="brand">
+        <span class="brand-icon">H</span>
+        <span>Hela Hop</span>
+      </a>
+      <a href="screen2_signup.html" class="btn-login">
+        Ingia / Log In
+      </a>
+    </header>
+
+    <main class="content">
+      <div class="trust-pill">
+        <span>🇰🇪</span> Direct M-PESA to your account
+      </div>
+
+      <div>
+        <h1>
+          Get your payment link in <span class="text-emerald">60 seconds.</span>
+        </h1>
+        <p class="subtitle">
+          Receive M-PESA on Instagram & WhatsApp without mistyped Paybills or asking customers "umesend screenshot?".
+        </p>
+      </div>
+
+      <a href="screen2_signup.html" class="btn-cta">
+        <span>Get Started Free</span>
+        <span style="font-size:18px;">➔</span>
+      </a>
+      <div style="text-align:center; font-size:11px; color:var(--slate-500); margin-top:-8px;">
+        No registration fee • Works with Till, Paybill & Pochi
+      </div>
+
+      <!-- Phone Mockup Preview -->
+      <div class="card-mock">
+        <div class="mock-inner">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px; color:var(--slate-500); margin-bottom:4px;">
+            <span>helahop.app/pay/mama-shiro</span>
+            <span style="color:var(--primary); font-weight:700;">ACTIVE</span>
+          </div>
+          <div style="font-size:14px; font-weight:800; color:var(--dark);">Mama Shiro Thrift</div>
+          <div style="font-size:19px; font-weight:900; color:var(--primary-hover); margin:4px 0;">KES 1,800</div>
+          <div style="background:var(--slate-100); padding:6px 10px; border-radius:6px; font-size:11.5px; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
+            <span>Till: 5492103</span>
+            <span style="background:var(--dark); color:#fff; padding:3px 8px; border-radius:4px; font-size:10.5px;">Copy</span>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--slate-500); text-align:center; margin-top:8px;">
+          💬 Customers open your link on WhatsApp & pay with 1 tap.
+        </div>
+      </div>
+
+      <!-- 3 Value Props -->
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:4px;">
+        <div class="value-card">
+          <div class="value-icon" style="background:var(--primary-light); color:var(--primary-hover);">
+            📋
+          </div>
+          <div>
+            <h3 style="font-size:13.5px; font-weight:700; color:var(--dark);">No More Mistyped Paybills</h3>
+            <p style="font-size:12px; color:var(--slate-500); line-height:1.4;">Big 1-tap copy buttons guarantee your customer never sends money to the wrong person.</p>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-icon" style="background:#eff6ff; color:#2563eb;">
+            🧾
+          </div>
+          <div>
+            <h3 style="font-size:13.5px; font-weight:700; color:var(--dark);">Track Paid vs Unpaid</h3>
+            <p style="font-size:12px; color:var(--slate-500); line-height:1.4;">Customers submit their M-PESA code. You verify in one tap. Instant official QR receipt.</p>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-icon" style="background:#fef3c7; color:#d97706;">
+            🛡️
+          </div>
+          <div>
+            <h3 style="font-size:13.5px; font-weight:700; color:var(--dark);">Zero Commission in Phase 1</h3>
+            <p style="font-size:12px; color:var(--slate-500); line-height:1.4;">Money lands straight in your own Till, Paybill or Pochi. We never hold your cash.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer CTA -->
+      <div style="border-top:1px solid var(--slate-200); padding-top:16px; text-align:center; margin-top:auto;">
+        <a href="screen2_signup.html" class="btn-cta">
+          Create My Payment Link
+        </a>
+        <div style="font-size:11px; color:var(--slate-400); margin-top:10px;">
+          © 2026 Hela Hop Kenya • Built for local hustle
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -11,6 +11,16 @@ export type KycTier = "unverified" | "tier1" | "tier2" | "tier3";
 export type PayoutMethod =
   "mpesa" | "bank" | "wave" | "airtel_money" | "manual";
 
+export type PayoutMethodType = "till" | "paybill" | "pochi" | "phone";
+
+export type InvoiceStatus = "unpaid" | "claimed" | "paid" | "cancelled";
+
+export interface InvoiceItem {
+  description: string;
+  quantity: number;
+  unit_price_minor: number;
+}
+
 export type TransactionStatus =
   "pending" | "processing" | "completed" | "failed" | "reversed" | "disputed";
 
@@ -34,6 +44,8 @@ export interface Database {
           id: string;
           email: string;
           username: string;
+          full_name: string | null;
+          phone: string | null;
           kyc_tier: KycTier;
           payout_method: PayoutMethod | null;
           payout_destination: string | null;
@@ -45,6 +57,8 @@ export interface Database {
           id: string;
           email: string;
           username: string;
+          full_name?: string | null;
+          phone?: string | null;
           kyc_tier?: KycTier;
           payout_method?: PayoutMethod | null;
           payout_destination?: string | null;
@@ -56,6 +70,8 @@ export interface Database {
           id?: string;
           email?: string;
           username?: string;
+          full_name?: string | null;
+          phone?: string | null;
           kyc_tier?: KycTier;
           payout_method?: PayoutMethod | null;
           payout_destination?: string | null;
@@ -73,6 +89,7 @@ export interface Database {
           title: string;
           currency: string;
           amount_minor: number | null;
+          payout_method_id: string | null;
           is_active: boolean;
           expires_at: string | null;
           created_at: string;
@@ -85,6 +102,7 @@ export interface Database {
           title: string;
           currency: string;
           amount_minor?: number | null;
+          payout_method_id?: string | null;
           is_active?: boolean;
           expires_at?: string | null;
           created_at?: string;
@@ -97,6 +115,7 @@ export interface Database {
           title?: string;
           currency?: string;
           amount_minor?: number | null;
+          payout_method_id?: string | null;
           is_active?: boolean;
           expires_at?: string | null;
           created_at?: string;
@@ -238,12 +257,121 @@ export interface Database {
           },
         ];
       };
+      payout_methods: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: PayoutMethodType;
+          number: string;
+          account_ref: string | null;
+          label: string | null;
+          is_default: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: PayoutMethodType;
+          number: string;
+          account_ref?: string | null;
+          label?: string | null;
+          is_default?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          type?: PayoutMethodType;
+          number?: string;
+          account_ref?: string | null;
+          label?: string | null;
+          is_default?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payout_methods_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoices: {
+        Row: {
+          id: string;
+          user_id: string;
+          code: string;
+          customer_name: string;
+          customer_phone: string;
+          items: InvoiceItem[];
+          total_minor: number;
+          currency: string;
+          due_date: string | null;
+          status: InvoiceStatus;
+          payout_method_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          code: string;
+          customer_name: string;
+          customer_phone: string;
+          items?: InvoiceItem[];
+          total_minor: number;
+          currency?: string;
+          due_date?: string | null;
+          status?: InvoiceStatus;
+          payout_method_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          code?: string;
+          customer_name?: string;
+          customer_phone?: string;
+          items?: InvoiceItem[];
+          total_minor?: number;
+          currency?: string;
+          due_date?: string | null;
+          status?: InvoiceStatus;
+          payout_method_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoices_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_payout_method_id_fkey";
+            columns: ["payout_method_id"];
+            isOneToOne: false;
+            referencedRelation: "payout_methods";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
       kyc_tier: KycTier;
       payout_method: PayoutMethod;
+      payout_method_type: PayoutMethodType;
+      invoice_status: InvoiceStatus;
       transaction_status: TransactionStatus;
       payer_type: PayerType;
       ledger_direction: LedgerDirection;
@@ -268,3 +396,5 @@ export type Profile = Tables<"profiles">;
 export type PaymentLink = Tables<"payment_links">;
 export type Transaction = Tables<"transactions">;
 export type LedgerEntry = Tables<"ledger_entries">;
+export type PayoutMethodRecord = Tables<"payout_methods">;
+export type InvoiceRecord = Tables<"invoices">;
