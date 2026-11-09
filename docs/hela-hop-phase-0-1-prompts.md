@@ -1,7 +1,17 @@
-# Hela Hop — Phase 0 & 1 Task Breakdown + AI Prompts
+# Hela Hop — Phases 0 to 2 Task Breakdown + AI Prompts
+
+> **Where to start:** Tasks 1.7 and 1.8 below are the original (deferred) versions. The live plan from here is: **1.6A → 1.9 → 1.9B → 1.10 → 1.11** (Phase 1), then **2.1 → 2.6** (Phase 2). Paste the **Shared rules block** at the top of every prompt.
 
 > **Stack (already started):** Next.js 15 · TypeScript · Tailwind v4 · Supabase · Daraja API · IntaSend
 > **Repo:** `C:\Hela_Hop_Fintech` — has scaffolding, Supabase client/server, Daraja STK Push helper, IntaSend helper, core migration (profiles, payment_links, transactions, ledger_entries with RLS).
+>
+> **Progress (9 Nov 2026):** Tasks 0.1 to 0.3 done. Phase 1 Tasks 1.1 to 1.6 built and reviewed (security and wording fixes applied; migrations `20261110000001` to `20261110000004` must be run on Supabase). Task 0.4 (interviews) is still open. Tasks 1.7 and 1.8 are deferred (D12). Next build tasks: **1.6A (tests)**, then **1.9 (hardening)**, 1.9B, 1.10 (deployment), 1.11.
+> **Aligned with Master Plan v1.2** (decisions D9 to D12). Every Phase 1 prompt must follow these rules:
+> - **Claim is not a receipt (D9):** a payer's M-PESA code is only a *claim*. A receipt exists only after the **seller confirms** it against their own M-PESA SMS. Never show "Verified".
+> - **Random public links (D10):** receipts/invoices use long random tokens, never sequential IDs. Mask phone numbers on public pages (e.g. `0712 *** 678`).
+> - **Plain wording (D11):** "Invoice", never "Official invoice" (not a KRA eTIMS invoice). Never call a seller "verified".
+> - **Smaller Phase 1 (D12):** Billers/reminders (Task 1.7) move to **Week 10**; Demo Mode (Task 1.8) to **Week 14**, both after Gate G1.
+> - **UI spec:** match `C:\Users\User\OneDrive\Desktop\Hela-Hop\wireframes\` (index.html + README.md). Tap targets at least 44px, never disable pinch-zoom, 320px wide, under 200KB per page.
 
 ---
 
@@ -61,7 +71,9 @@ This is sandbox-only / demo mode. No auth required for this page.
 
 ---
 
-### Task 0.3 — Screen Sketches / UI Wireframes
+### Task 0.3 — Screen Sketches / UI Wireframes (DONE)
+
+**Status:** Done 7 Nov 2026 in `wireframes/index.html`, fixed for v1.2 (claim flow, wording, zoom, tap targets). Prompt kept for reference only.
 
 **What:** Design the 8 key screens in Figma or as simple HTML wireframes.
 
@@ -171,13 +183,13 @@ The payment_links table exists. Build:
      * Till: "Go to M-PESA > Lipa na M-PESA > Buy Goods > Enter Till Number..."
      * Paybill: "Go to M-PESA > Lipa na M-PESA > Pay Bill > Enter Business Number... Account..."
      * Pochi/Phone: "Go to M-PESA > Send Money > Enter Number..."
-   - "I've Paid" button (links to a claim form — build in Task 1.5)
-   - Seller disclaimer: "Hela Hop does not verify this seller. Only pay people you trust."
+   - "I've Paid — Enter Code" button (opens the claim form, Task 1.5). It creates a CLAIM, not a receipt.
+   - Seller disclaimer: "Hela Hop does not verify this seller. Only pay people you trust." Never label the seller/username "verified".
    - Footer: "Get your own Hela Hop link" CTA
 4. Generate a downloadable QR code for the link URL (use 'qrcode' npm package, generate server-side as SVG/PNG).
 5. Swahili/English toggle on the /pay page (store in cookie, default English).
 
-Mobile-first. Pages must work on slow 3G and cheap Android phones — keep under 200KB.
+Mobile-first. Pages must work on slow 3G and cheap Android phones — keep under 200KB. Tap targets at least 44px; never set user-scalable=no or maximum-scale in the viewport. Follow wireframe Screen 5 (wireframes/index.html).
 ```
 
 ---
@@ -189,24 +201,26 @@ Mobile-first. Pages must work on slow 3G and cheap Android phones — keep under
 In Hela Hop (Next.js 15, Supabase, TypeScript):
 
 Create the invoices feature. New migration for invoices table:
-  id UUID PK, user_id FK profiles, code TEXT UNIQUE (random 8-char alphanumeric), customer_name TEXT, customer_phone TEXT, items JSONB (array of {description, quantity, unit_price_minor}), total_minor INTEGER, currency CHAR(3) default 'KES', due_date DATE nullable, status enum(unpaid/claimed/paid/cancelled), payout_method_id FK payout_methods, created_at, updated_at.
+  id UUID PK, user_id FK profiles, code TEXT UNIQUE (random, unguessable, at least 10 chars from a crypto-secure generator; never sequential), customer_name TEXT, customer_phone TEXT, items JSONB (array of {description, quantity, unit_price_minor}), total_minor INTEGER, currency CHAR(3) default 'KES', due_date DATE nullable, status enum(unpaid/claimed/paid/cancelled), payout_method_id FK payout_methods, created_at, updated_at.
   RLS: owner can CRUD, public can SELECT by code.
 
 Build:
 1. src/app/dashboard/invoices/page.tsx — List invoices with status badges (color-coded), filter by status, create button.
 2. src/app/dashboard/invoices/new/page.tsx — Create invoice: customer name, phone, line items (add/remove rows), due date, choose payout method. Auto-calculates total. Generates random code on save.
 3. src/app/i/[code]/page.tsx — PUBLIC invoice view. Shows:
-   - "Invoice from [Seller]" header
+   - "Invoice from [Seller]" header. Label it "Invoice" only, never "Official invoice" (not a KRA eTIMS invoice).
+   - Billed-to name with the customer phone MASKED (e.g. 0712 *** 678)
    - Line items table, total
    - Payout method number with Copy button
    - M-PESA instructions (same as /pay page)
-   - If unpaid: "I've Paid" button → shows form for M-PESA confirmation code
-   - If paid: shows "PAID" stamp + receipt link
+   - If unpaid: "I've Paid" button → shows form for M-PESA confirmation code (a claim, Task 1.5)
+   - If claimed: "Claim sent. Waiting for the seller to confirm." + CLAIMED badge. No receipt yet.
+   - If paid (seller confirmed): shows "PAID" stamp + receipt link
    - Seller disclaimer
    - Swahili/English toggle
 4. Share invoice via: copy link, WhatsApp share button (wa.me?text=...).
 
-Mobile-first, accessible, under 200KB.
+Mobile-first, accessible, under 200KB. Follow wireframe Screens 6 and 7.
 ```
 
 ---
@@ -223,12 +237,13 @@ Create the "I've Paid" claim and seller confirmation flow. New migration for pay
   RLS: seller can see claims on their invoices/links.
 
 Build:
-1. Claim form (embedded in /pay/[slug] and /i/[code] pages): payer name, phone, M-PESA confirmation code, amount paid. Validates M-PESA code format. Creates a payment_claim with status=pending.
-2. src/app/dashboard/claims/page.tsx — List pending claims for the seller. Each shows: payer name, code, amount, timestamp.
-3. For each claim: "Confirm" or "Reject" buttons. Confirm updates claim status to confirmed, updates invoice status to paid, and generates a receipt. Reject updates to rejected with optional reason.
-4. Receipt: src/app/receipt/[id]/page.tsx — public page showing: seller, payer, amount, M-PESA code, date, receipt number (auto-increment per seller), QR code linking back to receipt URL. Printable layout.
+1. Claim form (embedded in /pay/[slug] and /i/[code] pages): payer name, phone, M-PESA confirmation code, amount paid. Trim + uppercase the code and require exactly /^[A-Z0-9]{10}$/ on client AND server, with an inline error. Creates a payment_claim with status=pending and sets the invoice to claimed. Button text: "Send Payment Claim".
+2. After submitting, the payer sees "Claim sent. Waiting for the seller to confirm." + CLAIMED badge (EN/SW). NO receipt is shown or created yet. Email the seller when a new claim arrives, linking to the claims page.
+3. src/app/dashboard/claims/page.tsx — List pending claims for the seller. Each shows: payer name, code, amount, timestamp, and the hint "Check your M-PESA SMS shows this code and amount before you confirm."
+4. For each claim: "Confirm" or "Reject" buttons (at least 44px). Only Confirm updates the claim to confirmed, the invoice to paid, and creates the receipt. Reject sets rejected with an optional reason and returns the invoice to unpaid.
+5. Receipt: add a receipts table (id UUID, claim_id FK, receipt_number per seller for display only, public_token TEXT UNIQUE random, at least 10 chars, created_at). Public page at src/app/r/[token]/page.tsx (never /receipt/[id] or a sequential number). Shows "Payment Confirmed" + "Confirmed by the seller", seller, payer name with MASKED phone, amount, M-PESA code, date, receipt number, QR code linking to the /r/[token] URL. Printable layout. Never use the word "Verified".
 
-The seller is expected to cross-check the M-PESA code against their actual M-PESA SMS before confirming. This is the trust model for Lite — no automatic verification.
+The seller is expected to cross-check the M-PESA code against their actual M-PESA SMS before confirming. This is the trust model for Lite — no automatic verification (Master Plan D9). Follow wireframe Screens 3, 7 and 8.
 ```
 
 ---
@@ -251,14 +266,89 @@ Build the main seller dashboard at src/app/dashboard/page.tsx:
 4. A simple bar chart or number showing payments per day this week (can be a simple HTML/CSS chart, no charting library needed)
 5. CSV export button: downloads all confirmed payments as CSV (date, payer, amount, M-PESA code, invoice/link)
 
-Layout: sidebar nav on desktop (Dashboard, Links, Invoices, Claims, Billers, Settings), bottom tab bar on mobile. The nav should be in a dashboard layout at src/app/dashboard/layout.tsx.
+Layout: sidebar nav on desktop (Dashboard, Links, Invoices, Claims, Settings; add Billers in Week 10 with Task 1.7), bottom tab bar on mobile. The nav should be in a dashboard layout at src/app/dashboard/layout.tsx.
 
 Use server components to fetch data. Loading skeletons while data loads.
 ```
 
 ---
 
-### Task 1.7 — Saved Billers & Reminders
+### Shared rules block (paste at the top of EVERY prompt below)
+
+> Updated 9 Nov 2026 after the Task 1.1 to 1.6 review. These rules stop the
+> mistakes found in that review (open database policies, fake "verified"
+> wording, shortcuts around the claim flow).
+
+```
+Project: Hela Hop at C:\Hela_Hop_Fintech. Next.js 15 App Router, TypeScript,
+Tailwind v4, Supabase (@supabase/ssr), zod.
+
+Rules (follow strictly):
+- D9: a payer's M-PESA code is only a claim. A receipt exists only after the
+  seller confirms. Never show "Verified" anywhere.
+- D10: public links use long random tokens. Mask phone numbers on public pages.
+- D11: say "Invoice", never "Official invoice". Never call a seller "verified".
+- Never create RLS policies with USING (true) or WITH CHECK (true).
+  Public pages read data only through src/lib/public-data.ts (database
+  functions). Claims and receipts change only through the functions
+  submit_payment_claim / confirm_payment_claim / reject_payment_claim.
+- Database changes go in a NEW file in supabase/migrations/ (never edit old
+  ones). Update src/types/database.ts to match.
+- Reuse existing helpers: safeRedirectPath (lib/safe-redirect),
+  normalizeKenyanPhoneSync (lib/phone), maskPhoneNumber (lib/formatters),
+  notifySellerOfClaim (lib/email), createAdminClient (lib/supabase/admin,
+  server only, never import in a "use client" file).
+- Tap targets at least 44px, never disable zoom, works at 320px wide,
+  each page under 200KB.
+- Do not add npm packages unless the prompt allows it.
+- Do not run "npm run build" while "npm run dev" is running (they clash on
+  the .next folder). Stop the dev server first.
+- When finished: run npx tsc --noEmit, npm run lint and npm run build.
+  Report the results and list every file you changed. Do not push to git.
+```
+
+---
+
+### Task 1.6A — Stabilise and Test (Week 7)
+
+**Why:** Tasks 1.1 to 1.6 were built quickly. Before adding anything, prove the core flow works and keep it working.
+
+**Prompt:**
+```
+[Rules block]
+
+Goal: prove the core flow works and keep it working. No new features.
+
+1. Add Vitest as a dev dependency (allowed). Add "test": "vitest run" to
+   package.json and a test step to .github/workflows/ci.yml.
+2. Move the CSV escaping in src/app/api/export/payments/route.ts into
+   src/lib/csv.ts (escapeCsvCell) so it can be tested.
+3. Unit tests for: safeRedirectPath (including "//evil.com", "/\\evil.com",
+   "@evil.com"), normalizeKenyanPhoneSync, maskPhoneNumber, escapeCsvCell
+   (including "=SUM(A1)" and values with commas or quotes).
+4. Create supabase/tests/claims_flow.sql. It runs in one transaction and
+   ends with ROLLBACK. It must check:
+   - an anonymous user cannot select from invoices, receipts, profiles or
+     payout_methods
+   - get_public_invoice returns a masked phone, not the real one
+   - submit_payment_claim works on an unpaid invoice, then rejects the same
+     M-PESA code again (duplicate_code) and rejects a cancelled invoice
+   - confirm_payment_claim as the seller creates exactly one receipt, sets
+     the invoice to paid, and fails a second time (not_pending)
+   - another seller cannot confirm someone else's claim (not_found)
+   Use SET ROLE and set_config('request.jwt.claims', ...) to act as users.
+   Add a README note on how to run it in the Supabase SQL editor.
+5. Write docs/manual-test-checklist.md: the full flow on a 320px screen
+   (sign up, payout method, link, QR, invoice, payer claim in incognito,
+   seller email, confirm, receipt, CSV export).
+
+Do not change app behaviour. If a test finds a bug, list it and stop.
+```
+
+---
+### Task 1.7 — Saved Billers & Reminders (MOVED TO WEEK 10, after Gate G1, D12)
+
+**Do not build in Phase 1.** In Week 10 use **Task 2.2** below instead; it is this prompt rewritten for the current code (owner-only tables, cron secret, no open policies). This original is kept for the table design only.
 
 **Prompt:**
 ```
@@ -282,7 +372,9 @@ Keep the reminder system simple — email only for now. No SMS yet.
 
 ---
 
-### Task 1.8 — Demo Mode (Sandbox STK Push Page)
+### Task 1.8 — Demo Mode (Sandbox STK Push Page) (MOVED TO WEEK 14, after Gate G1, D12)
+
+**Do not build in Phase 1.** The Task 0.2 sandbox STK Push is enough for now. In Week 14 use **Task 2.6** below instead (it swaps the in-memory rate limit for the shared one from Task 1.9). Build earlier only if a pitch deadline needs it. This original is kept for the page spec.
 
 **Prompt:**
 ```
@@ -308,50 +400,260 @@ This page is public, no auth. Rate limit: max 5 requests per IP per minute (simp
 
 ---
 
-### Task 1.9 — Security, Polish & Deploy Prep
+
+### Task 1.9 — Security Hardening (Week 8) — REWRITTEN
+
+**What changed from the old 1.9:** the old prompt asked for an in-memory rate limiter. That does not work on Vercel (every server copy keeps its own count and forgets it on restart), and it only covered `/api/*` while the real risk is the claim form, which is a server action. Polish items moved to Task 1.9B. Three gaps found in the review were added (profile columns, /admin, password length).
 
 **Prompt:**
 ```
-In Hela Hop (Next.js 15, Supabase, TypeScript):
+[Rules block]
 
-Security and polish pass before beta:
+Security pass before beta. No new features.
 
-1. CSRF: Ensure all mutating server actions/API routes check origin header or use Next.js built-in CSRF. Add a reusable middleware.
-2. Rate limiting: Add simple rate limiting to public routes (/pay/*, /i/*, /api/mpesa/*) — use an in-memory Map with IP + timestamp. 30 requests/minute for pages, 5/minute for API.
-3. Security headers: Add to next.config.ts — Strict-Transport-Security, X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, basic CSP.
-4. Input validation: Audit all forms — ensure Zod validation on both client and server side.
-5. Error pages: Create src/app/not-found.tsx and src/app/error.tsx with branded Hela Hop styling.
-6. Loading states: Add loading.tsx files in each route group with skeleton UI.
-7. Report abuse: Add a small "Report this page" link on /pay/[slug] and /i/[code] that opens a simple form (name, reason) and stores in a reports table.
-8. Privacy Policy page at /privacy and Terms page at /terms — placeholder content with the right structure.
-9. Analytics: Add Vercel Analytics (or a simple privacy-friendly counter).
-10. Verify the whole app works on a 320px screen, test with Chrome DevTools throttled to "Slow 3G".
-
-No new features — just hardening.
+1. Rate limiting that works on Vercel (shared, not in-memory):
+   - New migration: table rate_limits (key TEXT, window_start TIMESTAMPTZ,
+     count INT, PRIMARY KEY(key, window_start)), no RLS policies, plus a
+     SECURITY DEFINER function hit_rate_limit(p_key, p_window_seconds, p_max)
+     that returns true if allowed. Grant execute to anon and authenticated.
+   - Use it in: submitClaimAction (5 per 10 min per IP + payment link or
+     invoice), the report-abuse action (Task 1.9B), /api/mpesa/stk-push
+     (5 per minute per IP). Get the IP from x-forwarded-for.
+   - Delete rows older than 1 day inside the function (simple cleanup).
+2. Security headers in next.config.ts: Strict-Transport-Security,
+   X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy
+   strict-origin-when-cross-origin, Permissions-Policy (camera, microphone,
+   geolocation off), and a CSP:
+   default-src 'self'; img-src 'self' data:; connect-src 'self'
+   https://*.supabase.co; frame-ancestors 'none'; script-src 'self'
+   'unsafe-inline'; style-src 'self' 'unsafe-inline'.
+   Confirm every page still loads in dev with no CSP errors in the console.
+3. Lock down profiles: sellers may only update full_name, phone and
+   username. Use a migration with column-level GRANT UPDATE (or a BEFORE
+   UPDATE trigger) so kyc_tier, kakitu_score_points, email and
+   payout_method cannot be changed from the browser.
+4. Protect /admin/*: check what src/app/admin/interviews/page.tsx stores and
+   where. Require login in middleware for /admin/*, and add a simple admin
+   allow-list (env var ADMIN_EMAILS) until Task 2.5.
+5. Passwords: raise the minimum to 10 in the signup and reset schemas. List
+   the Supabase dashboard settings I must change by hand (minimum length,
+   leaked password protection, auth rate limits).
+6. Validation audit: every server action validates input with zod on the
+   server. List any that do not and fix them.
+7. CSRF: Next.js server actions already check Origin. Confirm the API
+   routes that change data (only stk-push today) reject requests whose
+   Origin does not match NEXT_PUBLIC_APP_URL.
 ```
 
 ---
 
-### Task 1.10 — Deployment
+### Task 1.9B — Polish, Legal Pages and Report Abuse (Week 8)
 
 **Prompt:**
 ```
-Deploy the Hela Hop project (Next.js 15, Supabase) to Vercel:
+[Rules block]
 
-1. Ensure next.config.ts has output settings suitable for Vercel deployment.
-2. All env vars documented in .env.example with comments on which are public vs server-only.
-3. Create a vercel.json if needed for:
-   - Cron job for biller reminders (if using Vercel cron)
-   - Headers/redirects
-4. Add a health check API route at /api/health that returns { status: "ok", timestamp }.
-5. Ensure the Supabase project has:
-   - The migration applied
-   - Email auth enabled
-   - Site URL + redirect URLs configured for the production domain
-6. Set up a custom domain (when purchased).
-7. Verify HTTPS works, all pages load, auth flow works end-to-end.
+1. Branded src/app/not-found.tsx and src/app/error.tsx (error.tsx is a
+   client component with a "Try again" button). Plain language, 44px
+   buttons.
+2. loading.tsx skeletons for /dashboard/links, /dashboard/invoices,
+   /dashboard/claims, /pay/[slug], /i/[code], /r/[token].
+3. Report abuse:
+   - Migration: table abuse_reports (id, target_type enum(link, invoice),
+     target_id UUID, reporter_name TEXT nullable, reason TEXT 10-500 chars,
+     status enum(open, reviewed) default open, created_at). RLS on, no
+     public policies. Insert only through a SECURITY DEFINER function
+     submit_abuse_report(p_slug_or_code, p_type, p_name, p_reason) that
+     looks up the target itself.
+   - A small "Report this page" link at the bottom of /pay/[slug] and
+     /i/[code] that opens a form (name optional, reason). Rate limited with
+     hit_rate_limit. English and Swahili text in lib/i18n.ts.
+4. /privacy and /terms pages with the right structure and placeholder text
+   marked "DRAFT, to be reviewed by a lawyer". Privacy must cover: what we
+   collect (seller email, phone, payout numbers; payer name, phone, M-PESA
+   code), why, how long we keep it, how to ask for deletion or a copy, and
+   that Hela Hop never holds money. Link both from the footer of every
+   public page and from signup.
+5. Privacy-friendly analytics: add @vercel/analytics (allowed), page views
+   only, no personal data.
+6. Check every page at 320px and with Slow 4G throttling. Fix layout
+   breaks. Report the size of each public page.
+```
 
-The production database should still use sandbox Daraja keys — no real money until Phase 4.
+---
+
+### Task 1.10 — Deployment and Backups (Week 8) — REWRITTEN
+
+**Prompt:**
+```
+[Rules block]
+
+1. Add /api/health returning { status: "ok", timestamp } with no
+   database call.
+2. Update .env.example: mark each variable PUBLIC or SERVER-ONLY. Include
+   RESEND_API_KEY, EMAIL_FROM, ADMIN_EMAILS.
+3. Write docs/deploy.md with exact steps for me to follow:
+   - Supabase: run every migration in supabase/migrations in filename
+     order; turn on email auth; set Site URL and redirect URLs
+     (https://<domain>/auth/callback); check the sending domain in Resend.
+   - Vercel: import the GitHub repo, add env vars, deploy, add the custom
+     domain, confirm HTTPS.
+   - Backups: confirm which backups the Supabase plan includes. Write a
+     restore test: export with pg_dump, restore into a fresh free project,
+     check that row counts match. Record the date it was tested.
+4. Write docs/smoke-test.md: 10 checks to run on the live site after each
+   deploy.
+
+The live site still uses sandbox Daraja keys. No real money until Phase 4.
+```
+
+---
+
+### Task 1.11 — Beta Readiness (Week 8 to 9)
+
+**Why:** Master Plan Section 8.2 needs "delete my account" and "download my data" (manual is fine at first), and beta needs a way to hear from sellers.
+
+**Prompt:**
+```
+[Rules block]
+
+1. "Download my data" in /dashboard/settings: a server route that returns
+   a JSON file of the seller's own profile, payout methods, links,
+   invoices, claims and receipts.
+2. "Delete my account": a confirm screen (type DELETE). It records a
+   deletion request in a new table account_deletion_requests and emails the
+   admin. Manual processing is fine for now.
+3. First-run checklist on /dashboard for new sellers: add payout method,
+   create link, create invoice, share link. Each item ticks itself from
+   real data. Hide it once all four are done.
+4. A "Send feedback" link in the dashboard nav that opens a short form and
+   stores it in a feedback table (seller only, RLS owner insert).
+```
+
+---
+
+## PHASE 2 — Lite Beta + Pro Plan (Weeks 9–14)
+
+> Start only after Gate G1. Week 9 is people work (onboard 5 to 10 beta
+> sellers, watch them use it), so it has no build prompt. Write down every
+> confusion; those notes feed Task 2.1.
+
+### Task 2.1 — Google Sign-in and Onboarding Tips (Week 10)
+
+**Prompt:**
+```
+[Rules block]
+
+1. Add "Continue with Google" to /login and /signup using Supabase OAuth.
+   Reuse /auth/callback (it already uses safeRedirectPath). List the
+   Google Cloud and Supabase settings I must set by hand.
+2. Make sure the profile row is still created for Google users (the
+   handle_new_user trigger), and that their username is unique and valid.
+3. Add short tips (one line, dismissible, remembered in localStorage) on
+   the links, invoices and claims pages, based on the top 3 frictions from
+   beta testing: [paste your notes here].
+```
+
+---
+
+### Task 2.2 — Saved Billers and Reminders (Week 10) — replaces the old Task 1.7
+
+**Prompt:**
+```
+[Rules block]
+
+Use the table design from the old Task 1.7 (billers, reminders) with these
+changes:
+- RLS owner-only on both tables. No public access.
+- Number validation reuses the same rules as payout methods.
+- Daily job: a Vercel cron calling /api/cron/reminders, protected by a
+  CRON_SECRET header. It uses createAdminClient, sends email through
+  lib/email.ts (add a sendReminderEmail function), marks each reminder sent
+  or failed, and never sends the same reminder twice.
+- Add "Billers" back to the dashboard nav (it was removed in the Task 1.6
+  review because the page did not exist).
+- Add the cron to vercel.json.
+Email only. No SMS yet.
+```
+
+---
+
+### Task 2.3 — Pro Plan (Week 11)
+
+**Prompt:**
+```
+[Rules block]
+
+1. Migration: table plans (code, name, price_minor, limits JSONB, active),
+   seeded with "free" and "pro". Prices and limits live here, not in code.
+   Table subscriptions (user_id, plan_code, status enum(pending, active,
+   expired), current_period_end, payment_reference). RLS: users read their
+   own; changes only through SECURITY DEFINER functions.
+2. Enforce free-plan limits inside the database functions and server
+   actions (for example invoices per month), with a friendly "Upgrade to
+   Pro" message.
+3. Upgrade flow, Lite style (no gateway yet): the seller pays Hela Hop's
+   own Till shown on /dashboard/upgrade, then enters the M-PESA code. It
+   becomes a pending subscription that an admin confirms (Task 2.5). Same
+   rule as D9: nothing is active until it is confirmed.
+4. Pro features: custom link name and logo on the public pay page.
+   Branded colours come later.
+Do not use IntaSend for this yet. The company and Till are not registered.
+```
+
+---
+
+### Task 2.4 — SMS Notifications (Week 12)
+
+**Prompt:**
+```
+[Rules block]
+
+1. Add lib/sms.ts that calls the Africa's Talking REST API with fetch (no
+   SDK), sandbox first. Env: AT_USERNAME, AT_API_KEY, AT_SENDER_ID.
+2. Pro sellers can send an SMS with the invoice link to the customer.
+   Rate limited, and logged in a new sms_log table (to, type, status,
+   cost).
+3. Reminder emails from Task 2.2 can also go by SMS for Pro users.
+4. Never put a full phone number in logs. Mask it.
+```
+
+---
+
+### Task 2.5 — Admin Page and Audit Log (Week 13)
+
+**Prompt:**
+```
+[Rules block]
+
+1. Migration: table admin_users (user_id PK). No RLS policies, so only
+   SECURITY DEFINER functions can read it. Add an is_admin() helper. Do NOT
+   put an is_admin column on profiles (sellers can update their own row).
+2. Table audit_log (id, actor_id, action, target_type, target_id, reason
+   TEXT required, created_at). Insert only through a function.
+   Append-only: block update and delete with a trigger.
+3. /admin (replace the ADMIN_EMAILS check from Task 1.9 with is_admin()):
+   users list, invoice and link search, open abuse reports, pending Pro
+   payments to confirm, and "disable account" (sets profiles.disabled; the
+   public functions then hide that seller's links and invoices). Every
+   admin action requires a reason and writes to audit_log.
+```
+
+---
+
+### Task 2.6 — Demo Mode and Catch-up (Week 14) — replaces the old Task 1.8
+
+**Prompt:**
+```
+[Rules block]
+
+1. Build the polished demo page described in the old Task 1.8, but use
+   hit_rate_limit from Task 1.9 (not an in-memory counter) and keep the
+   orange "DEMO — NO REAL MONEY" banner visible at all times.
+2. Remove anything left over from the Task 0.2 test page that a visitor
+   could misuse.
+3. Run the backup restore test from docs/deploy.md again and record it.
+4. Update the README and docs to match the current code.
 ```
 
 ---
@@ -359,19 +661,38 @@ The production database should still use sandbox Daraja keys — no real money u
 ## Summary Checklist
 
 ### Phase 0 Gates (end of Week 2)
-- [ ] CI runs lint + type-check + build on every push
-- [ ] Daraja sandbox STK Push works from demo page
-- [ ] At least 10 user interviews logged
-- [ ] 8 screen wireframes done
+- [x] CI runs lint + type-check + build on every push
+- [x] Daraja sandbox STK Push works from the test script/API route (Task 0.2)
+- [ ] At least 10 user interviews logged (Task 0.4; show the wireframes)
+- [x] 8 screen wireframes done (fixed for v1.2)
 - [ ] Name "Hela Hop" checked (domain, eCitizen, social handles)
 
 ### Phase 1 Gates (end of Week 8)
+Built and code-reviewed (9 Nov 2026), still to be proven by running the flow
+with the four `20261110…` migrations applied (Task 1.6A):
 - [ ] Seller can: sign up → add payout method → get link + QR → create invoice
 - [ ] Payer can: open link → see instructions → claim "I've paid" with M-PESA code
-- [ ] Seller can: confirm/reject claims → receipt generated
-- [ ] Saved billers + email reminders work
-- [ ] Demo Mode (sandbox STK Push) works and is clearly labelled
-- [ ] Deployed on HTTPS with custom domain
-- [ ] Security checklist passed (CSRF, rate limits, headers, validation)
-- [ ] Terms + Privacy placeholder pages live
+- [ ] Payer sees "waiting for seller" after claiming; NO receipt until the seller confirms
+- [ ] Seller can: confirm/reject claims → receipt generated (random /r/[token] link, masked phone)
+- [ ] Seller gets an email when a new claim arrives (needs RESEND_API_KEY)
+- [x] Tap targets at least 44px, zoom allowed, no "Verified"/"Official" wording (fixed in the Task 1.6 review; re-check in Task 1.9B)
+
+Still to build:
+- [ ] Tests for the claim flow pass (Task 1.6A)
+- [ ] Security checklist passed: shared rate limits, headers, profile column lock, /admin protected, validation (Task 1.9)
+- [ ] Error pages, loading states, report-abuse link, Terms + Privacy placeholder pages (Task 1.9B)
+- [ ] Deployed on HTTPS with custom domain (Task 1.10)
+- [ ] Database backup restore tested (Task 1.10)
+- [ ] Delete-my-account and download-my-data possible (Task 1.11)
 - [ ] 5 design-partner sellers ready for beta
+- *(Billers/reminders → Week 10; Demo Mode → Week 14. Not part of this gate, D12.)*
+
+### Phase 2 Gates (end of Week 14)
+- [ ] 30+ registered users, 15+ active weekly
+- [ ] 100+ invoices / payment links paid through Lite
+- [ ] 3+ paying Pro users (Task 2.3, admin-confirmed)
+- [ ] Billers + reminders live (Task 2.2); SMS live (Task 2.4)
+- [ ] Admin page with audit log (Task 2.5)
+- [ ] Demo Mode live, clearly labelled (Task 2.6)
+- [ ] Backup restore re-tested (Task 2.6)
+- *(Company, KRA PIN, BOF1, eTIMS, ODPC and trademark are business tasks, tracked in the Master Plan, not here.)*
