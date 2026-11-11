@@ -267,6 +267,16 @@ function LoginForm() {
           Create Seller Account
         </Link>
       </div>
+
+      {/* No-account Interactive Overview */}
+      <div className="mt-1 text-center">
+        <Link
+          href="/overview"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 text-xs font-bold text-slate-600 underline underline-offset-2 hover:text-slate-900"
+        >
+          Just looking around? Try App Overview (No account needed)
+        </Link>
+      </div>
     </div>
   );
 }

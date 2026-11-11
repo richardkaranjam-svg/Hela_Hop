@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Hela Hop",
-  description: "Receive M-PESA from Anyone, Anywhere.",
+  description:
+    "Shareable M-PESA payment links, invoices, and payment tracking for Kenyan sellers.",
 };
 
 export default function RootLayout({

@@ -4,8 +4,18 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { getVercelTrustedHosts, resolveActionOrigin } from "@/lib/app-origin";
 import { safeRedirectPath } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
+
+async function getValidatedEmailOrigin(): Promise<string> {
+  const headerList = await headers();
+  return resolveActionOrigin({
+    headerOrigin: headerList.get("origin"),
+    configuredAppUrl: process.env.NEXT_PUBLIC_APP_URL,
+    vercelHosts: getVercelTrustedHosts(),
+  });
+}
 
 export type AuthActionResult = {
   success: boolean;
@@ -25,9 +35,9 @@ const signupSchema = z.object({
     .min(1, "Email address is required")
     .email("Please enter a valid email address"),
   password: z
-      .string()
-      .min(10, "Password must be at least 10 characters long")
-      .max(72, "Password must be 72 characters or fewer"),
+    .string()
+    .min(10, "Password must be at least 10 characters long")
+    .max(72, "Password must be 72 characters or fewer"),
 });
 
 const loginSchema = z.object({
@@ -80,11 +90,7 @@ export async function signupAction(
   }
 
   const supabase = await createClient();
-  const headerList = await headers();
-  const origin =
-    headerList.get("origin") ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "http://localhost:3000";
+  const origin = await getValidatedEmailOrigin();
 
   const { error } = await supabase.auth.signUp({
     email: validation.data.email,
@@ -166,11 +172,7 @@ export async function forgotPasswordAction(
   }
 
   const supabase = await createClient();
-  const headerList = await headers();
-  const origin =
-    headerList.get("origin") ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "http://localhost:3000";
+  const origin = await getValidatedEmailOrigin();
 
   const { error } = await supabase.auth.resetPasswordForEmail(
     validation.data.email,
