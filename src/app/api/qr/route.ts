@@ -1,15 +1,41 @@
 import { NextResponse, type NextRequest } from "next/server";
 import QRCode from "qrcode";
 
+const MAX_QR_TEXT_LENGTH = 500;
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const text = searchParams.get("text") || searchParams.get("url");
   const format = searchParams.get("format") || "png";
   const isDownload = searchParams.get("download") === "true";
-  const filename = searchParams.get("filename") || "helahop-qr";
+  // Only allow safe filename characters (prevents header injection).
+  const filename =
+    (searchParams.get("filename") || "")
+      .replace(/[^A-Za-z0-9._-]/g, "")
+      .slice(0, 64) || "helahop-qr";
 
   if (!text) {
     return new NextResponse("Missing text or url parameter", { status: 400 });
+  }
+
+  // Cap input size so nobody can burn CPU encoding huge payloads.
+  if (text.length > MAX_QR_TEXT_LENGTH) {
+    return new NextResponse("Text too long", { status: 413 });
+  }
+
+  // Only encode links that point at our own app (this is not a free,
+  // general-purpose QR service).
+  try {
+    const target = new URL(text).origin;
+    const allowed = new Set([request.nextUrl.origin]);
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      allowed.add(new URL(process.env.NEXT_PUBLIC_APP_URL).origin);
+    }
+    if (!allowed.has(target)) {
+      return new NextResponse("Not allowed", { status: 403 });
+    }
+  } catch {
+    return new NextResponse("Invalid url", { status: 400 });
   }
 
   try {

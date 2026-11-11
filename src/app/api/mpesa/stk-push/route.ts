@@ -26,6 +26,12 @@ const stkPushSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // This route is the sandbox demo only. Never let strangers trigger real
+  // payment prompts in production.
+  if (process.env.DARAJA_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   // CSRF (Task 1.9): only our own pages may call this route.
   if (
     !isSameOrigin(
