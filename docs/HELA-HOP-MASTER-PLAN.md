@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Document version** | v1.2 |
-| **Created** | 6 November 2026 (v1.1 same day; v1.2 on 7 November 2026; see Change History 0.5) |
+| **Document version** | v1.3 |
+| **Created** | 6 November 2026 (v1.1 same day; v1.2 on 7 November 2026; v1.3 on 9 November 2026; see Change History 0.5) |
 | **Plan start date** | Monday 9 November 2026 (Week 1) |
 | **Working time assumed** | 20–25 hours per week, founder working mostly solo |
 | **Owner** | Founder |
@@ -90,6 +90,7 @@
 | v1.0 | 6 Nov 2026 | First full master plan. Replaces the Kakitu summary and 30-day plan. | Founder + AI assistant |
 | v1.1 | 6 Nov 2026 | Gap review. **Added:** competitors (1.9), hypotheses to test (1.10), stop/pivot rules (3.5), best/likely dates (4.10), partner questions 7–8, wind-down plan, consent for future scoring, data-hosting rules, excise duty + eTIMS, employment-contract check, seller disclaimer, Swahili, accessibility, Airtel Money/USSD, CRB, insurance, dormant accounts, 6 new risks (R19–R24), 4 new open questions (Q14–Q17). **Corrected (facts checked online 6 Nov 2026):** ODPC registration is mandatory for financial services regardless of size; added eTIMS, 15% excise duty and the Finance Act 2026 16% VAT on payment-service fees; company fee shown as a range; the KES 1,000 margin example now includes taxes; the tourist segment is weaker than first thought. | Founder + AI assistant |
 | v1.2 | 7 Nov 2026 | Progress review after the 8-screen wireframes were built (`wireframes/`). **Added:** hypothesis H7 (payers submit their M-PESA code); decisions D8–D12; open question Q18 (receipt/invoice wording and eTIMS). **Changed:** headline now leads with the Kenyan-seller pitch; saved billers/reminders and sandbox Demo Mode moved to *after Gate G1* so Phase 1 focuses on the core seller loop; Gate G1 and Weeks 6–7 updated to match; Week 2 wireframe task ticked. **Wireframes fixed:** a payer's code is now only a *claim* until the seller confirms (no "Verified" receipt before that); removed "verified" from seller identity and "official" from invoices; 10-character code validation; pinch-zoom re-enabled; tap targets ≥ 44px; random receipt links and masked phone numbers. Footer version corrected. | Founder + AI assistant |
+| v1.3 | 9 Nov 2026 | **Proposals only, nothing decided:** new Section 3.6 "Making Lite faster and easier" with ideas U1–U12 (payer doesn't have to come back, paste the whole SMS, seller pastes SMS in bulk, fast confirm screen, automatic confirmation via Daraja C2B for Till/Paybill sellers, optional SMS-forwarding helper, 3-icon how-it-works, short video, practice run, and STK Push as the long-term answer). **Added:** hypotheses H8–H9, interview follow-up questions (11.2), open questions Q19–Q21, risk R25. To be reviewed together before Week 9. | Founder + AI assistant |
 
 ---
 
@@ -209,6 +210,8 @@ Each hypothesis is a bet. If the evidence says "no", we change the plan (see the
 | **H5** | Foreign freelancers / tourists want this enough to switch from what they use now | 10 interviews + waitlist sign-ups | ≥ 50 waitlist sign-ups from the target group | Week 20 |
 | **H6** | Users trust a new brand with money | Pilot behaviour | ≥ 60% of pilot users make a 2nd payment within 30 days | Week 28 |
 | **H7** *(v1.2)* | Payers will actually tap "I've paid" and submit their M-PESA code (Lite depends on this) | Beta usage: count invoices paid vs claims submitted; ask sellers how often they still chase payers | ≥ 40% of payments are claimed by the payer without the seller chasing | Week 14 |
+| **H8** *(v1.3, proposed)* | Busy sellers with a Till/Paybill would link it once so payments confirm themselves (idea U7, 3.6) | Interview follow-up (11.2); count beta sellers with a Till/Paybill | ≥ 50% of Till/Paybill sellers interviewed say yes | Week 14 |
+| **H9** *(v1.3, proposed)* | Pochi/phone sellers would allow a helper that forwards only their M-PESA SMS (idea U8, 3.6) | Interview follow-up (11.2) | ≥ 40% of Pochi/phone sellers interviewed say yes | Week 14 |
 
 > If **H4 fails**, the cross-border promise needs a different route (e.g. a specialised cross-border partner, or serving Kenyans abroad first). Update Section 1.2 honestly.
 
@@ -322,6 +325,60 @@ Persistence is good; stubbornness is expensive. At these checkpoints we decide h
 | **Any time** | Savings fall below 3 months of planned costs | Pause paid items, freelance, keep only free tools running. Never cut security or legal steps to save money |
 
 > A pivot is **not failure**. It means the plan learned something. Record every pivot in the Decision Log (Section 15).
+
+### 3.6 Making Lite faster and easier *(added in v1.3, PROPOSED, not decided)*
+
+> **Status: for review.** Nothing here is approved or scheduled yet. Review these ideas together, then move the accepted ones into the Decision Log (15.1) and the timeline (Section 4). Do **not** build any of them before Gate G1 unless they are explicitly approved.
+
+**The problem.** Lite asks too much of people in a hurry:
+- **Payers** do a round trip: copy the number, leave for M-PESA, pay, wait for the SMS, come back to the link, find the 10-character code, paste it. Every step is a chance to give up (Hypothesis H7).
+- **Busy sellers** only want to see who paid. They don't have time to check every claim against their M-PESA SMS. But if they tap "Confirm" without checking, a scammer can get a receipt with a made-up code, and fake confirmation messages are one of the top pains from the interviews.
+
+**The rule that does not change:** D9 (a code is only a claim until it is checked) and the Golden Rule (Hela Hop never holds the money). Every idea below keeps both. Ideas U7 and U8 replace "the seller checks" with "**Safaricom's own data** checks", which is stronger, not weaker.
+
+#### A. Make the payer's job shorter (small, Lite-friendly)
+
+| ID | Idea | What changes for the user | Effort | Suggested timing |
+|---|---|---|---|---|
+| **U1** | **Payer doesn't have to come back** | The payer just pays in M-PESA and is done. "I've paid" becomes optional (for payers who want a receipt). Matching moves to the seller side (U5, U7, U8). | S | Decide with U5/U7 |
+| **U2** | **Paste the whole SMS, not the code** | The payer long-presses the M-PESA SMS, taps Copy, and pastes the full message. Hela Hop pulls out the code and amount. No fiddly selecting of 10 characters on a cheap phone. | S | After G1 |
+| **U3** | **Big "Paste" button + page remembers where they were** | One tap pastes from the clipboard. When the payer returns to the link, the claim form is already open with the amount filled in, not the top of the page. | S | After G1 |
+| **U4** | **Less copying in the first place** | Show the Till number large enough to read and remember (5–7 digits). One simple checklist: *"Till 5492103 · Amount 2,500"*, then **[Open M-PESA]** and **[Done ✓]**. "Open M-PESA" dials `*334#` on Safaricom lines; it cannot pre-fill the number, but it saves searching the SIM menu. | S | After G1 |
+
+#### B. Make the seller's job shorter (for busy sellers)
+
+| ID | Idea | What changes for the user | Effort | Suggested timing |
+|---|---|---|---|---|
+| **U5** | **Seller pastes M-PESA SMS (one or many)** | The seller pastes today's M-PESA messages in one go. Hela Hop reads code, amount and payer name, and matches them to unpaid invoices/claims. The seller taps Confirm on each match. | M | After G1 |
+| **U6** | **Fast confirm screen + daily summary + helper account** | One screen of waiting claims with big **✓ Paid** / **✗ Not received** buttons; one daily message ("4 payments waiting, KES 8,200"); a shop assistant can confirm for the seller. Honest note in the app: *confirming without checking makes the receipt meaningless.* | S–M | Phase 2 (helper account with Task 2.5 roles) |
+| **U7** | **Automatic confirmation for Till / Paybill sellers (Daraja C2B)** ⚖️ | The seller links their own Till/Paybill **once**. Safaricom then sends Hela Hop a message for every payment (code, amount, payer name, time). Hela Hop marks the invoice/link **Paid** by itself. **The seller never checks M-PESA again, and the data can't be faked.** Money still goes straight to the seller. | L | Phase 2–3, after a lawyer check (Q19) |
+| **U8** | **SMS forwarding helper for Pochi / phone sellers** ⚖️ | These sellers have no shortcode, so Safaricom can't send a callback. An optional Android helper forwards **only messages from "MPESA"** to Hela Hop, which matches and confirms them. | L | Test demand first (H9); not before Phase 3 |
+
+**Notes and catches:**
+- **U7 setup:** each seller needs Daraja Go-Live for their own shortcode (M-PESA business/Org portal). Hela Hop can guide them or do the paperwork with them. This overlaps with the "Connect your own Paybill" stretch goal in 3.2. Ask the lawyer whether receiving payment data on the seller's behalf changes anything (Q19).
+- **U8 risks:** Google Play restricts apps that read SMS (may need distribution outside the Play Store, or an existing SMS-forwarder app); SMS data is sensitive (Privacy Policy, ODPC, store the minimum); some sellers will not trust an app that reads SMS. Keep it **optional** and explain it plainly (Q20, R25).
+- **U5 and U8** read text from M-PESA messages, whose format Safaricom can change. Matching must fail safe: no match means "needs the seller", never "paid".
+
+#### C. Help people learn it in seconds
+
+| ID | Idea | What changes for the user | Effort | Suggested timing |
+|---|---|---|---|---|
+| **U9** | **"How it works" in 3 icons (EN/SW)** | On every payer page: *Pay with M-PESA → Seller confirms → You get a receipt.* | S | After G1 |
+| **U10** | **10–15 second video/animation** | Shows the full flow on the payer page and in seller onboarding. Also reusable for TikTok/Reels (11.4). | S | Beta (Week 9+) |
+| **U11** | **Practice run for new sellers** | A test invoice the seller pays to themselves (e.g. KES 1), so they see both sides once before real customers. | S | Beta onboarding (11.3) |
+
+#### D. The long-term answer
+
+**U12, PIN prompt (STK Push):** the payer types their phone number, gets the M-PESA PIN prompt, enters the PIN, and payment is confirmed automatically. No copying, no codes, no seller checking. This is already planned: "Connect your own Paybill" (stretch, 3.2) and the wallet phases with a licensed partner (Phase 3–4). It stays later because of the legal and partner steps (Gate G4), but it is what the experience should end up as.
+
+#### Proposed order (to confirm at review)
+
+1. **First (cheap, no legal steps):** U2, U3, U4, U9, then U5 and U6.
+2. **Next (biggest win for busy sellers):** U7 for Till/Paybill sellers, after Q19 is answered.
+3. **Test before building:** U8 (only if H9 passes).
+4. **Later, as planned:** U12.
+
+**To test in interviews and beta:** add the follow-up questions in 11.2 and hypotheses H8 and H9 (1.10).
 
 ---
 
@@ -1060,6 +1117,10 @@ If monthly costs are ~KES 100,000 (hosting, tools, SMS, accounting, a small foun
 
 **Rules:** don't pitch until question 7; write down their exact words; ask for one referral at the end.
 
+**Follow-up questions after the demo** *(added in v1.3, for the ideas in 3.6)*:
+- **Sellers:** "How long does it take you to check who paid each day?" · "If you could link your Till/Paybill once so payments confirm themselves, would you?" (H8) · *(Pochi/phone sellers)* "Would you allow a helper that forwards only your M-PESA messages to Hela Hop?" (H9)
+- **Payers (if you can watch one):** "Which step was annoying?" · Time how long the payment takes from opening the link to done.
+
 ### 11.3 Beta onboarding
 
 - Set up the first 10 users **personally** (call or visit; set up their link together).
@@ -1141,6 +1202,7 @@ Likelihood (L) and Impact (I): **H**igh / **M**edium / **L**ow. Review monthly.
 | R22 *(v1.1)* | **Employer claims ownership** of Hela Hop | L | H | Check the employment contract in Week 1; build on personal time and equipment; get written clarity | IP / outside-work clauses |
 | R23 *(v1.1)* | **Data-protection breach of rules** (no ODPC registration, data abroad without basis, no scoring consent) | M | H | ODPC Week 12; consent from day one; hosting choice documented | Partner/ODPC questions |
 | R24 *(v1.1)* | **Scammers use Hela Hop links** to look trustworthy | M | M | Seller disclaimer; report-abuse button; fast takedown; KYC before wallets | Abuse reports |
+| R25 *(v1.3, if 3.6 ideas are adopted)* | **Automatic matching goes wrong** (an M-PESA SMS format change, a wrong match, or a leak of forwarded SMS data) | M | H | Match only on code + amount; no match means "needs the seller", never "paid"; store the minimum; consent and Privacy Policy before U5/U8; prefer Safaricom callbacks (U7) over SMS | Sellers reporting wrong "Paid" statuses; parsing failures in logs |
 
 ---
 
@@ -1223,6 +1285,9 @@ Likelihood (L) and Impact (I): **H**igh / **M**edium / **L**ow. Review monthly.
 | Q16 *(v1.1)* | Where will production data be hosted, and what safeguards cover the cross-border transfer? ⚖️ | Week 8 | Founder + lawyer |
 | Q17 *(v1.1)* | Which partner supports non-Kenyan users (H4)? | Week 15 | Founder |
 | Q18 *(v1.2)* | Does a Lite invoice/receipt need to be an eTIMS-compliant document, or is a payment-claim receipt enough? What wording is safe ("Receipt" vs "Proof of payment")? ⚖️ | Before beta (Week 8) | Accountant + lawyer |
+| Q19 *(v1.3)* | Idea U7 (3.6): can Hela Hop receive Daraja C2B payment callbacks for a **seller's own** Till/Paybill without needing a licence or changing who "handles" the money? What must the seller agree to, and what must the Privacy Policy say? ⚖️ | Before building U7 | Lawyer |
+| Q20 *(v1.3)* | Idea U8 (3.6): is an SMS-forwarding helper allowed (Google Play SMS policy) and acceptable under the Data Protection Act (consent, minimum data, retention)? ⚖️ | Before building U8 | Founder + lawyer |
+| Q21 *(v1.3)* | Which ideas from 3.6 (U1–U12) do we accept, and when? | Joint review, before Week 9 | Founder |
 
 ---
 
@@ -1419,5 +1484,5 @@ Write each as an automated test where possible. Groups:
 
 ---
 
-*End of the Hela Hop Master Plan v1.2. Update the version and Change History (0.5) whenever you change it.*
+*End of the Hela Hop Master Plan v1.3. Update the version and Change History (0.5) whenever you change it.*
 

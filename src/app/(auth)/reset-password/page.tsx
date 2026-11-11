@@ -22,7 +22,7 @@ export default function ResetPasswordPage() {
 
   const validatePassword = (val: string) => {
     if (!val) return "New password is required";
-    if (val.length < 8) return "Password must be at least 8 characters long";
+    if (val.length < 10) return "Password must be at least 10 characters long";
     return undefined;
   };
 
@@ -132,7 +132,7 @@ export default function ResetPasswordPage() {
             >
               New Password
             </label>
-            <span className="text-[11px] text-slate-400">Min 8 characters</span>
+            <span className="text-[11px] text-slate-400">Min 10 characters</span>
           </div>
           <div className="relative">
             <input

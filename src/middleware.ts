@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+import { isAdminEmail } from "@/lib/admin";
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
@@ -56,6 +58,20 @@ export async function middleware(request: NextRequest) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirectedFrom", pathname);
       return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // Protect /admin and /admin/* (Task 1.9): must be logged in AND on the
+  // ADMIN_EMAILS allow-list. Non-admins get a plain 404 so the page's
+  // existence is not advertised.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    if (!user) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirectedFrom", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    if (!isAdminEmail(user.email)) {
+      return new NextResponse("Not found", { status: 404 });
     }
   }
 

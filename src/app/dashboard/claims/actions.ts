@@ -1,9 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { z } from "zod";
 
 import { notifySellerOfClaim } from "@/lib/email";
 import { normalizeKenyanPhoneSync } from "@/lib/phone";
+import { getClientIp, hitRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 export type SubmitClaimResult = {
@@ -39,7 +42,65 @@ const CLAIM_ERROR_MESSAGES: Record<string, string> = {
   cancelled: "This invoice was cancelled by the seller.",
   not_found: "This payment page is no longer available.",
   invalid_target: "Something went wrong. Please reload the page.",
+  rate_limited:
+    "Too many attempts. Please wait a few minutes and try again.",
 };
+
+/** Shape check: exactly one target, and only the types we expect. */
+const claimTargetSchema = z
+  .object({
+    paymentLinkId: z.string().uuid().nullish(),
+    invoiceCode: z
+      .string()
+      .min(10)
+      .max(64)
+      .regex(/^[A-Za-z0-9_-]+$/)
+      .nullish(),
+    payerName: z.string().max(500).optional(),
+    payerPhone: z.string().max(50).optional(),
+    mpesaCode: z.string().max(50),
+    amountMinor: z.number().nullish(),
+  })
+  .refine((d) => Boolean(d.paymentLinkId) !== Boolean(d.invoiceCode), {
+    message: "invalid_target",
+  });
+
+/**
+ * Field rules. For invoices, name, phone and amount come from the invoice
+ * itself, so they are only checked for payment-link claims.
+ */
+const claimFieldsSchema = claimTargetSchema
+  .transform((d) => ({
+    isInvoice: Boolean(d.invoiceCode),
+    paymentLinkId: d.paymentLinkId ?? null,
+    invoiceCode: d.invoiceCode ?? null,
+    mpesaCode: d.mpesaCode.trim().toUpperCase(),
+    payerName: (d.payerName ?? "").trim().slice(0, 100),
+    payerPhone: d.invoiceCode
+      ? ""
+      : (normalizeKenyanPhoneSync((d.payerPhone ?? "").trim()) ?? ""),
+    amountMinor: d.amountMinor == null ? null : Math.round(d.amountMinor),
+  }))
+  .superRefine((d, ctx) => {
+    if (!/^[A-Z0-9]{10}$/.test(d.mpesaCode)) {
+      ctx.addIssue({ code: "custom", path: ["mpesa_code"], message: CLAIM_ERROR_MESSAGES.invalid_code });
+    }
+    if (d.isInvoice) return;
+    if (!d.payerName) {
+      ctx.addIssue({ code: "custom", path: ["payer_name"], message: CLAIM_ERROR_MESSAGES.invalid_name });
+    }
+    if (!d.payerPhone) {
+      ctx.addIssue({ code: "custom", path: ["payer_phone"], message: "Enter a valid Kenyan number (e.g. 0712 345 678)." });
+    }
+    if (
+      d.amountMinor !== null &&
+      (!Number.isFinite(d.amountMinor) ||
+        d.amountMinor <= 0 ||
+        d.amountMinor > 15_000_000)
+    ) {
+      ctx.addIssue({ code: "custom", path: ["amount"], message: CLAIM_ERROR_MESSAGES.invalid_amount });
+    }
+  });
 
 /**
  * Public action: send an "I've Paid" claim from /pay/[slug] or /i/[code].
@@ -54,51 +115,54 @@ export async function submitClaimAction(data: {
   mpesaCode: string;
   amountMinor?: number | null;
 }): Promise<SubmitClaimResult> {
-  const mpesaCode = (data.mpesaCode || "").trim().toUpperCase();
-  const payerName = (data.payerName || "").trim().slice(0, 100);
-  const rawPhone = (data.payerPhone || "").trim();
-  const isInvoice = Boolean(data.invoiceCode);
-
-  const errors: NonNullable<SubmitClaimResult["errors"]> = {};
-
-  if (!/^[A-Z0-9]{10}$/.test(mpesaCode)) {
-    errors.mpesa_code = CLAIM_ERROR_MESSAGES.invalid_code;
-  }
-
-  // For invoices, name and phone come from the invoice itself.
-  let payerPhone = "";
-  if (!isInvoice) {
-    if (!payerName) {
-      errors.payer_name = CLAIM_ERROR_MESSAGES.invalid_name;
+  // 1. Validate on the server with zod (Task 1.9).
+  const parsed = claimFieldsSchema.safeParse(data);
+  if (!parsed.success) {
+    const errors: NonNullable<SubmitClaimResult["errors"]> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0];
+      if (
+        field === "mpesa_code" ||
+        field === "payer_name" ||
+        field === "payer_phone" ||
+        field === "amount"
+      ) {
+        errors[field] ??= issue.message;
+      } else {
+        // Wrong types or not exactly one target: the page itself is broken.
+        errors.general = CLAIM_ERROR_MESSAGES.invalid_target;
+      }
     }
-    const normalized = normalizeKenyanPhoneSync(rawPhone);
-    if (!normalized) {
-      errors.payer_phone = "Enter a valid Kenyan number (e.g. 0712 345 678).";
-    } else {
-      payerPhone = normalized;
-    }
-  }
-
-  const amountMinor =
-    data.amountMinor == null ? null : Math.round(Number(data.amountMinor));
-  if (
-    !isInvoice &&
-    amountMinor !== null &&
-    (!Number.isFinite(amountMinor) ||
-      amountMinor <= 0 ||
-      amountMinor > 15_000_000)
-  ) {
-    errors.amount = CLAIM_ERROR_MESSAGES.invalid_amount;
-  }
-
-  if (Object.keys(errors).length > 0) {
     return { success: false, errors };
+  }
+  const {
+    isInvoice,
+    paymentLinkId,
+    invoiceCode,
+    mpesaCode,
+    payerName,
+    payerPhone,
+    amountMinor,
+  } = parsed.data;
+
+  // 2. Shared rate limit (Task 1.9): 5 claims per 10 minutes per IP + target.
+  const ip = getClientIp(await headers());
+  const target = isInvoice ? `inv:${invoiceCode}` : `link:${paymentLinkId}`;
+  const allowed = await hitRateLimit(
+    `claim:${ip}:${target}`,
+    RATE_LIMITS.claim
+  );
+  if (!allowed) {
+    return {
+      success: false,
+      errors: { general: CLAIM_ERROR_MESSAGES.rate_limited },
+    };
   }
 
   const supabase = await createClient();
   const { data: raw, error } = await supabase.rpc("submit_payment_claim", {
-    p_payment_link_id: isInvoice ? null : (data.paymentLinkId ?? null),
-    p_invoice_code: isInvoice ? (data.invoiceCode ?? null) : null,
+    p_payment_link_id: isInvoice ? null : paymentLinkId,
+    p_invoice_code: isInvoice ? invoiceCode : null,
     p_payer_name: payerName,
     p_payer_phone: payerPhone,
     p_mpesa_code: mpesaCode,
@@ -128,7 +192,7 @@ export async function submitClaimAction(data: {
   }
 
   if (isInvoice) {
-    revalidatePath(`/i/${data.invoiceCode}`);
+    revalidatePath(`/i/${invoiceCode}`);
     revalidatePath("/dashboard/invoices");
   }
   revalidatePath("/dashboard/claims");
@@ -153,6 +217,9 @@ const SELLER_ERROR_MESSAGES: Record<string, string> = {
   not_pending: "This claim was already handled. Refresh the page.",
 };
 
+const claimIdSchema = z.string().uuid();
+const rejectReasonSchema = z.string().max(500).optional();
+
 /**
  * Seller action: confirm a PENDING claim after checking their own M-PESA SMS.
  * Claim, invoice and receipt are updated together in one database transaction.
@@ -171,8 +238,13 @@ export async function confirmPaymentClaimAction(claimId: string): Promise<{
     return { success: false, message: "Authentication required." };
   }
 
+  const parsedId = claimIdSchema.safeParse(claimId);
+  if (!parsedId.success) {
+    return { success: false, message: SELLER_ERROR_MESSAGES.not_found };
+  }
+
   const { data: raw, error } = await supabase.rpc("confirm_payment_claim", {
-    p_claim_id: claimId,
+    p_claim_id: parsedId.data,
   });
   if (error) {
     console.error("confirm_payment_claim failed:", error);
@@ -215,9 +287,21 @@ export async function rejectPaymentClaimAction(
     return { success: false, message: "Authentication required." };
   }
 
+  const parsedId = claimIdSchema.safeParse(claimId);
+  const parsedReason = rejectReasonSchema.safeParse(reason);
+  if (!parsedId.success) {
+    return { success: false, message: SELLER_ERROR_MESSAGES.not_found };
+  }
+  if (!parsedReason.success) {
+    return {
+      success: false,
+      message: "Reason is too long (500 characters at most).",
+    };
+  }
+
   const { data: raw, error } = await supabase.rpc("reject_payment_claim", {
-    p_claim_id: claimId,
-    p_reason: reason ?? "",
+    p_claim_id: parsedId.data,
+    p_reason: parsedReason.data ?? "",
   });
   if (error) {
     console.error("reject_payment_claim failed:", error);

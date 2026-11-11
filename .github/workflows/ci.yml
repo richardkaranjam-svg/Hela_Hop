@@ -32,6 +32,9 @@ jobs:
       - name: Run Type Check
         run: npm run type-check
 
+      - name: Run Unit Tests
+        run: npm test
+
       - name: Copy env example for build
         run: cp .env.example .env.local
 

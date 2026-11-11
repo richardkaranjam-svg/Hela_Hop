@@ -17,6 +17,10 @@ export type InvoiceStatus = "unpaid" | "claimed" | "paid" | "cancelled";
 
 export type ClaimStatus = "pending" | "confirmed" | "rejected";
 
+export type AbuseTargetType = "link" | "invoice";
+
+export type AbuseReportStatus = "open" | "reviewed";
+
 export interface InvoiceItem {
   description: string;
   quantity: number;
@@ -68,18 +72,12 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        // Task 1.9: sellers may only update these three columns (column-level
+        // GRANT in migration 20261111000002). updated_at is set by a trigger.
         Update: {
-          id?: string;
-          email?: string;
           username?: string;
           full_name?: string | null;
           phone?: string | null;
-          kyc_tier?: KycTier;
-          payout_method?: PayoutMethod | null;
-          payout_destination?: string | null;
-          kakitu_score_points?: number;
-          created_at?: string;
-          updated_at?: string;
         };
         Relationships: [];
       };
@@ -475,6 +473,58 @@ export interface Database {
           },
         ];
       };
+      // Task 1.9: shared rate-limit counters. RLS on with no policies and no
+      // grants, so only the hit_rate_limit() database function can use it.
+      rate_limits: {
+        Row: {
+          key: string;
+          window_start: string;
+          count: number;
+        };
+        Insert: {
+          key: string;
+          window_start: string;
+          count?: number;
+        };
+        Update: {
+          key?: string;
+          window_start?: string;
+          count?: number;
+        };
+        Relationships: [];
+      };
+      // Task 1.9B: scam reports from /pay and /i. RLS on, no policies, no
+      // grants: written only by submit_abuse_report(), read in the dashboard.
+      abuse_reports: {
+        Row: {
+          id: string;
+          target_type: AbuseTargetType;
+          target_id: string;
+          reporter_name: string | null;
+          reason: string;
+          status: AbuseReportStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          target_type: AbuseTargetType;
+          target_id: string;
+          reporter_name?: string | null;
+          reason: string;
+          status?: AbuseReportStatus;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          target_type?: AbuseTargetType;
+          target_id?: string;
+          reporter_name?: string | null;
+          reason?: string;
+          status?: AbuseReportStatus;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -484,6 +534,8 @@ export interface Database {
       payout_method_type: PayoutMethodType;
       invoice_status: InvoiceStatus;
       claim_status: ClaimStatus;
+      abuse_target_type: AbuseTargetType;
+      abuse_report_status: AbuseReportStatus;
       transaction_status: TransactionStatus;
       payer_type: PayerType;
       ledger_direction: LedgerDirection;
@@ -512,3 +564,4 @@ export type PayoutMethodRecord = Tables<"payout_methods">;
 export type InvoiceRecord = Tables<"invoices">;
 export type PaymentClaimRecord = Tables<"payment_claims">;
 export type ReceiptRecord = Tables<"receipts">;
+export type AbuseReportRecord = Tables<"abuse_reports">;

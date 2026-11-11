@@ -24,7 +24,10 @@ const signupSchema = z.object({
     .trim()
     .min(1, "Email address is required")
     .email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  password: z
+      .string()
+      .min(10, "Password must be at least 10 characters long")
+      .max(72, "Password must be 72 characters or fewer"),
 });
 
 const loginSchema = z.object({
@@ -46,7 +49,10 @@ const forgotPasswordSchema = z.object({
 
 const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, "Password must be at least 8 characters long"),
+    password: z
+      .string()
+      .min(10, "Password must be at least 10 characters long")
+      .max(72, "Password must be 72 characters or fewer"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {

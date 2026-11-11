@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { submitClaimAction } from "@/app/dashboard/claims/actions";
 import { setLanguageAction } from "@/app/dashboard/links/actions";
+import { LegalFooter } from "@/components/public/LegalFooter";
+import { ReportAbuse } from "@/components/public/ReportAbuse";
 import { translations, type Language } from "@/lib/i18n";
 import type { InvoiceItem, InvoiceStatus } from "@/types/database";
 
@@ -447,6 +449,10 @@ export function PublicInvoiceClient({
             Create My Free Link &rarr;
           </Link>
         </div>
+
+        {/* Task 1.9B: report abuse + legal links */}
+        <ReportAbuse lang={lang} type="invoice" target={code} />
+        <LegalFooter lang={lang} className="mb-6" />
       </main>
 
       {/* Claim Form Modal */}

@@ -154,7 +154,7 @@ function LoginForm() {
             </label>
             <Link
               href="/forgot-password"
-              className="text-xs font-semibold text-emerald-600 transition-colors hover:text-emerald-700"
+              className="inline-flex min-h-[44px] items-center text-xs font-semibold text-emerald-600 transition-colors hover:text-emerald-700"
             >
               Forgot password?
             </Link>
@@ -262,7 +262,7 @@ function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="font-bold text-emerald-600 underline underline-offset-2 hover:text-emerald-700"
+          className="inline-flex min-h-[44px] items-center font-bold text-emerald-600 underline underline-offset-2 hover:text-emerald-700"
         >
           Create Seller Account
         </Link>

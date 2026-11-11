@@ -40,6 +40,29 @@ export const translations = {
     paybillHeader: "PAYBILL BUSINESS NUMBER",
     pochiHeader: "POCHI LA BIASHARA NUMBER",
     phoneHeader: "SEND MONEY NUMBER",
+    privacy: "Privacy",
+    terms: "Terms",
+    report: {
+      link: "Report this page",
+      title: "Report this page",
+      intro:
+        "Think this page is a scam or misuses your details? Tell us. The seller will not see your name.",
+      nameLabel: "Your name (optional)",
+      reasonLabel: "What is wrong?",
+      reasonHint: "10 to 500 characters.",
+      submit: "Send Report",
+      sending: "Sending...",
+      cancel: "Cancel",
+      thanks: "Thank you. We will look into this page.",
+      errors: {
+        invalid_reason: "Please describe the problem in 10 to 500 characters.",
+        invalid_name: "Name must be 100 characters or less.",
+        rate_limited:
+          "Too many reports from you. Please wait a few minutes and try again.",
+        not_found: "This page is no longer available.",
+        general: "Could not send your report. Please try again.",
+      },
+    },
     steps: {
       till: [
         "Open SIM Toolkit or M-PESA App.",
@@ -112,6 +135,29 @@ export const translations = {
     paybillHeader: "NAMBARI YA BIASHARA YA PAYBILL",
     pochiHeader: "NAMBARI YA POCHI LA BIASHARA",
     phoneHeader: "NAMBARI YA KUTUMA PESA",
+    privacy: "Faragha",
+    terms: "Masharti",
+    report: {
+      link: "Ripoti ukurasa huu",
+      title: "Ripoti ukurasa huu",
+      intro:
+        "Unadhani ukurasa huu ni wa utapeli au unatumia taarifa zako vibaya? Tuambie. Muuzaji hataona jina lako.",
+      nameLabel: "Jina lako (si lazima)",
+      reasonLabel: "Kuna tatizo gani?",
+      reasonHint: "Herufi 10 hadi 500.",
+      submit: "Tuma Ripoti",
+      sending: "Inatuma...",
+      cancel: "Ghairi",
+      thanks: "Asante. Tutachunguza ukurasa huu.",
+      errors: {
+        invalid_reason: "Tafadhali eleza tatizo kwa herufi 10 hadi 500.",
+        invalid_name: "Jina lisizidi herufi 100.",
+        rate_limited:
+          "Umetuma ripoti nyingi. Tafadhali subiri dakika chache ujaribu tena.",
+        not_found: "Ukurasa huu haupatikani tena.",
+        general: "Imeshindikana kutuma ripoti. Tafadhali jaribu tena.",
+      },
+    },
     steps: {
       till: [
         "Fungua SIM Toolkit au App ya M-PESA.",

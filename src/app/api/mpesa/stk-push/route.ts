@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { stkPush } from "@/lib/mpesa/daraja";
+import { getClientIp, hitRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { isSameOrigin } from "@/lib/same-origin";
 
 const stkPushSchema = z.object({
   phone: z
@@ -19,11 +21,34 @@ const stkPushSchema = z.object({
     })
     .gt(0, { message: "Amount must be greater than 0" })
     .lte(150000, { message: "Amount must be less than or equal to 150,000" }),
-  accountRef: z.string().optional(),
-  description: z.string().optional(),
+  accountRef: z.string().max(64).optional(),
+  description: z.string().max(64).optional(),
 });
 
 export async function POST(request: NextRequest) {
+  // CSRF (Task 1.9): only our own pages may call this route.
+  if (
+    !isSameOrigin(
+      request.headers.get("origin"),
+      process.env.NEXT_PUBLIC_APP_URL
+    )
+  ) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Shared rate limit (Task 1.9): 5 per minute per IP.
+  const ip = getClientIp(request.headers);
+  const allowed = await hitRateLimit(`stk:${ip}`, RATE_LIMITS.stkPush);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a minute and try again." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(RATE_LIMITS.stkPush.windowSeconds) },
+      }
+    );
+  }
+
   let body: unknown;
 
   try {

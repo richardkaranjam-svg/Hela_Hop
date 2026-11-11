@@ -29,7 +29,7 @@ export default function SignupPage() {
 
   const validatePassword = (val: string) => {
     if (!val) return "Password is required";
-    if (val.length < 8) return "Password must be at least 8 characters long";
+    if (val.length < 10) return "Password must be at least 10 characters long";
     return undefined;
   };
 
@@ -189,7 +189,7 @@ export default function SignupPage() {
             >
               Password
             </label>
-            <span className="text-[11px] text-slate-400">Min 8 characters</span>
+            <span className="text-[11px] text-slate-400">Min 10 characters</span>
           </div>
           <div className="relative">
             <input
@@ -254,8 +254,24 @@ export default function SignupPage() {
         {/* Disclaimer / Trust Note */}
         <div className="py-1">
           <p className="text-[11.5px] leading-snug text-slate-500">
-            By signing up, you agree to Hela Hop&apos;s seller guidelines. Funds
-            settle directly to your own Till, Paybill or Pochi.
+            By signing up, you agree to Hela Hop&apos;s{" "}
+            <Link
+              href="/terms"
+              target="_blank"
+              className="font-semibold text-emerald-700 underline underline-offset-2"
+            >
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              className="font-semibold text-emerald-700 underline underline-offset-2"
+            >
+              Privacy Policy
+            </Link>
+            . Hela Hop never holds your money: payments go directly to your own
+            Till, Paybill or Pochi.
           </p>
         </div>
 
@@ -302,7 +318,7 @@ export default function SignupPage() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-bold text-emerald-600 underline underline-offset-2 hover:text-emerald-700"
+          className="inline-flex min-h-[44px] items-center font-bold text-emerald-600 underline underline-offset-2 hover:text-emerald-700"
         >
           Log In
         </Link>

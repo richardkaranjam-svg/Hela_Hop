@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { LegalFooter } from "@/components/public/LegalFooter";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AuthLayout({
@@ -57,6 +58,7 @@ export default async function AuthLayout({
           <p>
             &copy; {new Date().getFullYear()} Hela Hop &bull; Nairobi, Kenya
           </p>
+          <LegalFooter className="mt-1" />
         </div>
       </div>
     </div>

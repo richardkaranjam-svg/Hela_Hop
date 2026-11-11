@@ -1,10 +1,117 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { generateSecureInvoiceCode } from "@/lib/formatters";
+import { normalizeKenyanPhoneSync } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 import type { InvoiceItem, InvoiceStatus } from "@/types/database";
+
+const MAX_ITEMS = 50;
+// invoices.total_minor is a Postgres INTEGER.
+const MAX_TOTAL_MINOR = 2_147_483_647;
+
+const invoiceItemSchema = z.object({
+  description: z.string().trim().min(1).max(200),
+  quantity: z.number().int().min(1).max(10_000),
+  unit_price_minor: z.number().int().min(0).max(15_000_000),
+});
+
+/**
+ * Items arrive as JSON from a hidden field. Each item is checked separately so
+ * the seller sees which line is wrong. Unknown keys are dropped (zod strips
+ * them), so nothing extra is stored in the items column.
+ */
+const itemsSchema = z
+  .string()
+  .transform((raw, ctx) => {
+    let value: unknown;
+    try {
+      value = JSON.parse(raw);
+    } catch {
+      ctx.addIssue({ code: "custom", message: "Invalid items list format." });
+      return z.NEVER;
+    }
+    if (!Array.isArray(value) || value.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Please add at least one item to the invoice.",
+      });
+      return z.NEVER;
+    }
+    if (value.length > MAX_ITEMS) {
+      ctx.addIssue({
+        code: "custom",
+        message: `An invoice can have at most ${MAX_ITEMS} items.`,
+      });
+      return z.NEVER;
+    }
+
+    const items: InvoiceItem[] = [];
+    for (let i = 0; i < value.length; i++) {
+      const res = invoiceItemSchema.safeParse(value[i]);
+      if (!res.success) {
+        const field = res.error.issues[0]?.path[0];
+        const message =
+          field === "description"
+            ? `Item #${i + 1} is missing a description (200 characters at most).`
+            : field === "quantity"
+              ? `Item #${i + 1} must have a whole-number quantity from 1 to 10,000.`
+              : `Item #${i + 1} must have a price from KES 0 to 150,000.`;
+        ctx.addIssue({ code: "custom", message });
+        return z.NEVER;
+      }
+      items.push(res.data);
+    }
+    return items;
+  });
+
+const createInvoiceSchema = z.object({
+  customer_name: z
+    .string()
+    .trim()
+    .min(1, "Customer name is required.")
+    .max(100, "Customer name cannot exceed 100 characters."),
+  customer_phone: z
+    .string()
+    .trim()
+    .min(1, "Customer phone number is required.")
+    .max(50, "Enter a valid Kenyan number (e.g. 0712 345 678).")
+    .transform((value, ctx) => {
+      const normalized = normalizeKenyanPhoneSync(value);
+      if (!normalized) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Enter a valid Kenyan number (e.g. 0712 345 678).",
+        });
+        return z.NEVER;
+      }
+      return normalized;
+    }),
+  items: itemsSchema,
+  due_date: z
+    .string()
+    .trim()
+    .refine(
+      (v) =>
+        v === "" ||
+        (/^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v))),
+      "Please choose a valid due date."
+    )
+    .transform((v) => v || null),
+  payout_method_id: z
+    .string()
+    .trim()
+    .refine(
+      (v) => v === "" || z.string().uuid().safeParse(v).success,
+      "Please choose a valid payout method you own."
+    )
+    .transform((v) => v || null),
+});
+
+const uuidSchema = z.string().uuid();
+const invoiceStatusSchema = z.enum(["unpaid", "claimed", "paid", "cancelled"]);
 
 export type InvoiceActionResult = {
   success: boolean;
@@ -39,73 +146,53 @@ export async function createInvoiceAction(
     };
   }
 
-  const rawCustomerName = (formData.get("customer_name") as string) || "";
-  const rawCustomerPhone = (formData.get("customer_phone") as string) || "";
-  const rawItemsJson = (formData.get("items_json") as string) || "[]";
-  const rawDueDate = (formData.get("due_date") as string) || "";
-  const rawPayoutMethodId = (formData.get("payout_method_id") as string) || "";
+  // 1-5. Validate everything on the server with zod (Task 1.9).
+  const parsed = createInvoiceSchema.safeParse({
+    customer_name: formData.get("customer_name") ?? "",
+    customer_phone: formData.get("customer_phone") ?? "",
+    items: formData.get("items_json") ?? "[]",
+    due_date: formData.get("due_date") ?? "",
+    payout_method_id: formData.get("payout_method_id") ?? "",
+  });
+
+  if (!parsed.success) {
+    const errors: NonNullable<InvoiceActionResult["errors"]> = {};
+    for (const issue of parsed.error.issues) {
+      const field = String(issue.path[0] ?? "");
+      if (
+        field === "customer_name" ||
+        field === "customer_phone" ||
+        field === "items" ||
+        field === "due_date" ||
+        field === "payout_method_id"
+      ) {
+        errors[field] ??= issue.message;
+      } else {
+        errors.general ??= "Please check the invoice details and try again.";
+      }
+    }
+    return { success: false, errors };
+  }
+
+  const {
+    customer_name: customerName,
+    customer_phone: customerPhone,
+    items,
+    due_date: dueDate,
+  } = parsed.data;
 
   const errors: InvoiceActionResult["errors"] = {};
 
-  // 1. Validate Customer Name
-  const customerName = rawCustomerName.trim();
-  if (!customerName) {
-    errors.customer_name = "Customer name is required.";
-  } else if (customerName.length > 100) {
-    errors.customer_name = "Customer name cannot exceed 100 characters.";
+  const totalMinor = items.reduce(
+    (sum, item) => sum + item.quantity * item.unit_price_minor,
+    0
+  );
+  if (totalMinor > MAX_TOTAL_MINOR) {
+    errors.items = "The invoice total is too large.";
   }
 
-  // 2. Validate Customer Phone
-  const customerPhone = rawCustomerPhone.trim();
-  if (!customerPhone) {
-    errors.customer_phone = "Customer phone number is required.";
-  }
-
-  // 3. Parse & Validate Items
-  let items: InvoiceItem[] = [];
-  try {
-    items = JSON.parse(rawItemsJson);
-  } catch {
-    errors.items = "Invalid items list format.";
-  }
-
-  if (!Array.isArray(items) || items.length === 0) {
-    errors.items = "Please add at least one item to the invoice.";
-  } else {
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (!item.description?.trim()) {
-        errors.items = `Item #${i + 1} is missing a description.`;
-        break;
-      }
-      if (!item.quantity || item.quantity <= 0) {
-        errors.items = `Item #${i + 1} must have a quantity of at least 1.`;
-        break;
-      }
-      if (item.unit_price_minor < 0) {
-        errors.items = `Item #${i + 1} cannot have a negative price.`;
-        break;
-      }
-    }
-  }
-
-  // 4. Calculate total_minor
-  let totalMinor = 0;
-  if (!errors.items && items.length > 0) {
-    totalMinor = items.reduce(
-      (sum, item) => sum + Math.round(item.quantity * item.unit_price_minor),
-      0
-    );
-  }
-
-  // 5. Due date validation
-  let dueDate: string | null = null;
-  if (rawDueDate.trim()) {
-    dueDate = rawDueDate.trim();
-  }
-
-  // 6. Payout method validation
-  let payoutMethodId: string | null = rawPayoutMethodId.trim() || null;
+  // 6. Payout method validation (must belong to this seller)
+  let payoutMethodId: string | null = parsed.data.payout_method_id;
   if (payoutMethodId) {
     const { data: userMethod } = await supabase
       .from("payout_methods")
@@ -185,10 +272,15 @@ export async function deleteInvoiceAction(
     return { success: false, message: "Authentication required." };
   }
 
+  const parsedId = uuidSchema.safeParse(invoiceId);
+  if (!parsedId.success) {
+    return { success: false, message: "Invoice not found." };
+  }
+
   const { error } = await supabase
     .from("invoices")
     .delete()
-    .eq("id", invoiceId)
+    .eq("id", parsedId.data)
     .eq("user_id", user.id);
 
   if (error) {
@@ -218,7 +310,13 @@ export async function updateInvoiceStatusAction(
     return { success: false, message: "Authentication required." };
   }
 
-  if (status !== "cancelled") {
+  const parsedId = uuidSchema.safeParse(invoiceId);
+  const parsedStatus = invoiceStatusSchema.safeParse(status);
+  if (!parsedId.success || !parsedStatus.success) {
+    return { success: false, message: "Invoice not found." };
+  }
+
+  if (parsedStatus.data !== "cancelled") {
     return {
       success: false,
       message: "Invoices become paid when you confirm a payment claim.",
@@ -228,7 +326,7 @@ export async function updateInvoiceStatusAction(
   const { data: updated, error } = await supabase
     .from("invoices")
     .update({ status: "cancelled" })
-    .eq("id", invoiceId)
+    .eq("id", parsedId.data)
     .eq("user_id", user.id)
     .eq("status", "unpaid")
     .select("id");

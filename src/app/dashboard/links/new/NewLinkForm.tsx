@@ -2,7 +2,6 @@
 
 import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import { useToast } from "@/components/ui/Toast";
 import type { PayoutMethodRecord } from "@/types/database";
@@ -27,8 +26,7 @@ function slugify(text: string): string {
 }
 
 export function NewLinkForm({ username, payoutMethods }: NewLinkFormProps) {
-  const router = useRouter();
-  const { success, error } = useToast();
+  const { error } = useToast();
 
   const [state, formAction, isPending] = useActionState<
     PaymentLinkActionResult | null,
@@ -55,14 +53,19 @@ export function NewLinkForm({ username, payoutMethods }: NewLinkFormProps) {
     }
   }, [title, username, isEditingSlug]);
 
+  // Success is a server redirect to /dashboard/links/created, so the form
+  // only ever gets errors back. Toast the general one as well as showing it
+  // inline next to the button.
   useEffect(() => {
-    if (state?.success && state.message) {
-      success(state.message);
-      router.push("/dashboard/links");
-    } else if (state?.errors?.general) {
+    if (state?.errors?.general) {
       error(state.errors.general);
     }
-  }, [state, success, router, error]);
+  }, [state, error]);
+
+  const formErrors = [state?.errors?.slug, state?.errors?.general].filter(
+    Boolean
+  ) as string[];
+  const noPayout = payoutMethods.length === 0;
 
   const quickAmounts = [500, 1000, 2000, 5000];
 
@@ -293,11 +296,32 @@ export function NewLinkForm({ username, payoutMethods }: NewLinkFormProps) {
         </div>
       </div>
 
+      {/* Why the link was not created (shown right above the button) */}
+      {formErrors.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-700"
+        >
+          <p className="font-bold">Your link was not created.</p>
+          {formErrors.map((msg) => (
+            <p key={msg} className="mt-1">
+              {msg}
+            </p>
+          ))}
+        </div>
+      )}
+      {noPayout && (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs font-medium text-amber-800">
+          Add a payout method (Till, Paybill, Pochi or phone) first. The
+          button below unlocks once you have one.
+        </p>
+      )}
+
       {/* Submit / Cancel Buttons */}
       <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row">
         <button
           type="submit"
-          disabled={isPending || payoutMethods.length === 0}
+          disabled={isPending || noPayout}
           className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-8 text-sm font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           {isPending ? (

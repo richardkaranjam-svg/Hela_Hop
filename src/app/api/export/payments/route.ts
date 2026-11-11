@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { escapeCsvCell } from "@/lib/csv";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
@@ -73,28 +74,14 @@ export async function GET() {
         ? `Link: ${pl.title}`
         : "Direct Payment";
 
-    // Escape CSV cell values. Payers type their own name, so a value starting
-    // with = + - @ (or a tab/CR) could run as a formula when opened in Excel.
-    // Prefix those with an apostrophe so they stay plain text.
-    const escapeCsv = (input: string) => {
-      let val = input;
-      if (/^[=+\-@\t\r]/.test(val)) {
-        val = `'${val}`;
-      }
-      if (/[",\r\n]/.test(val)) {
-        return `"${val.replace(/"/g, '""')}"`;
-      }
-      return val;
-    };
-
     return [
-      escapeCsv(date),
-      escapeCsv(c.payer_name),
-      escapeCsv(c.payer_phone),
-      escapeCsv(amount),
-      escapeCsv(c.mpesa_code),
-      escapeCsv(reference),
-      escapeCsv(receiptNum),
+      escapeCsvCell(date),
+      escapeCsvCell(c.payer_name),
+      escapeCsvCell(c.payer_phone),
+      escapeCsvCell(amount),
+      escapeCsvCell(c.mpesa_code),
+      escapeCsvCell(reference),
+      escapeCsvCell(receiptNum),
     ].join(",");
   });
 

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { LegalFooter } from "@/components/public/LegalFooter";
+
 export interface ReceiptDetails {
   receiptNumber: string;
   publicToken: string;
@@ -297,6 +299,7 @@ export function PublicReceiptClient({ receipt }: PublicReceiptClientProps) {
           </Link>{" "}
           — Kenya&apos;s Independent Lipa na M-PESA Hub
         </p>
+        <LegalFooter className="mt-1" />
       </footer>
     </div>
   );

@@ -1,12 +1,14 @@
 import Link from "next/link";
 
+import { LegalFooter } from "@/components/public/LegalFooter";
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col justify-between bg-slate-50 text-slate-900">
       {/* Top Header */}
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex min-h-[44px] items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-lg font-black text-white shadow-sm shadow-emerald-600/30">
               H
             </span>
@@ -118,6 +120,7 @@ export default function Home() {
         <p>
           Hela Hop Fintech &copy; {new Date().getFullYear()}. Built for Kenya.
         </p>
+        <LegalFooter className="mt-1" />
       </footer>
     </div>
   );
