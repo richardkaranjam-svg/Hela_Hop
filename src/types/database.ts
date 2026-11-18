@@ -21,6 +21,26 @@ export type AbuseTargetType = "link" | "invoice";
 
 export type AbuseReportStatus = "open" | "reviewed";
 
+export type InterviewSegment = "seller" | "supplier" | "student" | "freelancer";
+
+export type InterviewWouldTry = "yes" | "maybe" | "no";
+
+export type InterviewCurrentTool =
+  | "notebook"
+  | "excel"
+  | "whatsapp"
+  | "memory"
+  | "accounting_software"
+  | "other"
+  | "none";
+
+export type InterviewPriceReaction =
+  | "founding_yes"
+  | "would_pay"
+  | "too_expensive"
+  | "free_only"
+  | "unsure";
+
 export interface InvoiceItem {
   description: string;
   quantity: number;
@@ -525,6 +545,50 @@ export interface Database {
         };
         Relationships: [];
       };
+      interviews: {
+        Row: {
+          id: string;
+          interview_date: string;
+          person_name: string;
+          segment: InterviewSegment;
+          business_type: string | null;
+          pain_unprompted: boolean;
+          pain_points: string[];
+          exact_quote: string | null;
+          current_tool: InterviewCurrentTool | null;
+          monthly_orders: number | null;
+          credit_customers: boolean | null;
+          asked_for_etims: boolean | null;
+          price_reaction: InterviewPriceReaction | null;
+          would_try: InterviewWouldTry;
+          referral: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          interview_date: string;
+          person_name: string;
+          segment: InterviewSegment;
+          business_type?: string | null;
+          pain_unprompted?: boolean;
+          pain_points?: string[];
+          exact_quote?: string | null;
+          current_tool?: InterviewCurrentTool | null;
+          monthly_orders?: number | null;
+          credit_customers?: boolean | null;
+          asked_for_etims?: boolean | null;
+          price_reaction?: InterviewPriceReaction | null;
+          would_try: InterviewWouldTry;
+          referral?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["interviews"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -565,3 +629,4 @@ export type InvoiceRecord = Tables<"invoices">;
 export type PaymentClaimRecord = Tables<"payment_claims">;
 export type ReceiptRecord = Tables<"receipts">;
 export type AbuseReportRecord = Tables<"abuse_reports">;
+export type InterviewRecord = Tables<"interviews">;
