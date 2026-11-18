@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Document version** | v1.3 |
-| **Created** | 6 November 2026 (v1.1 same day; v1.2 on 7 November 2026; v1.3 on 9 November 2026; see Change History 0.5) |
+| **Document version** | v1.5 |
+| **Created** | 6 November 2026 (v1.1 same day; v1.2 on 7 November 2026; v1.3 on 9 November 2026; v1.4 on 10 November 2026; v1.5 on 18 November 2026; see Change History 0.5) |
 | **Plan start date** | Monday 9 November 2026 (Week 1) |
 | **Working time assumed** | 20–25 hours per week, founder working mostly solo |
 | **Owner** | Founder |
@@ -91,6 +91,8 @@
 | v1.1 | 6 Nov 2026 | Gap review. **Added:** competitors (1.9), hypotheses to test (1.10), stop/pivot rules (3.5), best/likely dates (4.10), partner questions 7–8, wind-down plan, consent for future scoring, data-hosting rules, excise duty + eTIMS, employment-contract check, seller disclaimer, Swahili, accessibility, Airtel Money/USSD, CRB, insurance, dormant accounts, 6 new risks (R19–R24), 4 new open questions (Q14–Q17). **Corrected (facts checked online 6 Nov 2026):** ODPC registration is mandatory for financial services regardless of size; added eTIMS, 15% excise duty and the Finance Act 2026 16% VAT on payment-service fees; company fee shown as a range; the KES 1,000 margin example now includes taxes; the tourist segment is weaker than first thought. | Founder + AI assistant |
 | v1.2 | 7 Nov 2026 | Progress review after the 8-screen wireframes were built (`wireframes/`). **Added:** hypothesis H7 (payers submit their M-PESA code); decisions D8–D12; open question Q18 (receipt/invoice wording and eTIMS). **Changed:** headline now leads with the Kenyan-seller pitch; saved billers/reminders and sandbox Demo Mode moved to *after Gate G1* so Phase 1 focuses on the core seller loop; Gate G1 and Weeks 6–7 updated to match; Week 2 wireframe task ticked. **Wireframes fixed:** a payer's code is now only a *claim* until the seller confirms (no "Verified" receipt before that); removed "verified" from seller identity and "official" from invoices; 10-character code validation; pinch-zoom re-enabled; tap targets ≥ 44px; random receipt links and masked phone numbers. Footer version corrected. | Founder + AI assistant |
 | v1.3 | 9 Nov 2026 | **Proposals only, nothing decided:** new Section 3.6 "Making Lite faster and easier" with ideas U1–U12 (payer doesn't have to come back, paste the whole SMS, seller pastes SMS in bulk, fast confirm screen, automatic confirmation via Daraja C2B for Till/Paybill sellers, optional SMS-forwarding helper, 3-icon how-it-works, short video, practice run, and STK Push as the long-term answer). **Added:** hypotheses H8–H9, interview follow-up questions (11.2), open questions Q19–Q21, risk R25. To be reviewed together before Week 9. | Founder + AI assistant |
+| v1.4 | 10 Nov 2026 | **Proposals only, nothing decided:** new Section 3.7 "Making Hela Hop fun, warm and personal" with ideas F1–F16 (personal "Hi [name]" greetings and notification messages, methali, ready-made customer messages, the "Hopi" mascot, signature animations, milestones with shareable WhatsApp Status cards, weekly and yearly summaries, seller shop looks with kitenge/kikoi-inspired patterns, thank-you notes, seasonal touches, Calm mode) and six guardrails (never celebrate a claim, serious moments stay serious, light on slow phones, trust first on payer pages, bilingual and respectful, privacy). **Added:** hypothesis H10, look-and-feel interview questions (11.2), risk R26, open questions Q22–Q23. To be reviewed with 3.6 before Week 9. | Founder + AI assistant |
+| v1.5 | 18 Nov 2026 | **Decided (D13):** new Section 3.8 "Hela Hop Business and the smart assistant": three plans (Free, Pro, and a new **Business** plan for suppliers that handle many orders and sell on credit to other businesses), Business features B1–B8 (organisations and staff roles, customer accounts, products, orders, invoice lines and part-payments, statements, credit notes and PO numbers, bank transfer), the smart assistant A1–A4 with per-plan limits, eTIMS options E1–E3, a proposed D11 wording change, and six guardrails (Golden Rule, claim is not a receipt, own data only, privacy, AI cost cap, honest tax wording). **Added:** hypotheses H11–H13, B2B and assistant interview questions (11.2), risks R27–R28, open questions Q24–Q28; competitor row for accounting and eTIMS software (1.9) and a competitor price check with proposed prices (Pro KES 200/month or KES 50/week, Business KES 1,500/month with a KES 999 founding offer). To be reviewed after the B2B interviews. | Founder + AI assistant |
 
 ---
 
@@ -192,6 +194,7 @@ Users already have ways to solve these problems. If Hela Hop is not clearly bett
 | **Freelancer payout services** (e.g. Wise, Payoneer, Grey, Chipper Cash; also IntaSend for Kenyan freelancers) | Trusted for cross-border payments | Not M-PESA-first for *collecting from Kenyan clients* | Phase 4–6 only; must be cheaper or simpler for a specific corridor |
 | **Spreadsheets, notebooks, WhatsApp chats** | Free and familiar | Messy, error-prone, no reminders | Make Lite **faster than a notebook**, or it fails |
 | **Digital lenders and M-Shwari/KCB M-PESA loans** | Instant credit | Can be costly; aggressive collections damage trust | Phase 7: tiny top-ups paid directly to billers, flat fee, ethical collections |
+| **Accounting, invoicing and eTIMS software** *(v1.5, for 3.8)*: Zoho Books, QuickBooks, Odoo, TallyPrime; Kenyan tools such as Odibooks, Risiti and Retaela | Full accounting, stock, eTIMS invoices; Odibooks already collects invoice payments through the seller's own Till/Paybill | Built for accountants and bookkeeping, not for chasing late payers; per-user prices add up; too heavy for a supplier who just wants to know who owes what | Business plan (3.8): cheaper than accounting software, focused on **getting paid** (debtors, statements, reminders, assistant), and **exports to** their accounting tool instead of replacing it |
 
 **Our wedge (the first thing we must win):** *informal sellers who want invoices, payment tracking and reminders that work with the M-PESA numbers they already have.*
 
@@ -212,6 +215,10 @@ Each hypothesis is a bet. If the evidence says "no", we change the plan (see the
 | **H7** *(v1.2)* | Payers will actually tap "I've paid" and submit their M-PESA code (Lite depends on this) | Beta usage: count invoices paid vs claims submitted; ask sellers how often they still chase payers | ≥ 40% of payments are claimed by the payer without the seller chasing | Week 14 |
 | **H8** *(v1.3, proposed)* | Busy sellers with a Till/Paybill would link it once so payments confirm themselves (idea U7, 3.6) | Interview follow-up (11.2); count beta sellers with a Till/Paybill | ≥ 50% of Till/Paybill sellers interviewed say yes | Week 14 |
 | **H9** *(v1.3, proposed)* | Pochi/phone sellers would allow a helper that forwards only their M-PESA SMS (idea U8, 3.6) | Interview follow-up (11.2) | ≥ 40% of Pochi/phone sellers interviewed say yes | Week 14 |
+| **H10** *(v1.4, proposed)* | Warm, personal touches (3.7) make sellers come back and share Hela Hop with others | Beta: weekly active sellers (with H2); share-card shares (F10); design-partner feedback | ≥ 30% of sellers who reach a milestone share the card, and ≥ 3 of 5 design partners say the app "feels like mine" | Week 14 |
+| **H11** *(v1.5, proposed)* | Suppliers who sell on credit to other businesses have a sharp pain tracking debtors and chasing late payments (H1, retested for this group) | 10 B2B interviews (11.2) | ≥ 6 of 10 describe this pain unprompted, and ≥ 4 track debtors in a notebook, Excel or WhatsApp today | Week 14 (before any Business build) |
+| **H12** *(v1.5, proposed)* | Sellers act on the assistant's recommendations (3.8 C) | Beta: Do it / Dismiss on each recommendation (A1, later A2) | ≥ 30% of recommendations are acted on, and ≥ 3 of 5 design partners say it saved them time | Week 14 (A1); Week 20 (A2) |
+| **H13** *(v1.5, proposed)* | Businesses will pay for the Business plan, mainly for statements, debtor chasing and eTIMS | B2B interviews (question 6) + 3 pre-sales or letters of intent | ≥ 3 businesses agree to pay ≥ KES 1,500 a month (founding offer KES 999 counts if they commit to 12 months) | Week 18 |
 
 > If **H4 fails**, the cross-border promise needs a different route (e.g. a specialised cross-border partner, or serving Kenyans abroad first). Update Section 1.2 honestly.
 
@@ -379,6 +386,184 @@ Persistence is good; stubbornness is expensive. At these checkpoints we decide h
 4. **Later, as planned:** U12.
 
 **To test in interviews and beta:** add the follow-up questions in 11.2 and hypotheses H8 and H9 (1.10).
+
+### 3.7 Making Hela Hop fun, warm and personal *(added in v1.4, PROPOSED, not decided)*
+
+> **Status: for review.** Nothing here is approved or scheduled yet. Review together with 3.6, move accepted ideas into the Decision Log (15.1) and the timeline, and do **not** build any of them before Gate G1 unless explicitly approved.
+
+**The problem.** Lite works, but it looks and feels like a plain form. Sellers open apps that make them feel good and seen; a plain tool gets forgotten after the first week (which would fail H2). Delight is also free marketing: people show their friends things that make them smile.
+
+**The catch.** Hela Hop is about money. A payer who is unsure whether they are being scammed does not want jokes, and a cheap phone does not want heavy animations. So the fun must be **warm, small and earned**, never silly at serious moments.
+
+#### Guardrails (these do not change)
+
+1. **Never celebrate a claim (D9).** Big celebrations happen only when the **seller confirms** a payment. A payer who submits a code gets a calm "Sent to the seller" screen, never confetti.
+2. **Serious moments stay serious.** No jokes, mascot or animation on errors, rejected claims, abuse reports, disputes, or account deletion.
+3. **Light on slow phones.** CSS-only animations (no animation libraries), at most about 15 KB extra per page, the 200 KB page limit still applies. Respect the phone's "reduce motion" setting and the browser's data-saver signal automatically.
+4. **Payer pages: trust first.** Hela Hop's own fun lives mostly in the **seller's dashboard**. Payer pages only show the **seller's** personal touches (section D), not Hela Hop jokes.
+5. **Respectful, bilingual words.** Every message in English and Swahili, checked by a native speaker. No stereotypes, no fake urgency, no guilt, nothing that feels like gambling.
+6. **Privacy.** Messages use only the seller's own first name. Share cards hide amounts unless the seller turns them on. Non-essential notifications are opt-in, at most one a day, with one-tap "stop".
+
+#### A. Personal, warm words
+
+| ID | Idea | What the user sees | Effort |
+|---|---|---|---|
+| **F1** | **"Hi Wanjiru 👋" greetings** | Dashboard greets the seller by first name, by time of day and in their language: *"Habari za asubuhi, Wanjiru"* / *"Good evening, Wanjiru"*. A second line says what matters now: *"2 payments are waiting for you"* or *"Quiet day so far. Share your link on WhatsApp Status?"* Falls back to the username if no name is set. | S |
+| **F2** | **Personal notification messages** (email now; WhatsApp/SMS later when the budget allows) | Every message starts with the seller's name and says exactly what to do. Examples: *"Hi Wanjiru, Brian says he paid you KES 1,500 for 'Leather tote'. Check your M-PESA SMS, then tap Confirm."* · *"Hi Wanjiru, your first Hela Hop payment is confirmed! 🎉"* · *"Hi Wanjiru, the invoice for Brian is 3 days overdue. Here is a polite reminder you can send him."* | S |
+| **F3** | **Methali at the right moment** | A Swahili proverb, with its meaning, on milestone screens: *"Haba na haba hujaza kibaba"* (little by little fills the measure) after a small payment; *"Polepole ndio mwendo"* (slowly is the way) on a quiet week. A short, curated list, checked by a native speaker. | S |
+| **F4** | **Ready-made customer messages** | One tap opens WhatsApp with a polite, personal message the seller can edit: payment request, gentle reminder, thank you. Uses the customer's name from the invoice: *"Hi Brian, thank you for your order! You can pay here: ..."*. English, Swahili, or a light Sheng option. | S |
+
+#### B. Small moments of delight (animations)
+
+| ID | Idea | What the user sees | Effort |
+|---|---|---|---|
+| **F5** | **"Hopi", the Hela Hop mascot** | A small green coin with legs that hops (Hela = money, Hop = hop). One tiny SVG. Appears on empty screens (*"No payments yet. Hopi is ready when you are!"*), on "link created", on the 404 page and while loading. Never on money errors. | S |
+| **F6** | **Signature animations** | **Link created:** the tick draws itself and Hopi hops onto the new link card. **Seller confirms a payment (the big one):** a coin drops into a *kiondo* (woven basket) and a "PAID" stamp lands on the receipt. **Copy:** the button squishes and says *"Imenakiliwa!"*. **Payer sends a claim:** a calm paper plane flies to *"Sent to Mama Shiro. She will confirm soon."* **Dashboard numbers** count up (KES 0 to 12,400). | M |
+| **F7** | **Optional "cha-ching" sound** | A soft sound when a payment is confirmed. **Off by default**, never on payer pages. | S |
+| **F8** | **Confetti, but rare** | Only for milestones (F9), once each, in kitenge-inspired colours. | S |
+
+#### C. Milestones and progress (celebrate, never pressure)
+
+| ID | Idea | What the user sees | Effort |
+|---|---|---|---|
+| **F9** | **"Hatua" milestones** | First link · first confirmed payment · 10 paying customers · KES 10,000 confirmed · 50 customers · 1 year on Hela Hop. Each gets an animation, a methali (F3) and a share card (F10). Counts only **seller-confirmed** payments. | M |
+| **F10** | **Share cards for WhatsApp Status and Instagram** | A good-looking image: *"Mama Shiro Thrift just got her 50th happy customer 🎉"* plus her payment-link QR. Amounts hidden by default. **Why this matters most:** every share advertises the seller's shop **and** Hela Hop, for free (Section 11). | M |
+| **F11** | **"Wiki Yako" weekly card and "Mwaka Wako" year in review** | Sunday card: customers who paid, busiest day, top item, returning customers. Every December a short, shareable "year in review" story. In-app first; by email only if opted in. | M |
+
+**Deliberately not doing:** daily streaks, leaderboards between sellers, points or rewards for payment volume. They pressure people, can push risky behaviour, and start to look like the credit scoring we promised not to do without consent (Privacy Policy, Section 1.3).
+
+#### D. Let sellers make it theirs (customisation)
+
+| ID | Idea | What the user sees | Effort |
+|---|---|---|---|
+| **F12** | **Shop look** | The seller picks a colour and one of 4 to 6 light patterns inspired by kitenge, kikoi, Maasai shuka and kiondo weave (drawn in CSS, no image files), plus an emoji or initials badge. Applied to their payment page, invoices and receipts. Logo upload later (storage costs money). | M |
+| **F13** | **Personal thank-you note** | Shown to the payer after they send a claim and printed on the receipt: *"Asante sana Brian! Karibu tena. Mama Shiro"*. Optional "Open hours" and "Delivery info" lines. The single most personal touch for payers. | S |
+| **F14** | **Greeting style for customers** | The seller chooses how their pages talk: formal, friendly, or light Sheng; and the default language. | S |
+| **F15** | **Seasonal touches** | A small banner and ready-made link templates for Jamhuri Day, Christmas, Eid, Diwali, back-to-school and Black Friday (*"Christmas offer"*). The seller can turn them off. | S |
+
+#### E. Comfort settings
+
+| ID | Idea | What the user sees | Effort |
+|---|---|---|---|
+| **F16** | **Calm mode** | One switch in Settings turns off every animation, sound and decoration. Switches on by itself when the phone asks for reduced motion or data saving. | S |
+
+#### Proposed order (to confirm at review)
+
+1. **Beta polish (Weeks 9 to 10, small and safe):** F1 greetings, F2 personal emails, F5 Hopi on empty screens, F6 link-created and payment-confirmed animations, F13 thank-you note, F16 calm mode.
+2. **During beta (Weeks 10 to 14):** F9 milestones with F10 share cards (measure shares), F4 ready-made messages, F3 methali, F12 shop look.
+3. **Later (Phase 2 onward):** F11 weekly and yearly cards, F7 sound, F14 greeting style, F15 seasonal touches.
+
+**To test:** hypothesis H10 (1.10), the follow-up questions in 11.2, risk R26, and open questions Q22 to Q23.
+
+### 3.8 Hela Hop Business and the smart assistant *(added in v1.5, DECIDED: D13)*
+
+> **Status: decided (D13, 18 Nov 2026).** We **will** build Hela Hop Business and the smart assistant. The B2B interviews (11.2) and hypotheses H11–H13 no longer decide *whether*; they decide **what comes first, the prices, and the timing**. It does **not** replace Lite or change the beta, and the guardrails below still apply. Nothing beyond B1 and A1 is built before Gate G1 unless explicitly approved.
+
+**The idea in one line.** Keep **Free** and **Pro** for everyday sellers (mama mboga, Instagram and WhatsApp sellers, market stalls) and add a third plan, **Business**, for suppliers that handle many orders and sell on credit to other businesses. All three plans get a **smart assistant** that reads the seller's own data and recommends what to do next (who to chase, who pays late, what is selling), with tight limits on the cheaper plans.
+
+**Why a third plan instead of going fully B2B.**
+- The wedge stays the same (1.9): everyday sellers, Lite, the 4 Jan beta and hypotheses H2/H3 are untouched.
+- Businesses that sell on credit feel the "who hasn't paid?" pain **more sharply** (bigger amounts, 30-day terms, many customers) and can pay more than KES 150–300 a month.
+- It adds a revenue line during Phases 2–3, before wallet fees exist (Section 10).
+
+**Who Business is for (realistic, not giant companies).** Wholesalers, distributors, contractors, and suppliers to shops, hotels, schools and offices, with roughly **50 to 1,000 orders a month**. Very large companies already run ERP systems (SAP, Odoo and similar) with eTIMS built in, and expect contracts, uptime guarantees and security reviews that a solo founder cannot give yet. Revisit them after the wallet phases. **Name:** "Business" (not "Biashara", which is too close to Safaricom's *Pochi la Biashara*).
+
+#### Guardrails (these do not change)
+
+1. **The Golden Rule still holds (2.2, D2).** Business does not touch money. Payers still pay the seller directly.
+2. **A claim is not a receipt (D9).** The assistant **never** confirms a payment, marks an invoice paid, or issues an invoice by itself. It recommends; the seller acts.
+3. **The assistant sees only the seller's own data.** It reads through the same row-level security as the dashboard (the seller's own login), never with the admin/service key.
+4. **Privacy first.** Phone numbers and KRA PINs are masked before anything is sent to an AI provider. The AI provider is listed in the Privacy Policy as a data processor, with a data processing agreement (Q16, Q27). No customer data is used to train anyone's model.
+5. **Costs stay inside the price.** AI costs per user must stay under about **10% of what that user pays** (about KES 15–30 a month on Pro). Hard monthly limits, enforced in the database, not in the app screen.
+6. **Plain, honest tax wording (D11).** Never call anything an "eTIMS invoice" or "tax invoice" unless it carries a KRA-issued invoice number.
+
+#### A. The three plans
+
+| | **Free** | **Pro** (KES 200 / month or KES 50 / week, Q5) | **Business** (KES 1,500 / month, 3 staff included, Q24) |
+|---|---|---|---|
+| **For** | Trying Hela Hop; very small sellers | Everyday sellers: mama mboga, online and market sellers | Suppliers and distributors selling to other businesses on credit |
+| Payment links, invoices, claims, receipts | ✓ (monthly cap) | Unlimited | Unlimited |
+| Branded page, custom link name, SMS reminders, monthly report | | ✓ | ✓ |
+| Saved customers | ✓ (simple) | ✓ | ✓ full customer accounts (B2) |
+| Orders, products, line items with VAT, statements | | | ✓ (B3–B6) |
+| Part-payments, credit notes, purchase-order numbers | | | ✓ (B5, B7) |
+| eTIMS | | Paste your own KRA invoice number (Option E1) | E1 now; one-click through an approved integrator later (E2) |
+| Staff accounts and roles | | | ✓ (B1) |
+| Smart assistant | Simple tips only (A1, no AI) | Weekly digest + about 15 questions a month (A2–A3) | Daily digest + fair-use questions (A2–A4) |
+| Export | CSV | CSV | CSV + PDF statements; API later |
+
+All prices and limits are **stored in the database, not hard-coded** (Week 11 task, 4.5), so they can be changed after testing.
+
+**Competitors and why these prices** *(prices from vendor websites, checked online 18 Nov 2026; confirm before relying on them)*:
+
+| Tool | What it is | Price seen |
+|---|---|---|
+| Zoho Books | Cloud accounting with a Kenya edition | Free plan for micro businesses; paid plans about KES 999–2,999 / month per organisation |
+| QuickBooks Online | Cloud accounting | About US$38–75 / month (KES ~5,000–10,000) |
+| Odoo | Full ERP (accounting, stock, sales) | About US$24–31 per **user** / month (KES ~3,100+ per user) |
+| TallyPrime eTIMS Starter | Accounting + stock + eTIMS | About KES 2,940 / month, paid yearly |
+| Risiti | eTIMS invoicing for Kenyan businesses | KES 1,500–3,500 / month |
+| Retaela | Business management with eTIMS help | From about KES 2,800 / month |
+| Odibooks | Kenyan SME accounting; collects invoice payments via the seller's own Till/Paybill (closest to us) | Not published; check |
+
+**What this tells us.** Kenyan SMEs already pay about **KES 1,000–3,500 a month** for invoicing and accounting. Hela Hop Business does less (no full accounting, eTIMS only by linking at first) but does the one thing they do badly: **chasing who owes you**. So we price **below** them and position as the add-on that works next to their accounting tool, not a replacement.
+
+**Proposed prices:**
+- **Free:** stays free (Zoho also has a free plan, so we must too).
+- **Pro: KES 200 a month, or KES 50 a week** paid by M-PESA. Small weekly payments suit sellers whose income comes in daily. First month free.
+- **Business: KES 1,500 a month** for the organisation, **3 staff included**, KES 300 per extra staff member. Yearly: **KES 15,000** (two months free).
+- **Founding offer:** the first 20 Business customers pay **KES 999 a month, locked for 12 months**, in exchange for feedback calls (they are the Business design partners).
+- **Later add-on:** one-click eTIMS (E2) at about **+KES 1,000 a month** once it exists, which keeps Business plus eTIMS (KES 2,500) at the low end of Risiti/Tally/Retaela while adding debt chasing.
+- **The pitch:** *"Costs less than one late invoice a month."*
+
+**AI cost check (guardrail 5):** Pro at KES 200 leaves about KES 20 a month for AI (weekly digest + about 15 questions on a small model). Business at KES 1,500 leaves about KES 150 a month, so "fair use" becomes **about 200 questions a month** plus the daily digest.
+
+#### B. What Business adds (product and data model)
+
+| ID | Idea | What it means | Effort |
+|---|---|---|---|
+| **B1** | **Organisations and staff roles** | A business account with several people: Owner, Accountant, Sales. Every record belongs to an **organisation**, not one person. Free/Pro users get a one-person organisation automatically. **Suggested before the beta** (small now, painful after real data exists). | M |
+| **B2** | **Customer accounts** | Company name, contact person, phone, email, KRA PIN, payment terms (e.g. 30 days), credit limit. Invoices point to a customer instead of a typed name. | M |
+| **B3** | **Products** | Name, price, unit, tax type (16% VAT / zero-rated / exempt) and KRA item classification code (needed for eTIMS). | S |
+| **B4** | **Orders** | Order received → packed → delivered → invoiced → paid. One tap turns an order into an invoice. This is what "manage many orders" means; **stock counting is parked** (a different product). | M |
+| **B5** | **Invoice lines and part-payments** | Invoices get proper line items with tax (replacing today's simple items list). Several confirmed payments can settle one invoice ("Part paid: KES 40,000 of 84,000"). | M |
+| **B6** | **Customer statements** | "Everything Acme Ltd owes you", with ageing (0–30, 31–60, 60+ days), as a PDF and a private link. | M |
+| **B7** | **Credit notes and PO numbers** | Issued invoices are never edited or deleted, only reversed with a credit note (eTIMS works the same way). The buyer's purchase-order number is printed on the invoice. | S |
+| **B8** | **Bank transfer as a payment method** | Businesses often pay by bank. Shown next to Paybill/Till; still a claim the seller confirms. | S |
+
+#### C. The smart assistant
+
+The assistant is a set of **read-only tools** over the seller's data (for example: overdue invoices, a customer's payment history, sales by week, unconfirmed claims, top products). Simple rules find the facts; the AI writes them in plain, friendly words and answers questions.
+
+| ID | Idea | What the seller sees | Plans | Effort |
+|---|---|---|---|---|
+| **A1** | **Simple tips (no AI)** | Short rule-based cards on the dashboard: *"3 invoices are overdue"* · *"2 claims are waiting more than 2 days"* · *"You haven't shared your link this week"*. Costs nothing to run. | All | S |
+| **A2** | **The digest** | *"Acme owes KES 84,000, now 12 days late. Here is a polite reminder you can send."* · *"Kamau Stores has paid late 3 times. Ask for payment upfront next time?"* · *"Sales are down 20% this month, mostly from 2 customers."* Each recommendation has **Do it / Dismiss** (measured for H12). Weekly on Pro, daily on Business. | Pro, Business | M |
+| **A3** | **Ask a question** | *"Who hasn't paid this month?"* · *"Ni nani hajalipa wiki hii?"* Answers in English, Swahili or light Sheng, with links to the records it used. | Pro (≈15/month), Business (fair use) | M |
+| **A4** | **Business extras** | Digest per branch or salesperson; order trends; customers close to their credit limit; draft statement messages. | Business | M |
+
+**How it is built (sketch):** a `recommendations` table (new / done / dismissed); an `assistant_usage` table that enforces the monthly limits; a scheduled job for the digests; a `/dashboard/assistant` page. A small, low-cost AI model for Pro and a stronger one for Business; provider chosen at build time (Q27). Every recommendation links to its source records, so the seller can check it.
+
+#### D. eTIMS (KRA electronic tax invoices)
+
+**Why it matters for Business.** Since the Finance Act 2023, a business can deduct an expense only if it is backed by an eTIMS invoice (from 1 January 2024, including invoices from suppliers who are **not** VAT-registered). Business customers will ask suppliers for eTIMS invoices, so a plain Hela Hop invoice is not enough for them. *(Facts checked online 18 Nov 2026 on KRA's public notices and eTIMS pages. Sources disagree on 2025–2026 changes, including reported new minimum penalties; confirm the current rules with an accountant, Q25.)*
+
+| ID | Option | How it works | Effort | When |
+|---|---|---|---|---|
+| **E1** | **Link the seller's own eTIMS invoice** | The seller issues the eTIMS invoice themselves (eTIMS Lite on the web or USSD) and pastes the KRA invoice number into Hela Hop. It shows on the invoice, statement and receipt. Hela Hop still only tracks and chases payment. | S | First (Pro and Business) |
+| **E2** | **Partner with a KRA-approved eTIMS integrator** | Hela Hop sends the invoice data to the integrator's API; they sign it with KRA (online "OSCU" route) and return the KRA invoice number and QR code. One tap for the seller. Costs per invoice; needs a contract and secure storage of each seller's eTIMS setup. | M | After Business has paying customers |
+| **E3** | **Become an integrator ourselves** | Direct system-to-system connection to KRA. KRA asks integrators for incorporation documents (CR12), tax compliance certificates, **at least three qualified technical staff**, a notarised non-insolvency declaration and a technical architecture document. | L | **Not realistic now.** Revisit with a team. |
+
+**Proposed wording change to D11 (needs Q25 first):** *"A Hela Hop invoice is called an eTIMS invoice only when it carries a KRA-issued invoice number (E1 or E2). Otherwise it stays a plain 'Invoice'."*
+
+#### Proposed order (to confirm at review)
+
+1. **Now (Weeks 2 to 8, no new features):** rewrite and run the B2B interview questions (11.2) alongside the existing interviews. Optional: B1 organisations, before real data exists.
+2. **Beta (Weeks 9 to 14):** A1 simple tips for everyone. Pro launches as planned (Week 11), with the assistant limits stored in the database.
+3. **After Gate G2** (interview results decide which features come first): Business build (B2–B8 + E1), then A2–A3 on Pro and A2–A4 on Business. ⚠️ This competes with Phase 3 (Wallet Engine, Weeks 15 to 20) for the same 20–25 hours a week: decide which comes first at G2 (Q28).
+4. **Later:** E2 eTIMS integrator; API for Business; stock counting stays parked.
+
+**To test:** hypotheses H11 to H13 (1.10), the B2B interview questions in 11.2, risks R27 to R28, and open questions Q24 to Q28.
 
 ---
 
@@ -1121,6 +1306,18 @@ If monthly costs are ~KES 100,000 (hosting, tools, SMS, accounting, a small foun
 - **Sellers:** "How long does it take you to check who paid each day?" · "If you could link your Till/Paybill once so payments confirm themselves, would you?" (H8) · *(Pochi/phone sellers)* "Would you allow a helper that forwards only your M-PESA messages to Hela Hop?" (H9)
 - **Payers (if you can watch one):** "Which step was annoying?" · Time how long the payment takes from opening the link to done.
 
+**Follow-up questions about look and feel** *(added in v1.4, for the ideas in 3.7)*:
+- **Sellers:** "Which app on your phone do you enjoy opening, and why?" · "Would you post a 'my 50th happy customer' card on your WhatsApp Status?" (F10, H10) · "What would you write to customers as a thank-you note?" (F13) · Show the plain screen and an animated one: "Which feels more trustworthy for money?"
+- **Payers:** "Would jokes or animations on a payment page make you trust it more or less?"
+
+**B2B interview questions** *(added in v1.5, for 3.8; ask suppliers, wholesalers and distributors)*:
+- "How many orders do you handle in a month? How many customers buy on credit?" · "Walk me through the last time a customer paid late. What did you do?" (H11)
+- "How do you know who owes you, and how much, right now? Show me." · "How do you send statements?"
+- "How many of your customers ask for an eTIMS invoice? How do you issue them today?" (E1, E2)
+- "If an assistant told you every morning who to chase and drafted the message, would you use it? What would it be worth per month?" (H12, H13) · "Who else in your business would need to log in?" (B1)
+
+**Assistant questions for everyday sellers** *(added in v1.5)*: "Would a weekly message like 'Brian owes you KES 1,500, here is a reminder' help, or annoy you?" · "Would you ask the app questions in Swahili or English?" (A2, A3, H12)
+
 ### 11.3 Beta onboarding
 
 - Set up the first 10 users **personally** (call or visit; set up their link together).
@@ -1203,6 +1400,9 @@ Likelihood (L) and Impact (I): **H**igh / **M**edium / **L**ow. Review monthly.
 | R23 *(v1.1)* | **Data-protection breach of rules** (no ODPC registration, data abroad without basis, no scoring consent) | M | H | ODPC Week 12; consent from day one; hosting choice documented | Partner/ODPC questions |
 | R24 *(v1.1)* | **Scammers use Hela Hop links** to look trustworthy | M | M | Seller disclaimer; report-abuse button; fast takedown; KYC before wallets | Abuse reports |
 | R25 *(v1.3, if 3.6 ideas are adopted)* | **Automatic matching goes wrong** (an M-PESA SMS format change, a wrong match, or a leak of forwarded SMS data) | M | H | Match only on code + amount; no match means "needs the seller", never "paid"; store the minimum; consent and Privacy Policy before U5/U8; prefer Safaricom callbacks (U7) over SMS | Sellers reporting wrong "Paid" statuses; parsing failures in logs |
+| R26 *(v1.4, if 3.7 ideas are adopted)* | **Fun backfires:** the app feels childish or less trustworthy for money, slows cheap phones, or celebrates the wrong thing (a claim instead of a confirmed payment) | L | M | Guardrails in 3.7; celebrate only seller-confirmed payments; CSS-only animations within the 200 KB page limit; Calm mode (F16); test with design partners first | Sellers switching on Calm mode; feedback like "not serious"; pages over 200 KB |
+| R27 *(v1.5, if 3.8 is adopted)* | **The assistant goes wrong:** gives wrong advice (wrong amount or customer), leaks customer data to an AI provider, or AI costs exceed what the plan earns | M | H | Rules find the facts, AI only words them; every recommendation links to its source records; read-only, own-data access through row-level security; mask phones and KRA PINs; data processing agreement; hard monthly limits in the database | Sellers reporting wrong recommendations; AI cost per user above 10% of plan price |
+| R28 *(v1.5, if 3.8 is adopted)* | **Business pulls focus or overpromises on tax:** the Business build delays the wallet phases, or sellers believe Hela Hop makes them "KRA compliant" when it does not | M | H | Let interviews (H11) decide which Business features come first; decide Business vs Phase 3 order at Gate G2 (Q28); never say "eTIMS" or "tax invoice" without a KRA invoice number (D11 change, once Q25 confirms the wording); accountant review of wording (Q25) | Phase 3 dates slipping; sellers or customers asking "is this a KRA invoice?" |
 
 ---
 
@@ -1262,6 +1462,7 @@ Likelihood (L) and Impact (I): **H**igh / **M**edium / **L**ow. Review monthly.
 | D10 | 7 Nov 2026 | Public receipt/invoice links use **long random tokens**, never sequential numbers; payer phone numbers are masked on public pages | Prevents guessing other people's receipts (privacy, Data Protection Act) |
 | D11 | 7 Nov 2026 | Lite invoices are plain "Invoice", **not** "official invoice" (they are not KRA eTIMS invoices) | Avoid implying tax-invoice status; see Q18 |
 | D12 | 7 Nov 2026 | Saved billers/reminders and sandbox Demo Mode move to **after Gate G1**; Google sign-in stays in Week 10 | Phase 1 was too big for 20–25 hrs/week; protect the core seller loop |
+| D13 | 18 Nov 2026 | **We will build Hela Hop Business and the smart assistant (3.8).** Three plans: Free, Pro, Business. The assistant only recommends; it never confirms payments or issues invoices. eTIMS starts with E1 (link the seller's own KRA invoice number). Prices in 3.8 are the starting point, to be confirmed with users (Q24) | Founder's commitment: suppliers selling on credit feel the "who owes me?" pain most and can pay more; adds revenue before wallet fees |
 
 ### 15.2 Open questions
 
@@ -1288,6 +1489,13 @@ Likelihood (L) and Impact (I): **H**igh / **M**edium / **L**ow. Review monthly.
 | Q19 *(v1.3)* | Idea U7 (3.6): can Hela Hop receive Daraja C2B payment callbacks for a **seller's own** Till/Paybill without needing a licence or changing who "handles" the money? What must the seller agree to, and what must the Privacy Policy say? ⚖️ | Before building U7 | Lawyer |
 | Q20 *(v1.3)* | Idea U8 (3.6): is an SMS-forwarding helper allowed (Google Play SMS policy) and acceptable under the Data Protection Act (consent, minimum data, retention)? ⚖️ | Before building U8 | Founder + lawyer |
 | Q21 *(v1.3)* | Which ideas from 3.6 (U1–U12) do we accept, and when? | Joint review, before Week 9 | Founder |
+| Q22 *(v1.4)* | Which ideas from 3.7 (F1–F16) do we accept, and when? | Joint review with Q21, before Week 9 | Founder |
+| Q23 *(v1.4)* | Mascot name and look ("Hopi"?), and who checks the Swahili, Sheng and methali wording (a native speaker, ideally a design-partner seller)? | Before building F3, F5 | Founder |
+| Q24 *(v1.5)* | Confirm prices with users: Pro KES 200/month or KES 50/week; Business KES 1,500/month with 3 staff (KES 999 founding offer); eTIMS add-on about KES 1,000. Is weekly payment wanted? | After B2B interviews | Founder + users |
+| Q25 *(v1.5)* | Current eTIMS rules (2025–2026 changes, penalties): is E1 (pasting the seller's KRA invoice number) safe wording, and what must the invoice and statement say? ⚖️ | Before building E1 | Accountant + lawyer |
+| Q26 *(v1.5)* | Which KRA-approved eTIMS integrator for E2: per-invoice cost, API quality, contract terms? | After Business has paying customers | Founder |
+| Q27 *(v1.5)* | Which AI provider and models for the assistant; where is the data processed, and what does the data processing agreement and Privacy Policy need to say? ⚖️ | Before building A2 | Founder + lawyer |
+| Q28 *(v1.5)* | Which comes first after Gate G2: the Business build (3.8) or Phase 3 Wallet Engine? | Gate G2 (Week 14) | Founder |
 
 ---
 
