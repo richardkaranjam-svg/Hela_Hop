@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import type { ClaimStatus } from "@/types/database";
 
+import { matchClaimsToSms, type SmsMatchResult } from "@/lib/mpesa-sms";
+
 import { confirmPaymentClaimAction, rejectPaymentClaimAction } from "./actions";
 
 export interface ClaimItem {
@@ -79,6 +81,57 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
     });
   };
 
+  const [smsText, setSmsText] = useState("");
+  const [smsResult, setSmsResult] = useState<SmsMatchResult | null>(null);
+
+  const handleMatchSms = () => {
+    setSmsResult(
+      matchClaimsToSms(
+        smsText,
+        claims.filter((c) => c.status === "pending")
+      )
+    );
+  };
+
+  const handleConfirmAllMatched = () => {
+    if (!smsResult) return;
+    const toConfirm = smsResult.matched.map((m) => m.claim.id);
+    setActionId("bulk");
+    startTransition(async () => {
+      let done = 0;
+      for (const id of toConfirm) {
+        const res = await confirmPaymentClaimAction(id);
+        if (res.success) {
+          done++;
+          setClaims((prev) =>
+            prev.map((c) =>
+              c.id === id
+                ? {
+                    ...c,
+                    status: "confirmed",
+                    receipt: res.receiptToken
+                      ? {
+                          public_token: res.receiptToken,
+                          receipt_number: res.receiptNumber ?? "Receipt",
+                        }
+                      : c.receipt,
+                  }
+                : c
+            )
+          );
+        }
+      }
+      if (done === toConfirm.length) {
+        success(`${done} payment(s) confirmed. Receipts created.`);
+      } else {
+        error(`Confirmed ${done} of ${toConfirm.length}. Refresh and retry.`);
+      }
+      setSmsResult(null);
+      setSmsText("");
+      setActionId(null);
+    });
+  };
+
   const handleReject = (claim: ClaimItem) => {
     const reason = window.prompt(
       "Reason for rejection (e.g. Code does not match M-PESA SMS):",
@@ -138,10 +191,98 @@ export function ClaimsClient({ initialClaims }: ClaimsClientProps) {
           Payment Claims
         </h1>
         <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-          Review customer M-PESA codes against your own M-PESA SMS before
-          confirming.
+          Paste your M-PESA messages and we match them to waiting claims, or
+          check each code against your own SMS yourself.
         </p>
       </div>
+
+      {/* Paste M-PESA messages: match by code + amount, seller still confirms */}
+      {claims.some((c) => c.status === "pending") && (
+        <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <label
+            htmlFor="sms-paste"
+            className="block text-xs font-bold text-slate-700"
+          >
+            Paste your M-PESA messages
+          </label>
+          <textarea
+            id="sms-paste"
+            rows={4}
+            value={smsText}
+            onChange={(e) => {
+              setSmsText(e.target.value);
+              setSmsResult(null);
+            }}
+            placeholder="Paste one or many M-PESA messages here. They are read in your browser and not saved."
+            className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+          />
+          <button
+            type="button"
+            onClick={handleMatchSms}
+            disabled={!smsText.trim()}
+            className="min-h-[44px] rounded-xl bg-slate-900 px-5 text-xs font-bold text-white disabled:opacity-40"
+          >
+            Match to claims
+          </button>
+
+          {smsResult && (
+            <div className="space-y-2 text-xs">
+              {smsResult.messagesRead === 0 && (
+                <p className="text-red-600">
+                  No M-PESA messages found. Paste the full message, starting
+                  with the code and &ldquo;Confirmed&rdquo;.
+                </p>
+              )}
+              {smsResult.matched.length > 0 && (
+                <div className="space-y-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                  <p className="font-bold text-emerald-900">
+                    {smsResult.matched.length} match (code and amount agree)
+                  </p>
+                  {smsResult.matched.map(({ claim }) => (
+                    <p key={claim.id} className="font-mono text-emerald-900">
+                      {claim.mpesa_code} · KES{" "}
+                      {(claim.amount_minor / 100).toLocaleString()}
+                    </p>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleConfirmAllMatched}
+                    disabled={isPending}
+                    className="min-h-[44px] rounded-xl bg-emerald-600 px-5 font-bold text-white disabled:opacity-50"
+                  >
+                    {isPending && actionId === "bulk"
+                      ? "Confirming..."
+                      : `Confirm ${smsResult.matched.length}`}
+                  </button>
+                </div>
+              )}
+              {smsResult.amountMismatch.length > 0 && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-red-800">
+                  <p className="font-bold">Code found but amount differs:</p>
+                  {smsResult.amountMismatch.map(({ claim, sms }) => (
+                    <p key={claim.id} className="font-mono">
+                      {claim.mpesa_code}: claim KES{" "}
+                      {(claim.amount_minor / 100).toLocaleString()}, message{" "}
+                      {sms.amountMinor == null
+                        ? "unreadable"
+                        : `KES ${(sms.amountMinor / 100).toLocaleString()}`}
+                    </p>
+                  ))}
+                </div>
+              )}
+              {smsResult.messagesRead > 0 &&
+                smsResult.notFound.length > 0 && (
+                  <p className="text-slate-500">
+                    Not in your messages ({smsResult.notFound.length}):{" "}
+                    <span className="font-mono">
+                      {smsResult.notFound.map((c) => c.mpesa_code).join(", ")}
+                    </span>
+                  </p>
+                )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200 pb-2">
