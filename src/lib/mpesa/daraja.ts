@@ -42,7 +42,8 @@ export async function stkPush({
   const token = await getDarajaAccessToken();
   const shortcode = process.env.DARAJA_SHORTCODE!;
   const passkey = process.env.DARAJA_PASSKEY!;
-  const timestamp = new Date()
+  // Daraja expects YYYYMMDDHHmmss in Kenyan time (EAT, UTC+3, no DST).
+  const timestamp = new Date(Date.now() + 3 * 60 * 60 * 1000)
     .toISOString()
     .replace(/[^0-9]/g, "")
     .slice(0, 14);

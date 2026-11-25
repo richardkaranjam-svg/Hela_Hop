@@ -1,5 +1,5 @@
-import { listInterviews } from "./actions";
-import InterviewsClient from "./InterviewsClient";
+import { listInterviews } from "@/features/interviews/actions";
+import InterviewsClient from "@/features/interviews/InterviewsClient";
 
 export const dynamic = "force-dynamic";
 

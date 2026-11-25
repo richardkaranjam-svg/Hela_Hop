@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { SettingsForm } from "@/features/profile/SettingsForm";
 import { createClient } from "@/lib/supabase/server";
-
-import { SettingsForm } from "./SettingsForm";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -29,6 +29,15 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      {/* The mobile bottom bar has no room for Payouts, so link it here. */}
+      <Link
+        href="/dashboard/payout-methods"
+        className="flex min-h-[56px] items-center justify-between rounded-2xl border border-slate-200/90 bg-white px-5 py-4 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 lg:hidden"
+      >
+        <span>Payout methods (Till, Paybill, Pochi)</span>
+        <span aria-hidden="true">&rarr;</span>
+      </Link>
+
       <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
         <div className="mb-6">
           <h1 className="text-xl font-black tracking-tight text-slate-900">

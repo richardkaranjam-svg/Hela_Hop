@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/security/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /**

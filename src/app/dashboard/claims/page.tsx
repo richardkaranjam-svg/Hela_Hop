@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import { ClaimsClient, type ClaimItem } from "@/features/claims/ClaimsClient";
 import { createClient } from "@/lib/supabase/server";
-
-import { ClaimsClient, type ClaimItem } from "./ClaimsClient";
 
 export const metadata: Metadata = {
   title: "Payment Claims | Hela Hop",
@@ -52,13 +51,11 @@ export default async function ClaimsPage() {
     .eq("seller_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching claims:", error);
-  }
+  // Show the error/retry screen, not an empty list that hides waiting claims.
+  if (error) throw error;
 
   // Normalize joined data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const initialClaims: ClaimItem[] = (rawClaims || []).map((c: any) => {
+  const initialClaims: ClaimItem[] = (rawClaims || []).map((c) => {
     const receipt = Array.isArray(c.receipts)
       ? c.receipts[0] || null
       : c.receipts || null;
@@ -92,7 +89,5 @@ export default async function ClaimsPage() {
     };
   });
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://helahop.co.ke";
-
-  return <ClaimsClient initialClaims={initialClaims} appUrl={appUrl} />;
+  return <ClaimsClient initialClaims={initialClaims} />;
 }

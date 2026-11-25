@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
-
 import {
   DashboardClient,
   type ActivityItem,
   type DashboardStats,
   type DayData,
-} from "./DashboardClient";
+} from "@/features/dashboard/DashboardClient";
+import { getAppUrl } from "@/lib/app-url";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Seller Dashboard | Hela Hop",
@@ -52,10 +52,13 @@ export default async function DashboardPage() {
   const publicLinkSlug: string | null = latestLink?.slug ?? null;
 
   // 2. Fetch Payout Methods
-  const { data: payoutMethods } = await supabase
+  const { data: payoutMethods, error: payoutError } = await supabase
     .from("payout_methods")
     .select("type, number, account_ref, label, is_default")
     .eq("user_id", user.id);
+  // Show the error/retry screen rather than "KES 0" or "no claims" when the
+  // database is unreachable: an empty dashboard would hide waiting claims.
+  if (payoutError) throw payoutError;
 
   const defaultMethod =
     payoutMethods?.find((m) => m.is_default) || payoutMethods?.[0] || null;
@@ -77,7 +80,7 @@ export default async function DashboardPage() {
 
   // A claim only changes when the seller confirms or rejects it, so for a
   // confirmed claim `updated_at` is the moment the seller confirmed it.
-  const { data: allClaims } = await supabase
+  const { data: allClaims, error: claimsError } = await supabase
     .from("payment_claims")
     .select(
       `
@@ -101,6 +104,7 @@ export default async function DashboardPage() {
     )
     .eq("seller_id", user.id)
     .order("created_at", { ascending: false });
+  if (claimsError) throw claimsError;
 
   const claimsList = allClaims || [];
 
@@ -122,11 +126,12 @@ export default async function DashboardPage() {
   );
 
   // 4. Invoices Metrics
-  const { data: invoices } = await supabase
+  const { data: invoices, error: invoicesError } = await supabase
     .from("invoices")
     .select("id, customer_name, code, total_minor, status, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+  if (invoicesError) throw invoicesError;
 
   const invoicesList = invoices || [];
   const unpaidInvoices = invoicesList.filter(
@@ -177,12 +182,10 @@ export default async function DashboardPage() {
 
   // 6. Build Unified Activity Stream (Top 10 claims and invoices)
   const claimActivities: ActivityItem[] = claimsList.map((c) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const r: any = Array.isArray(c.receipts) ? c.receipts[0] : c.receipts;
+    const r = Array.isArray(c.receipts) ? c.receipts[0] : c.receipts;
     const publicToken = r?.public_token;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pl: any = Array.isArray(c.payment_links)
+    const pl = Array.isArray(c.payment_links)
       ? c.payment_links[0]
       : c.payment_links;
 
@@ -230,6 +233,7 @@ export default async function DashboardPage() {
       recentActivity={recentActivity}
       sellerName={sellerName}
       publicLinkSlug={publicLinkSlug}
+      appUrl={getAppUrl()}
       payoutBadge={
         defaultMethod
           ? {

@@ -35,11 +35,7 @@ export type InterviewCurrentTool =
   | "none";
 
 export type InterviewPriceReaction =
-  | "founding_yes"
-  | "would_pay"
-  | "too_expensive"
-  | "free_only"
-  | "unsure";
+  "founding_yes" | "would_pay" | "too_expensive" | "free_only" | "unsure";
 
 export interface InvoiceItem {
   description: string;
@@ -147,6 +143,13 @@ export interface Database {
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payment_links_payout_method_id_fkey";
+            columns: ["payout_method_id"];
+            isOneToOne: false;
+            referencedRelation: "payout_methods";
             referencedColumns: ["id"];
           },
         ];
@@ -591,7 +594,57 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    // RPCs callable from the app. Keep in sync with supabase/migrations.
+    // Most return a JSONB { ok, error?, ... } object; callers narrow it.
+    Functions: {
+      get_public_payment_link: { Args: { p_slug: string }; Returns: Json };
+      get_public_invoice: { Args: { p_code: string }; Returns: Json };
+      get_public_receipt: { Args: { p_token: string }; Returns: Json };
+      submit_payment_claim: {
+        Args: {
+          p_payment_link_id: string | null;
+          p_invoice_code: string | null;
+          p_payer_name: string;
+          p_payer_phone: string;
+          p_mpesa_code: string;
+          p_amount_minor: number | null;
+        };
+        Returns: Json;
+      };
+      confirm_payment_claim: { Args: { p_claim_id: string }; Returns: Json };
+      reject_payment_claim: {
+        Args: { p_claim_id: string; p_reason: string };
+        Returns: Json;
+      };
+      hit_rate_limit: {
+        Args: { p_key: string; p_window_seconds: number; p_max: number };
+        Returns: boolean;
+      };
+      submit_abuse_report: {
+        Args: {
+          p_slug_or_code: string;
+          p_type: string;
+          p_name: string | null;
+          p_reason: string;
+        };
+        Returns: Json;
+      };
+      add_payout_method: {
+        Args: {
+          p_type: PayoutMethodType;
+          p_number: string;
+          p_account_ref: string;
+          p_label: string;
+          p_make_default: boolean;
+        };
+        Returns: Json;
+      };
+      set_default_payout_method: {
+        Args: { p_method_id: string };
+        Returns: Json;
+      };
+      delete_payout_method: { Args: { p_method_id: string }; Returns: Json };
+    };
     Enums: {
       kyc_tier: KycTier;
       payout_method: PayoutMethod;

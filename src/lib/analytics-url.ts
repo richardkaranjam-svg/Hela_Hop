@@ -36,9 +36,7 @@ export function redactAnalyticsUrl(rawUrl: string): string | null {
   if (first && first in PRIVATE_SEGMENTS && parts.length > 2 && parts[2]) {
     parts[2] = PRIVATE_SEGMENTS[first];
   }
-  const cleaned = parts
-    .map((p) => (UUID_RE.test(p) ? "[id]" : p))
-    .join("/");
+  const cleaned = parts.map((p) => (UUID_RE.test(p) ? "[id]" : p)).join("/");
 
   return `${url.origin}${cleaned}`;
 }

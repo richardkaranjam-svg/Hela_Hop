@@ -1,11 +1,11 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { PublicPayClient } from "@/features/links/PublicPayClient";
+import { getAppUrl } from "@/lib/app-url";
 import type { Language } from "@/lib/i18n";
-import { getPublicPaymentLink, PENDING_PAYOUT } from "@/lib/public-data";
+import { getPublicPaymentLink } from "@/lib/public-data";
 import { generateQrDataUrl } from "@/lib/qr";
-
-import { PublicPayClient } from "./PublicPayClient";
 
 interface PayPageProps {
   params: Promise<{
@@ -40,7 +40,7 @@ export default async function PublicPayPage({ params }: PayPageProps) {
     notFound();
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
   const fullUrl = `${appUrl}/pay/${link.slug}`;
   const qrDataUrl = await generateQrDataUrl(fullUrl);
 
@@ -54,7 +54,7 @@ export default async function PublicPayPage({ params }: PayPageProps) {
       title={link.title}
       amountMinor={link.amount_minor}
       currency={link.currency || "KES"}
-      payoutMethod={link.payout ?? PENDING_PAYOUT}
+      payoutMethod={link.payout}
       qrDataUrl={qrDataUrl}
       fullUrl={fullUrl}
     />

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getPublicReceipt } from "@/lib/public-data";
-import { generateQrDataUrl } from "@/lib/qr";
-
 import {
   PublicReceiptClient,
   type ReceiptDetails,
-} from "./PublicReceiptClient";
+} from "@/features/receipts/PublicReceiptClient";
+import { getAppUrl } from "@/lib/app-url";
+import { getPublicReceipt } from "@/lib/public-data";
+import { generateQrDataUrl } from "@/lib/qr";
 
 interface PageProps {
   params: Promise<{
@@ -43,7 +43,7 @@ export default async function PublicReceiptPage({ params }: PageProps) {
     notFound();
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
   const receiptUrl = `${appUrl}/r/${receipt.public_token}`;
 
   let qrDataUrl = "";
@@ -55,7 +55,6 @@ export default async function PublicReceiptPage({ params }: PageProps) {
 
   const receiptDetails: ReceiptDetails = {
     receiptNumber: receipt.receipt_number,
-    publicToken: receipt.public_token,
     createdAt: receipt.created_at,
     amountMinor: receipt.amount_minor,
     mpesaCode: receipt.mpesa_code,

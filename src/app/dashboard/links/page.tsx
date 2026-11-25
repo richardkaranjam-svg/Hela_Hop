@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
+import { PaymentLinksClient } from "@/features/links/PaymentLinksClient";
+import { getAppUrl } from "@/lib/app-url";
 import { createClient } from "@/lib/supabase/server";
-
-import { PaymentLinksClient, type PaymentLinkItem } from "./PaymentLinksClient";
 
 export default async function PaymentLinksPage() {
   const supabase = await createClient();
@@ -37,16 +37,9 @@ export default async function PaymentLinksPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching payment links:", error);
-  }
+  if (error) throw error;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
 
-  return (
-    <PaymentLinksClient
-      initialLinks={(links as unknown as PaymentLinkItem[]) || []}
-      appUrl={appUrl}
-    />
-  );
+  return <PaymentLinksClient initialLinks={links ?? []} appUrl={appUrl} />;
 }

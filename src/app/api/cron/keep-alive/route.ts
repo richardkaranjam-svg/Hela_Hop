@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -25,27 +25,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    let supabase;
-    // Prefer service-role admin client if available, otherwise fall back to anon key
-    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      supabase = createAdminClient();
-    } else {
-      const url =
-        process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-      const anonKey =
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-        process.env.SUPABASE_ANON_KEY;
-
-      if (!url || !anonKey) {
-        return NextResponse.json(
-          { error: "Supabase credentials are not configured" },
-          { status: 500 }
-        );
-      }
-      supabase = createClient(url, anonKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
-    }
+    // Throws (caught below) if SUPABASE_SERVICE_ROLE_KEY is missing; the
+    // same key is required for claim emails and rate limits anyway.
+    const supabase = createAdminClient();
 
     // Touch the database via PostgREST to register activity on Supabase
     const { data, error } = await supabase

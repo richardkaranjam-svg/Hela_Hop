@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import QRCode from "qrcode";
 
+import { QR_OPTIONS } from "@/lib/qr";
+
 const MAX_QR_TEXT_LENGTH = 500;
 
 export async function GET(request: NextRequest) {
@@ -41,12 +43,8 @@ export async function GET(request: NextRequest) {
   try {
     if (format === "svg") {
       const svgString = await QRCode.toString(text, {
+        ...QR_OPTIONS,
         type: "svg",
-        margin: 2,
-        color: {
-          dark: "#0f172a",
-          light: "#ffffff",
-        },
       });
 
       const headers: Record<string, string> = {
@@ -64,13 +62,9 @@ export async function GET(request: NextRequest) {
 
     // Default to PNG
     const pngBuffer = await QRCode.toBuffer(text, {
+      ...QR_OPTIONS,
       type: "png",
       width: 480,
-      margin: 2,
-      color: {
-        dark: "#0f172a",
-        light: "#ffffff",
-      },
     });
 
     const headers: Record<string, string> = {

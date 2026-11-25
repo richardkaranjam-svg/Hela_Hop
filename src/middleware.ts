@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/security/admin";
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

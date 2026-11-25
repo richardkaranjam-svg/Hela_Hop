@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
+import { InvoicesListClient } from "@/features/invoices/InvoicesListClient";
+import { getAppUrl } from "@/lib/app-url";
 import { createClient } from "@/lib/supabase/server";
-
-import { InvoicesListClient, type InvoiceListItem } from "./InvoicesListClient";
 
 export default async function InvoicesPage() {
   const supabase = await createClient();
@@ -50,15 +50,13 @@ export default async function InvoicesPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching invoices:", error);
-  }
+  if (error) throw error;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
 
   return (
     <InvoicesListClient
-      initialInvoices={(invoices as unknown as InvoiceListItem[]) || []}
+      initialInvoices={invoices ?? []}
       appUrl={appUrl}
       sellerName={sellerName}
     />

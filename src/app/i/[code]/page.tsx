@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { PublicInvoiceClient } from "@/features/invoices/PublicInvoiceClient";
+import { getAppUrl } from "@/lib/app-url";
 import type { Language } from "@/lib/i18n";
-import { getPublicInvoice, PENDING_PAYOUT } from "@/lib/public-data";
-
-import { PublicInvoiceClient } from "./PublicInvoiceClient";
+import { getPublicInvoice } from "@/lib/public-data";
 
 interface InvoicePageProps {
   params: Promise<{
@@ -43,7 +43,7 @@ export default async function PublicInvoicePage({ params }: InvoicePageProps) {
     notFound();
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
   const fullUrl = `${appUrl}/i/${inv.code}`;
 
   return (
@@ -58,7 +58,7 @@ export default async function PublicInvoicePage({ params }: InvoicePageProps) {
       currency={inv.currency || "KES"}
       dueDate={inv.due_date}
       status={inv.status}
-      payoutMethod={inv.payout ?? PENDING_PAYOUT}
+      payoutMethod={inv.payout}
       fullUrl={fullUrl}
     />
   );

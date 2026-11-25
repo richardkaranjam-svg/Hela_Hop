@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 
+import { PayoutMethodsClient } from "@/features/payouts/PayoutMethodsClient";
 import { createClient } from "@/lib/supabase/server";
 import type { PayoutMethodRecord } from "@/types/database";
-
-import { PayoutMethodsClient } from "./PayoutMethodsClient";
 
 export default async function PayoutMethodsPage() {
   const supabase = await createClient();

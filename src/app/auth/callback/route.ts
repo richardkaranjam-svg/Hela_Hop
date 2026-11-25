@@ -4,8 +4,8 @@ import {
   getVercelTrustedHosts,
   parseAllowedOtpType,
   resolveSafeAppOrigin,
-} from "@/lib/app-origin";
-import { safeRedirectPath } from "@/lib/safe-redirect";
+} from "@/lib/security/app-origin";
+import { safeRedirectPath } from "@/lib/security/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {

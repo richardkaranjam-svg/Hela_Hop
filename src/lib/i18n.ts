@@ -2,7 +2,6 @@ export type Language = "en" | "sw";
 
 export const translations = {
   en: {
-    langLabel: "English",
     forItem: "FOR ORDER / ITEM",
     flexibleAmount: "Enter agreed amount",
     sellerDisclaimer:
@@ -29,9 +28,16 @@ export const translations = {
     claimedStatus: "CLAIM SENT — Waiting for seller confirmation",
     paidStamp: "PAID",
     cancelledStatus: "CANCELLED",
+    claimedBadge: "CLAIMED",
+    createFreeLink: "Create My Free Link",
+    invalidMpesaCode: "Please enter a valid 10-character M-PESA code.",
+    payoutPendingTitle: "Not ready for payment yet",
+    payoutPendingBody:
+      "This seller has not added their M-PESA payment details yet. Please do not send money. Ask the seller to finish setting up, then open this link again.",
+    invoiceCancelledBody:
+      "The seller cancelled this invoice. Please do not pay it. Contact the seller if you think this is a mistake.",
     itemDescription: "Item Description",
     itemQty: "Qty",
-    itemPrice: "Unit Price",
     itemTotal: "Line Total",
     grandTotal: "Total Amount",
     shareWhatsApp: "Share via WhatsApp",
@@ -96,7 +102,6 @@ export const translations = {
     },
   },
   sw: {
-    langLabel: "Kiswahili",
     forItem: "KWA AJILI YA AGIZO / BIDHAA",
     flexibleAmount: "Weka kiasi mlichokubaliana",
     sellerDisclaimer:
@@ -124,9 +129,16 @@ export const translations = {
     claimedStatus: "DAI LIMETUMWA — Inasubiri uthibitisho wa muuzaji",
     paidStamp: "IMELIPWA",
     cancelledStatus: "IMEGHAIRIWA",
+    claimedBadge: "IMEDAIWA",
+    createFreeLink: "Unda Kiungo Changu Bure",
+    invalidMpesaCode: "Tafadhali weka msimbo sahihi wa M-PESA wenye herufi 10.",
+    payoutPendingTitle: "Bado haiko tayari kwa malipo",
+    payoutPendingBody:
+      "Muuzaji huyu bado hajaweka maelezo yake ya malipo ya M-PESA. Tafadhali usitume pesa. Mwombe muuzaji amalize kuweka, kisha ufungue kiungo hiki tena.",
+    invoiceCancelledBody:
+      "Muuzaji ameghairi ankara hii. Tafadhali usiilipe. Wasiliana na muuzaji kama unafikiri ni kosa.",
     itemDescription: "Maelezo ya Bidhaa",
     itemQty: "Idadi",
-    itemPrice: "Bei ya Kila Moja",
     itemTotal: "Jumla",
     grandTotal: "Jumla Kuu",
     shareWhatsApp: "Tuma kwa WhatsApp",

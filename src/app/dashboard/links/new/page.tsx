@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 
+import { NewLinkForm } from "@/features/links/NewLinkForm";
 import { createClient } from "@/lib/supabase/server";
 import type { PayoutMethodRecord } from "@/types/database";
-
-import { NewLinkForm } from "./NewLinkForm";
 
 export default async function NewPaymentLinkPage() {
   const supabase = await createClient();

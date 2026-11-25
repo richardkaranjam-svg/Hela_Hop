@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { stkPush } from "@/lib/mpesa/daraja";
-import { getClientIp, hitRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
-import { isSameOrigin } from "@/lib/same-origin";
+import {
+  getClientIp,
+  hitRateLimit,
+  RATE_LIMITS,
+} from "@/lib/security/rate-limit";
+import { isSameOrigin } from "@/lib/security/same-origin";
 
 const stkPushSchema = z.object({
   phone: z
@@ -19,6 +23,7 @@ const stkPushSchema = z.object({
       required_error: "Amount is required",
       invalid_type_error: "Amount must be a number",
     })
+    .int({ message: "Amount must be whole shillings" })
     .gt(0, { message: "Amount must be greater than 0" })
     .lte(150000, { message: "Amount must be less than or equal to 150,000" }),
   accountRef: z.string().max(64).optional(),

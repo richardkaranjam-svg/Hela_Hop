@@ -1,3 +1,4 @@
+import { getAppUrl } from "@/lib/app-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 function escapeHtml(value: string): string {
@@ -70,9 +71,7 @@ export async function notifySellerOfClaim(claimId: string): Promise<void> {
       .maybeSingle();
     if (!seller?.email) return;
 
-    const appUrl = (
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    ).replace(/\/$/, "");
+    const appUrl = getAppUrl();
     const claimsUrl = `${appUrl}/dashboard/claims`;
     const amount = `KES ${(claim.amount_minor / 100).toLocaleString("en-KE")}`;
     const greetingName = seller.full_name || seller.username || "there";

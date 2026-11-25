@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { escapeCsvCell } from "@/lib/csv";
+import { escapeCsvCell } from "@/lib/format/csv";
 import { createClient } from "@/lib/supabase/server";
+
+/** YYYY-MM-DD in Kenyan time (a 01:30 EAT payment belongs to that day). */
+const nairobiDate = (d: Date) =>
+  d.toLocaleDateString("en-CA", { timeZone: "Africa/Nairobi" });
 
 export async function GET() {
   const supabase = await createClient();
@@ -56,15 +60,12 @@ export async function GET() {
   ];
 
   const rows = (claims || []).map((c) => {
-    const date = new Date(c.created_at).toISOString().split("T")[0];
+    const date = nairobiDate(new Date(c.created_at));
     const amount = (c.amount_minor / 100).toFixed(2);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const r: any = Array.isArray(c.receipts) ? c.receipts[0] : c.receipts;
+    const r = Array.isArray(c.receipts) ? c.receipts[0] : c.receipts;
     const receiptNum = r?.receipt_number || "N/A";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const inv: any = Array.isArray(c.invoices) ? c.invoices[0] : c.invoices;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pl: any = Array.isArray(c.payment_links)
+    const inv = Array.isArray(c.invoices) ? c.invoices[0] : c.invoices;
+    const pl = Array.isArray(c.payment_links)
       ? c.payment_links[0]
       : c.payment_links;
 
@@ -86,7 +87,7 @@ export async function GET() {
   });
 
   const csvContent = [headers.join(","), ...rows].join("\r\n");
-  const today = new Date().toISOString().split("T")[0];
+  const today = nairobiDate(new Date());
 
   return new NextResponse(csvContent, {
     status: 200,

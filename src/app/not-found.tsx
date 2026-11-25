@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LegalFooter } from "@/components/public/LegalFooter";
+import { LegalFooter } from "@/features/legal/LegalFooter";
 
 export const metadata = {
   title: "Page not found | Hela Hop",

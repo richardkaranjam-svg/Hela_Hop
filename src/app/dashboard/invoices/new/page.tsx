@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 
+import { NewInvoiceForm } from "@/features/invoices/NewInvoiceForm";
 import { createClient } from "@/lib/supabase/server";
 import type { PayoutMethodRecord } from "@/types/database";
-
-import { NewInvoiceForm } from "./NewInvoiceForm";
 
 export default async function NewInvoicePage() {
   const supabase = await createClient();

@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { LegalFooter } from "@/components/public/LegalFooter";
+import { LegalFooter } from "@/features/legal/LegalFooter";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AuthLayout({

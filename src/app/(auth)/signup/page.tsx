@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 
-import { signupAction, type AuthActionResult } from "../actions";
+import { signupAction, type AuthActionResult } from "@/features/auth/actions";
 
 export default function SignupPage() {
   const [state, formAction, isPending] = useActionState<
@@ -189,7 +189,9 @@ export default function SignupPage() {
             >
               Password
             </label>
-            <span className="text-[11px] text-slate-400">Min 10 characters</span>
+            <span className="text-[11px] text-slate-400">
+              Min 10 characters
+            </span>
           </div>
           <div className="relative">
             <input

@@ -3,7 +3,10 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 
-import { forgotPasswordAction, type AuthActionResult } from "../actions";
+import {
+  forgotPasswordAction,
+  type AuthActionResult,
+} from "@/features/auth/actions";
 
 export default function ForgotPasswordPage() {
   const [state, formAction, isPending] = useActionState<

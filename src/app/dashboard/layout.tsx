@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 
+import { ToastProvider } from "@/components/ui/Toast";
 import {
   DesktopSidebar,
   MobileBottomNav,
   MobileTopBar,
-} from "@/components/dashboard/DashboardNav";
-import { ToastProvider } from "@/components/ui/Toast";
+} from "@/features/dashboard/DashboardNav";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({

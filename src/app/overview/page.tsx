@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
+import OverviewClient, {
+  type OverviewTab,
+} from "@/features/overview/OverviewClient";
+import { getAppUrl } from "@/lib/app-url";
 import { generateQrDataUrl } from "@/lib/qr";
-
-import OverviewClient, { type OverviewTab } from "./OverviewClient";
 
 export const metadata: Metadata = {
   title: "App Overview (No Account Needed) | Hela Hop",
@@ -32,9 +34,7 @@ export default async function OverviewPage({
   const resolvedParams = await searchParams;
   const initialTab = parseInitialTab(resolvedParams.tab);
 
-  const appOrigin =
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "") ||
-    "https://hela-hop.vercel.app";
+  const appOrigin = getAppUrl();
   const samplePayUrl = `${appOrigin}/pay/mama-shiro-thrift`;
   const qrDataUrl = await generateQrDataUrl(samplePayUrl);
 

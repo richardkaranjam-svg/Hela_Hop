@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { ShareLinkActions } from "@/features/links/ShareLinkActions";
+import { getAppUrl } from "@/lib/app-url";
 import { generateQrDataUrl } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/server";
-
-import { ShareLinkActions } from "./ShareLinkActions";
 
 export const metadata: Metadata = {
   title: "Link created | Hela Hop",
@@ -58,7 +58,7 @@ export default async function LinkCreatedPage({ searchParams }: PageProps) {
       .eq("is_active", true),
   ]);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
   const fullUrl = `${appUrl}/pay/${link.slug}`;
   const displayUrl = fullUrl.replace(/^https?:\/\//, "");
 
@@ -89,7 +89,9 @@ export default async function LinkCreatedPage({ searchParams }: PageProps) {
           ✓
         </div>
         <h1 className="mt-4 text-2xl font-black tracking-tight text-slate-900">
-          {isFirst ? "Your first payment link is ready!" : "Payment link created!"}
+          {isFirst
+            ? "Your first payment link is ready!"
+            : "Payment link created!"}
         </h1>
         <p className="mt-1 text-sm text-slate-600">
           Share it with customers so they can pay you on M-PESA.

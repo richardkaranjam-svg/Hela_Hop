@@ -4,7 +4,7 @@ import { Suspense, useActionState, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { loginAction, type AuthActionResult } from "../actions";
+import { loginAction, type AuthActionResult } from "@/features/auth/actions";
 
 function LoginForm() {
   const searchParams = useSearchParams();

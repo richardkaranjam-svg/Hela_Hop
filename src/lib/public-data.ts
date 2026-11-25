@@ -55,24 +55,15 @@ export type PublicReceipt = {
   payout: PublicPayout | null;
 };
 
-/** Shown when the seller has not added a payout method yet. */
-export const PENDING_PAYOUT: PublicPayout = {
-  type: "till",
-  number: "Pending Setup",
-  account_ref: null,
-  label: "Seller is still setting up their payout details",
-};
-
 export const getPublicPaymentLink = cache(
   async (slug: string): Promise<PublicPaymentLink | null> => {
     const supabase = await createClient();
     const { data, error } = await supabase.rpc("get_public_payment_link", {
       p_slug: slug,
     });
-    if (error) {
-      console.error("get_public_payment_link failed:", error);
-      return null;
-    }
+    // A database error is NOT "not found": throw so the buyer sees the
+    // retry screen instead of "this link no longer exists".
+    if (error) throw error;
     return (data as unknown as PublicPaymentLink | null) ?? null;
   }
 );
@@ -83,10 +74,9 @@ export const getPublicInvoice = cache(
     const { data, error } = await supabase.rpc("get_public_invoice", {
       p_code: code,
     });
-    if (error) {
-      console.error("get_public_invoice failed:", error);
-      return null;
-    }
+    // A database error is NOT "not found": throw so the buyer sees the
+    // retry screen instead of "this link no longer exists".
+    if (error) throw error;
     return (data as unknown as PublicInvoice | null) ?? null;
   }
 );
@@ -97,10 +87,9 @@ export const getPublicReceipt = cache(
     const { data, error } = await supabase.rpc("get_public_receipt", {
       p_token: token,
     });
-    if (error) {
-      console.error("get_public_receipt failed:", error);
-      return null;
-    }
+    // A database error is NOT "not found": throw so the buyer sees the
+    // retry screen instead of "this link no longer exists".
+    if (error) throw error;
     return (data as unknown as PublicReceipt | null) ?? null;
   }
 );

@@ -19,15 +19,33 @@ Hela Hop is a payment bridge built on top of Safaricom's M-PESA network, powered
 
 ```
 src/
-├── app/                  # Next.js App Router pages & API routes
-├── components/           # Shared UI components
+├── app/                  # URLs only: page.tsx, layout.tsx, route.ts (folder names = routes)
+├── features/             # All product code, one folder per feature
+│   ├── auth/             #   login, signup, password reset actions
+│   ├── profile/          #   seller settings
+│   ├── payouts/          #   Till / Paybill / Pochi / phone payout methods
+│   ├── links/            #   payment links + public pay page (/pay/[slug])
+│   ├── invoices/         #   invoices + public invoice page (/i/[code])
+│   ├── claims/           #   "I have paid" claims, confirm / reject
+│   ├── receipts/         #   public receipt page (/r/[token])
+│   ├── dashboard/        #   dashboard home + navigation
+│   ├── abuse/            #   report-abuse form and action
+│   ├── interviews/       #   admin discovery-interview tracker
+│   ├── overview/         #   no-account sandbox (/overview)
+│   └── legal/            #   terms / privacy page layout
+├── components/ui/        # Generic UI pieces (Toast, Skeletons)
 ├── lib/
-│   ├── supabase/         # server.ts + client.ts
-│   ├── mpesa/            # daraja.ts (STK Push, OAuth)
-│   └── intasend/         # intasend.ts (checkout, payouts)
-├── types/                # Shared TypeScript types
-└── middleware.ts         # Supabase session refresh
+│   ├── supabase/         # server, browser and admin clients
+│   ├── mpesa/            # Daraja API, M-PESA SMS parser, Kenyan phone numbers
+│   ├── security/         # rate limits, origin checks, safe redirects, admin list
+│   ├── format/           # formatters, CSV
+│   └── *.ts              # i18n, email, QR codes, public-data, validation
+├── types/database.ts     # Supabase database types
+└── middleware.ts         # Session refresh + route protection
 ```
+
+Each feature folder holds its `actions.ts` (server actions) and its screens
+(`*Client.tsx`, `*Form.tsx`). Tests sit next to the code in `__tests__/`.
 
 ## Getting Started
 

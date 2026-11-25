@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { LegalPage } from "@/components/public/LegalPage";
+import { LegalPage } from "@/features/legal/LegalPage";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Hela Hop",

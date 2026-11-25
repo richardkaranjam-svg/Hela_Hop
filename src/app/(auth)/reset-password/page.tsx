@@ -3,7 +3,10 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 
-import { resetPasswordAction, type AuthActionResult } from "../actions";
+import {
+  resetPasswordAction,
+  type AuthActionResult,
+} from "@/features/auth/actions";
 
 export default function ResetPasswordPage() {
   const [state, formAction, isPending] = useActionState<
@@ -132,7 +135,9 @@ export default function ResetPasswordPage() {
             >
               New Password
             </label>
-            <span className="text-[11px] text-slate-400">Min 10 characters</span>
+            <span className="text-[11px] text-slate-400">
+              Min 10 characters
+            </span>
           </div>
           <div className="relative">
             <input
