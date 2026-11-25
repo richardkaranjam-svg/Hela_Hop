@@ -95,7 +95,7 @@ export async function signupAction(
   const supabase = await createClient();
   const origin = await getValidatedEmailOrigin();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: validation.data.email,
     password: validation.data.password,
     options: {
@@ -108,6 +108,21 @@ export async function signupAction(
       success: false,
       errors: {
         general: error.message,
+      },
+    };
+  }
+
+  // With email confirmation enabled, Supabase returns an obfuscated user with
+  // an empty identities array instead of an error when the email already exists.
+  if (
+    data.user &&
+    (!data.user.identities || data.user.identities.length === 0)
+  ) {
+    return {
+      success: false,
+      errors: {
+        email:
+          "An account with this email already exists. Please log in or use Forgot password.",
       },
     };
   }
