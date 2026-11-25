@@ -74,6 +74,12 @@ export default function SignupPage() {
           Please click the link in that email to activate your account and start
           receiving payments.
         </p>
+        <p className="mt-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+          If clicking the link opens a page that cannot be reached, your email
+          is still confirmed &mdash; come back here and tap{" "}
+          <strong className="font-semibold text-slate-700">Go to Log In</strong>
+          .
+        </p>
         <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-5">
           <Link
             href="/login"
